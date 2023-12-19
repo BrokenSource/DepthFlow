@@ -11,23 +11,27 @@ class DepthFlowScene(SombreroScene):
 
     # # Image parallax
 
-    def parallax(self, image: Option[PilImage, Path, "url"]):
+    def parallax(self,
+        image: Option[PilImage, Path, "url"],
+        depth: Option[PilImage, Path, "url"]=None
+    ):
         """Parallax effect"""
         self.image.from_image(image)
-        self.depth.from_image(self.mde(image))
+        self.depth.from_image(depth or self.mde(image))
         self.context.time = 0
 
     def resize_to_image(self):
         self.context.resize(*self.image.size)
 
-    def settings(self, image: str):
-        self.parallax(image)
+    def settings(self,
+        image: Annotated[str, typer.Option("--image", "-i", help="Image to parallax (path, url)")],
+        depth: Annotated[str, typer.Option("--depth", "-d", help="Depth map of the image, None to estimate")]=None,
+    ):
+        self.parallax(image=image, depth=depth)
 
     def handle(self, message: SombreroMessage):
-
-        # Drag and drop images or urls to parallax
         if isinstance(message, SombreroMessage.Window.FileDrop):
-            self.parallax(message.files[0])
+            self.parallax(image=message.files[0], depth=message.files.get(1))
 
     # # SombreroScene
 
@@ -76,7 +80,7 @@ class DepthFlowScene(SombreroScene):
 
         # Load default image if none was provided
         if self.image.is_empty:
-            self.parallax("https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png")
+            self.parallax(image="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png")
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iFocus",          value=1)

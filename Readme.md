@@ -22,7 +22,7 @@
 
   <br>
 
-  <ins> **[**[**DepthFlow**](https://github.com/BrokenSource/DepthFlow)**]**: Image → **2.5D Parallax** Effect Video. A Professional **[**[**Depthy**](https://depthy.stamina.pl)**]** Alternative. </ins>
+  **[**[**DepthFlow**](https://github.com/BrokenSource/DepthFlow)**]**: Image → **2.5D Parallax** Effect Video. A Professional **[**[**Depthy**](https://depthy.stamina.pl)**]** Alternative.
 </div>
 
 <br>
@@ -71,13 +71,17 @@ As simple as that, we achieve a similar effect as [**Depthy**](https://depthy.st
 
 > 🔴🟡🟢
 >
-> **Download** and install our [**Monorepo**](https://github.com/BrokenSource/BrokenSource) with all the code and projects first
+> **Download** and install our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) with all the code and projects first
 >
 > <sub><b>Note:</b> You cannot run this project in dev mode without the <i>Framework!</i></sub>
 
+<br>
+
 ## Running the code
 
-- Run the command: `broken depthflow` on the Broken Environment
+After running the `brakeit` script on the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) and inside the Virtual Environment,
+
+- Run the command: `broken depthflow`
 
 A real time window should pop up. You can see `broken depthflow --help` for render options
 
@@ -88,7 +92,8 @@ A real time window should pop up. You can see `broken depthflow --help` for rend
 - `broken depthflow (--render | -r)`
 - `broken depthflow -r -w 1280 -h 720 -f 30`
 - `broken depthflow -r -o ./video_name -f mkv`
-- `broken depthflow settings (url | path) main --render -s 2`
+- `broken depthflow settings --image (url | path) main --render -s 2`
+- `broken depthflow settings -i (image) -d (depth) main`
 
 <b>Note</b>: A high SSAA `-s 2` is recommended for antialiasing
 
@@ -101,7 +106,7 @@ A real time window should pop up. You can see `broken depthflow --help` for rend
 
 > By default, Pytorch will be installed with CPU support.
 
-If you want to **Speed Up** the **Depth Estimation** process, you can install it with GPU support:
+If you want to **Speed Up** the **Depth Estimation**, you can add Pytorch with GPU support:
 
 <br>
 
@@ -109,7 +114,7 @@ If you want to **Speed Up** the **Depth Estimation** process, you can install it
 - Install [CUDA](https://developer.nvidia.com/cuda-downloads) and [cuDNN](https://developer.nvidia.com/cudnn)
 - Run the command: `broken depthflow poe cuda`
 
-<sub>*N1: Your GPU must support PyTorch's CUDA version, all >= GTX 900. Preferably install from your package manager</sub>
+<sub>*N1: Check GPU compatibility (<= GTX 800 series is not supported). Preferably install CUDA from your package manager.</sub>
 
 
 <br>
@@ -117,7 +122,7 @@ If you want to **Speed Up** the **Depth Estimation** process, you can install it
 **AMD**<sup>R1</sup> (ROCm):
 - Run the command: `broken depthflow poe rocm`
 
-<sub>*R1: Check GPU compatibility, <= RX 500 series is not supported. Preferably install from your package manager</sub>
+<sub>*R1: Check GPU compatibility (<= RX 500 series is not supported). Preferably install ROCm from your package manager</sub>
 
 
 <br>
