@@ -2,15 +2,9 @@
 void main() {
     SombreroCamera iCamera = iInitSombreroCamera(gluv);
 
-    // Depth map maximum height
-    float height = 0.16;
-
-    // Small shake
-    iCamera.position.yz += 0.1 * vec2(sin(iTime), sin(2*iTime));
-
-    // Varying camera isometric
-    float iso = smoothstep(0.0, 1.0, (sin(iTime) + 1)/2);
-    iCamera.isometric = iso;
+    // Add parallax options
+    iCamera.position.yz += iParallaxPosition;
+    iCamera.isometric = iParallaxIsometric;
 
     // Project camera Rays
     iCamera = iProjectSombreroCamera(iCamera);
@@ -21,11 +15,9 @@ void main() {
         return;
     }
 
-    // Zoom out
-    iCamera.uv *= 0.6 + 0.25*(2.0/PI)*atan(2*iTime);
-
-    // Fix camera Zoom due isometric
-    iCamera.uv *= 1 - height*iso;
+    // Apply and fix camera Zoom due isometric
+    iCamera.uv *= iParallaxZoom;
+    iCamera.uv *= 1 - iParallaxHeight*iParallaxIsometric;
 
     // // DepthFlow math
 
@@ -47,7 +39,7 @@ void main() {
     );
 
     // The distance Beta we care for the depth map
-    float delta = abs(tan(theta) * (1 - iCamera.origin.x - height));
+    float delta = abs(tan(theta) * (1 - iCamera.origin.x - iParallaxHeight));
     float alpha = abs(tan(theta) * (1 - iCamera.origin.x));
     float beta  = abs(alpha - delta);
 
@@ -74,7 +66,7 @@ void main() {
         vec2 sample = gluv2stuv(lambda + i*beta*walk);
 
         // The depth map value
-        float depth_height = height * (1.0 - draw_image(depth, sample).r);
+        float depth_height = iParallaxHeight * (1.0 - draw_image(depth, sample).r);
         float walk_height  = (i*beta) / tan(theta);
 
         if (depth_height > walk_height) {

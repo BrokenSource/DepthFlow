@@ -46,42 +46,29 @@ class DepthFlowScene(SombreroScene):
         self.image.repeat(False)
         self.depth.repeat(False)
 
-        # Create a Camera Shake Noise module
-        self.shake_noise = self.engine.add(SombreroNoise(
-            name="Position",
-            frequency=0.25,
-            roughness=0.3,
-            octaves=6,
-            dimensions=2,
-        ))
-
-        # Create a Camera Zoom Noise module
-        self.zoom_noise = self.engine.add(SombreroNoise(
-            name="Zoom",
-            frequency=0.2,
-            roughness=0.5,
-            octaves=3,
-            dimensions=1
-        ))
-
-        # Create a Camera Rotation Noise module
-        self.rotate_noise = self.engine.add(SombreroNoise(
-            name="Rotation",
-            frequency=0.2,
-            roughness=0.5,
-            octaves=3,
-            dimensions=1
-        ))
-
         # Load the Default DepthFlow shader
         self.engine.shader.fragment = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.frag").read_text()
 
     def update(self):
-
-        # Load default image if none was provided
         if self.image.is_empty:
             self.parallax(image="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png")
 
+    def smoothstep(self, x: float) -> float:
+        return x*x*(3 - 2*x)
+
     def pipeline(self) -> Iterable[ShaderVariable]:
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iFocus",          value=1)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxFactor", value=0.52)
+
+        # Smootly change isometric
+        iso = self.smoothstep(0.5*(math.sin(self.context.time) + 1))
+
+        # Infinite 8 loop shift
+        pos = 0.1 * numpy.array([math.sin(self.context.time), math.sin(2*self.context.time)])
+
+        # Zoom out on the start
+        zoom = 0.6 + 0.25*(2/math.pi)*math.atan(2*self.context.time)
+
+        # Output variables
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxHeight",    value=0.16)
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxIsometric", value=iso)
+        yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=pos)
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxZoom",      value=zoom)
