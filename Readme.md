@@ -42,6 +42,8 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
     <img src="https://github.com/BrokenSource/DepthFlow/assets/29046864/1975fdc9-9517-4700-88dd-ed8175ab813f" alt="Original Image">
   </a>
   <br>
+  <b>Source:</b> <a href="https://wallhaven.cc/w/pkz5r9">Wallhaven</a>. All images remain property of their original owners. ⚖️
+  <br>
   <br>
 </details>
 
@@ -49,6 +51,8 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 <summary>🪄 <b>Click</b> to see the Estimated Depth map </summary>
   <br>
   <img src="https://github.com/BrokenSource/DepthFlow/assets/29046864/7f73775e-0b08-4a4f-bf97-7cb8f3aecad8" alt="Depth Map">
+  <br>
+  The Depth Map was estimated with <a href="https://github.com/isl-org/ZoeDepth"><b>ZoeDepth</b></a> 🚀
   <br>
   <br>
 </details>
