@@ -24,8 +24,8 @@ void main() {
     // Point where the ray intersects with the YZ plane
     vec2 lambda = iCamera.uv;
 
-    // Note: No camera displacement mode, raw parallax
-    if (true) {
+    // No camera displacement mode, raw parallax
+    if (iParallaxFixed) {
         lambda -= vec2(-iCamera.position.y, iCamera.position.z);
     }
 
@@ -63,12 +63,15 @@ void main() {
     // Fixme: Calculate walk distance based on pixel and angle?
     // The Very Expensive Loop™
     for (float i=0.0; i<1.0; i+=quality) {
+
+        // Get the uv we'll check for the heights
         vec2 sample = gluv2stuv(lambda + i*beta*walk);
 
         // The depth map value
         float depth_height = iParallaxHeight * (1.0 - draw_image(depth, sample).r);
         float walk_height  = (i*beta) / tan(theta);
 
+        // Update uv until the last height > walk
         if (depth_height > walk_height) {
             parallax = sample;
         }

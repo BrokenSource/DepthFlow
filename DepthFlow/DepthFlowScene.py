@@ -72,3 +72,5 @@ class DepthFlowScene(SombreroScene):
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxIsometric", value=iso)
         yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=pos)
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxZoom",      value=zoom)
+        yield ShaderVariable(qualifier="uniform", type="bool",  name=f"iParallaxFixed",     value=True)
+
