@@ -90,7 +90,8 @@ After running the `brakeit` script on the [**Monorepo**](https://github.com/Brok
 A real time window should pop up. You can see `broken depthflow --help` for render options
 
 #### Selecting the image
-- `broken depthflow settings (url | path) main`
+- `broken depthflow settings --image/-i (url | path) main`
+- `broken depthflow settings --image/-i (url | path) --depth/-d (url | path) main`
 
 #### Rendering to a video
 - `broken depthflow (--render | -r)`
@@ -99,7 +100,7 @@ A real time window should pop up. You can see `broken depthflow --help` for rend
 - `broken depthflow settings --image (url | path) main --render -s 2`
 - `broken depthflow settings -i (image) -d (depth) main`
 
-<b>Note</b>: A high SSAA `-s 2` is recommended for antialiasing
+<b>Note</b>: A high SSAA `-s 1.5` is recommended for antialiasing due the Steep Parallax
 
 <sup><b>Todo:</b> Reimplement the Gradio interface; configurable parallax settings</sup>
 
