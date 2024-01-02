@@ -9,7 +9,7 @@
 
   <h1>DepthFlow</h1>
 
-  <img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow" alt="Stars Badge"/>
+  <img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow?style=flat" alt="Stars Badge"/>
   <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2FBrokenSource%2FDepthFlow.json%3Fshow%3Dunique&label=Visitors&color=blue"/>
   <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2FBrokenSource%2FDepthFlow.json&label=Page%20Views&color=blue"/>
   <img src="https://img.shields.io/github/license/BrokenSource/DepthFlow?color=blue" alt="License Badge"/>
