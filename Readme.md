@@ -83,7 +83,7 @@ As simple as that, we achieve a similar effect as [**Depthy**](https://depthy.st
 
 <br>
 
-- ⚠️ **DepthFlow** directly uses [**🌵 ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
+- **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
 
 <br>
 
