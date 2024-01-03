@@ -83,6 +83,10 @@ As simple as that, we achieve a similar effect as [**Depthy**](https://depthy.st
 
 <br>
 
+- ⚠️ **DepthFlow** directly uses [**🌵 ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
+
+<br>
+
 ## Running the code
 
 After running the `brakeit` script on the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) and inside the Virtual Environment,
