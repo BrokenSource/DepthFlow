@@ -2,8 +2,8 @@ from . import *
 
 
 @attrs.define
-class DepthFlowScene(SombreroScene):
-    """Basics of Simplex noise"""
+class DepthFlow(SombreroScene):
+    """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first."""
     __name__ = "DepthFlow"
 
     # DepthFlow objects
@@ -54,7 +54,17 @@ class DepthFlowScene(SombreroScene):
             self.parallax(image="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png")
 
     def smoothstep(self, x: float) -> float:
-        return x*x*(3 - 2*x)
+        return numpy.clip(3*x**2 - 2*x**3, 0, 1)
+
+    # Parallax configuration and presets
+    fixed  = field(default=True)
+    height = field(default=0.25)
+
+    def ui(self) -> None:
+        if (state := imgui.checkbox("Fixed", self.fixed))[0]:
+            self.fixed = state[1]
+        if (state := imgui.input_float("Height", self.height, 0.01, 0.01, "%.2f"))[0]:
+            self.height = max(0, state[1])
 
     def pipeline(self) -> Iterable[ShaderVariable]:
 
@@ -68,9 +78,9 @@ class DepthFlowScene(SombreroScene):
         zoom = 0.6 + 0.25*(2/math.pi)*math.atan(2*self.context.time)
 
         # Output variables
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxHeight",    value=0.16)
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxHeight",    value=self.height)
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxIsometric", value=iso)
         yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=pos)
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxZoom",      value=zoom)
-        yield ShaderVariable(qualifier="uniform", type="bool",  name=f"iParallaxFixed",     value=True)
+        yield ShaderVariable(qualifier="uniform", type="bool",  name=f"iParallaxFixed",     value=self.fixed)
 

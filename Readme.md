@@ -24,7 +24,7 @@
 
   <br>
 
-  **[**[**DepthFlow**](https://github.com/BrokenSource/DepthFlow)**]**: Image → **2.5D Parallax** Effect Video. A Professional **[**[**Depthy**](https://depthy.stamina.pl)**]** Alternative.
+  **[**[**DepthFlow**](https://github.com/BrokenSource/DepthFlow)**]**: Image to → **2.5D Parallax** Effect Video. A Professional **[**[**Depthy**](https://depthy.stamina.pl)**]** Alternative.
 </div>
 
 <br>

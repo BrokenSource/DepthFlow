@@ -17,7 +17,7 @@ void main() {
 
     // Apply and fix camera Zoom due isometric
     iCamera.uv *= iParallaxZoom;
-    iCamera.uv *= 1 - iParallaxHeight*iParallaxIsometric;
+    iCamera.uv *= 1 - pow(iParallaxHeight*iParallaxIsometric, 2);
 
     // // DepthFlow math
 
@@ -72,7 +72,7 @@ void main() {
         float walk_height  = (i*beta) / tan(theta);
 
         // Update uv until the last height > walk
-        if (depth_height > walk_height) {
+        if (depth_height >= walk_height) {
             parallax = sample;
         }
     }

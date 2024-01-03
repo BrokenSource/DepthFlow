@@ -12,5 +12,6 @@ DEPTHFLOW = BrokenProject(
     RESOURCES=DepthFlowResources,
 )
 
+# isort: off
 from .DepthFlowMDE import *
-from .DepthFlowScene import *
+from .DepthFlow import *
