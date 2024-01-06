@@ -93,22 +93,31 @@ After running the `brakeit` script on the [**Monorepo**](https://github.com/Brok
 
 - Run the command: `broken depthflow`
 
-A real time window should pop up. You can see `broken depthflow --help` for render options
+A real time window should pop up.
 
-#### Selecting the image
-- `broken depthflow settings --image/-i (url | path) main`
-- `broken depthflow settings --image/-i (url | path) --depth/-d (url | path) main`
+<br>
 
-#### Rendering to a video
+#### Selecting the input image
+- Run `broken depthflow parallax --help` for parallax options
+
+- You can also drag and drop an Image File or URL From your Browser
+
+<br>
+
+#### Rendering Options
+- Run `broken depthflow --help` for options and rendering
+
+<br>
+
+#### Full Examples
 - `broken depthflow (--render | -r)`
 - `broken depthflow -r -w 1280 -h 720 -f 30`
-- `broken depthflow -r -o ./video_name -f mkv`
-- `broken depthflow settings --image (url | path) main --render -s 2`
-- `broken depthflow settings -i (image) -d (depth) main`
+- `broken depthflow -r -o ./video_name --format mkv`
+- `broken depthflow parallax --image (url | path) main --render -s 2`
+- `broken depthflow -r -t 2 --open`
+- `broken depthflow parallax -i (image) -d (depth) main`
 
 <b>Note</b>: A high SSAA `-s 1.5` is recommended for antialiasing due the Steep Parallax
-
-<sup><b>Todo:</b> Reimplement the Gradio interface; configurable parallax settings</sup>
 
 <br>
 <br>

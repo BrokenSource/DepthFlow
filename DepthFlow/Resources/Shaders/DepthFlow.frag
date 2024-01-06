@@ -53,10 +53,10 @@ void main() {
     float quality;
     switch (iQuality) {
         case 0: quality = 0.05;  break;
-        case 1: quality = 0.01;  break;
-        case 2: quality = 0.005; break;
-        case 3: quality = 0.002; break;
-        case 4: quality = 0.001; break;
+        case 1: quality = 0.02;  break;
+        case 2: quality = 0.01; break;
+        case 3: quality = 0.008; break;
+        case 4: quality = 0.003; break;
     }
 
     // Fixme: Can we smartly cache the last walk distance?
