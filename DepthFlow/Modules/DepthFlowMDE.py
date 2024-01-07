@@ -1,7 +1,7 @@
 from . import *
 
 
-@attrs.define
+@define
 class DepthFlowMDE:
     model: Any = None
 

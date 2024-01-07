@@ -1,15 +1,15 @@
 from . import *
 
 
-@attrs.define
-class DepthFlow(SombreroScene):
+@define
+class DepthFlowScene(SombreroScene):
     """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first."""
     __name__ = "DepthFlow"
 
     DEFAULT_IMAGE = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
 
     # DepthFlow objects
-    mde = attrs.field(factory=DepthFlowMDE)
+    mde = field(factory=DepthFlowMDE)
 
     # ------------------------------------------|
 
@@ -69,7 +69,7 @@ class DepthFlow(SombreroScene):
 
         # Set default image if none provided
         if self.image.is_empty:
-            self.parallax(image=DepthFlow.DEFAULT_IMAGE)
+            self.parallax(image=DepthFlowScene.DEFAULT_IMAGE)
 
         # Load new parallax images
         if self.__load_image__ and self.__load_depth__:

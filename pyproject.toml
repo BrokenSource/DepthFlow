@@ -31,6 +31,7 @@ shaderflow   = {path="../ShaderFlow", develop=true}
 torch        = {version="2.0.1", source="torch-cpu"}
 transformers = "^4.35.2"
 timm         = "0.6.7"
+gradio       = "^4.13.0"
 
 [[tool.poetry.source]]
 name     = "torch-cpu"

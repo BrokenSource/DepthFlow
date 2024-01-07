@@ -1,4 +1,5 @@
 import DepthFlow.Resources as DepthFlowResources
+import gradio
 import torch
 import transformers
 from ShaderFlow import *
@@ -13,5 +14,5 @@ DEPTHFLOW = BrokenProject(
 )
 
 # isort: off
-from .DepthFlowMDE import *
+from .Modules import *
 from .DepthFlow import *

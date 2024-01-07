@@ -3,8 +3,8 @@ void main() {
     SombreroCamera iCamera = iInitSombreroCamera(gluv);
 
     // Add parallax options
-    iCamera.position.yz += iParallaxPosition;
-    iCamera.isometric = iParallaxIsometric;
+    iCamera.position.xy += iParallaxPosition;
+    iCamera.isometric    = iParallaxIsometric;
 
     // Project camera Rays
     iCamera = iProjectSombreroCamera(iCamera);
@@ -26,21 +26,21 @@ void main() {
 
     // No camera displacement mode, raw parallax
     if (iParallaxFixed) {
-        lambda -= vec2(-iCamera.position.y, iCamera.position.z);
+        lambda -= vec2(iCamera.position.x, iCamera.position.y);
     }
 
     // The vector from Lambda to the camera's projection on the YZ plane
-    vec2 displacement = vec2(-iCamera.origin.y, iCamera.origin.z) - lambda;
+    vec2 displacement = vec2(iCamera.origin.x, iCamera.origin.y) - lambda;
 
     // Angle between the Ray's origin and the YZ plane
     float theta = atan(
         length(displacement),
-        abs(1 - iCameraPosition.x)
+        abs(1 - iCameraPosition.z)
     );
 
     // The distance Beta we care for the depth map
-    float delta = abs(tan(theta) * (1 - iCamera.origin.x - iParallaxHeight));
-    float alpha = abs(tan(theta) * (1 - iCamera.origin.x));
+    float delta = abs(tan(theta) * (1 - iCamera.origin.z - iParallaxHeight));
+    float alpha = abs(tan(theta) * (1 - iCamera.origin.z));
     float beta  = abs(alpha - delta);
 
     // The vector we should walk towards
@@ -52,11 +52,12 @@ void main() {
     // The quality of the parallax effect is how tiny the steps are
     float quality;
     switch (iQuality) {
-        case 0: quality = 0.05;  break;
-        case 1: quality = 0.02;  break;
-        case 2: quality = 0.01; break;
-        case 3: quality = 0.008; break;
-        case 4: quality = 0.003; break;
+        case 0:  quality = 0.050; break;
+        case 1:  quality = 0.020; break;
+        case 2:  quality = 0.010; break;
+        case 3:  quality = 0.005; break;
+        case 4:  quality = 0.002; break;
+        default: quality = 0.020; break;
     }
 
     // Fixme: Can we smartly cache the last walk distance?
