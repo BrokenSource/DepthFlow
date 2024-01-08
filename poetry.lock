@@ -145,7 +145,7 @@ test = ["tox"]
 
 [[package]]
 name = "broken"
-version = "2024.1.2"
+version = "2024.1.7"
 description = "Broken Source Software Framework"
 optional = false
 python-versions = ">=3.10,<3.13"
@@ -172,6 +172,7 @@ opensimplex = "^0.4.5"
 pillow = "^9.5.0"
 poethepoet = "^0.24.4"
 poetry = "^1.5.1"
+pyfiglet = "^1.0.2"
 python-dotenv = "^1.0.0"
 requests = "^2.28.2"
 rich = "^13.3.4"
@@ -2693,6 +2694,17 @@ files = [
 ]
 
 [[package]]
+name = "pyfiglet"
+version = "1.0.2"
+description = "Pure-python FIGlet implementation"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pyfiglet-1.0.2-py3-none-any.whl", hash = "sha256:889b351d79c99e50a3f619c8f8e6ffdb27fd8c939fc43ecbd7559bd57d5f93ea"},
+    {file = "pyfiglet-1.0.2.tar.gz", hash = "sha256:758788018ab8faaddc0984e1ea05ff330d3c64be663c513cc1f105f6a3066dab"},
+]
+
+[[package]]
 name = "pygame"
 version = "2.5.2"
 description = "Python Game Development"
@@ -3508,7 +3520,7 @@ testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jar
 
 [[package]]
 name = "shaderflow"
-version = "2024.1.2"
+version = "2024.1.7"
 description = "Imagine ShaderToy, on a Manim-like architecture. That's ShaderFlow."
 optional = false
 python-versions = ">=3.10,<3.13"
