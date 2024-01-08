@@ -131,7 +131,7 @@ If you want to **Speed Up** the **Depth Estimation**, you can add Pytorch with G
 <br>
 
 **NVIDIA**<sup>N1</sup> (CUDA):
-- Install [CUDA](https://developer.nvidia.com/cuda-downloads) and [cuDNN](https://developer.nvidia.com/cudnn)
+- Have the [NVIDIA Drivers](https://www.nvidia.com/download/index.aspx) installed - Windows might already have installed them
 - Run the command: `broken depthflow poe cuda`
 
 <sub>*N1: Check GPU compatibility (<= GTX 800 series is not supported). Preferably install CUDA from your package manager.</sub>
