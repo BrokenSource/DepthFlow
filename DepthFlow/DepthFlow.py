@@ -71,6 +71,10 @@ class DepthFlowScene(SombreroScene):
         if self.image.is_empty:
             self.parallax(image=DepthFlowScene.DEFAULT_IMAGE)
 
+        if self.__rendering__:
+            self.__loading__.join()
+            self.time = 0
+
         # Load new parallax images
         if self.__load_image__ and self.__load_depth__:
             self.engine.fragment = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.frag").read_text()
@@ -84,6 +88,10 @@ class DepthFlowScene(SombreroScene):
     # Parallax configuration and presets
     parallax_fixed  = field(default=True)
     parallax_height = field(default=0.25)
+    parallax_focus  = field(default=1.0)
+    parallax_zoom   = field(default=1.0)
+    parallax_iso    = field(default=0.0)
+    parallax_pos    = field(default=numpy.array([0, 0]))
 
     def ui(self) -> None:
         if (state := imgui.checkbox("Fixed", self.parallax_fixed))[0]:
@@ -94,18 +102,19 @@ class DepthFlowScene(SombreroScene):
     def pipeline(self) -> Iterable[ShaderVariable]:
 
         # Smootly change isometric
-        iso = self.smoothstep(0.5*(math.sin(self.time) + 1))
+        self.parallax_iso = self.smoothstep(0.5*(math.sin(self.time) + 1))
 
         # Infinite 8 loop shift
-        pos = 0.1 * numpy.array([math.sin(self.time), math.sin(2*self.time)])
+        self.parallax_pos = 0.1 * numpy.array([math.sin(self.time), math.sin(2*self.time)])
 
         # Zoom out on the start
-        zoom = 0.6 + 0.25*(2/math.pi)*math.atan(2*self.time)
+        self.parallax_zoom = 0.6 + 0.25*(2/math.pi)*math.atan(2*self.time)
 
         # Output variables
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxHeight",    value=self.parallax_height)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxIsometric", value=iso)
-        yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=pos)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxZoom",      value=zoom)
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxIsometric", value=self.parallax_iso)
+        yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=self.parallax_pos)
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxFocus",     value=self.parallax_focus)
+        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxZoom",      value=self.parallax_zoom)
         yield ShaderVariable(qualifier="uniform", type="bool",  name=f"iParallaxFixed",     value=self.parallax_fixed)
 

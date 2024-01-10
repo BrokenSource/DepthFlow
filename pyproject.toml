@@ -26,12 +26,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python       = ">=3.10,<3.13"
-broken       = {path="../../", develop=true}
-shaderflow   = {path="../ShaderFlow", develop=true}
 torch        = {version="2.0.1", source="torch-cpu"}
 transformers = "^4.35.2"
 timm         = "0.6.7"
 gradio       = "^4.13.0"
+
+[tool.poetry.dev-dependencies]
+broken     = {path="../../", develop=true}
+shaderflow = {path="../ShaderFlow", develop=true}
 
 [[tool.poetry.source]]
 name     = "torch-cpu"
