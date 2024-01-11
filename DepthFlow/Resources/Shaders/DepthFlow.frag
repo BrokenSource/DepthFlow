@@ -4,7 +4,9 @@ void main() {
 
     // Add parallax options
     iCamera.position.xy += iParallaxPosition;
-    iCamera.isometric    = iParallaxIsometric;
+    iCamera.isometric   += iParallaxIsometric;
+    iCamera.dolly       += iParallaxDolly;
+    iCamera.fov         += iParallaxZoom - 1;
 
     // Project camera Rays
     iCamera = iProjectSombreroCamera(iCamera);
@@ -15,9 +17,6 @@ void main() {
         return;
     }
 
-    // Apply and fix camera Zoom due isometric
-    iCamera.uv *= iParallaxZoom;
-    iCamera.uv *= 1 - pow(iParallaxHeight*iParallaxIsometric, 2);
 
     // // DepthFlow math
 
@@ -26,16 +25,16 @@ void main() {
 
     // No camera displacement mode, raw parallax
     if (iParallaxFixed) {
-        lambda -= vec2(iCamera.position.x, iCamera.position.y);
+        lambda -= iCamera.position.xy;
     }
 
     // The vector from Lambda to the camera's projection on the YZ plane
-    vec2 displacement = vec2(iCamera.origin.x, iCamera.origin.y) - lambda;
+    vec2 displacement = iCamera.origin.xy - lambda;
 
     // Angle between the Ray's origin and the YZ plane
     float theta = atan(
         length(displacement),
-        abs(1 - iCameraPosition.z)
+        abs(1 - iCamera.origin.z)
     );
 
     // The distance Beta we care for the depth map
