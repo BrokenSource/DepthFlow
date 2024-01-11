@@ -71,10 +71,6 @@ class DepthFlowScene(SombreroScene):
         if self.image.is_empty:
             self.parallax(image=DepthFlowScene.DEFAULT_IMAGE)
 
-        if self.__rendering__:
-            self.__loading__.join()
-            self.time = 0
-
         # Load new parallax images
         if self.__load_image__ and self.__load_depth__:
             self.engine.fragment = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.frag").read_text()
