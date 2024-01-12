@@ -12,13 +12,14 @@ include = "DepthFlow"
 depthflow = "DepthFlow.__main__:main"
 
 [tool.poe.tasks]
+_install_venv       = "python -m poetry install"
 _install_torch_cuda = "python -m pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118"
 _install_torch_rocm = "python -m pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.6"
 _install_torch_cpu  = "python -m pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu"
 _uninstall_torch    = "python -m pip uninstall -y torch torchvision torchaudio"
-cuda                = ["_uninstall_torch", "_install_torch_cuda"]
-rocm                = ["_uninstall_torch", "_install_torch_rocm"]
-cpu                 = ["_uninstall_torch", "_install_torch_cpu"]
+cuda                = ["_install_venv", "_uninstall_torch", "_install_torch_cuda"]
+rocm                = ["_install_venv", "_uninstall_torch", "_install_torch_rocm"]
+cpu                 = ["_install_venv", "_uninstall_torch", "_install_torch_cpu" ]
 
 [build-system]
 requires      = ["poetry-core"]
