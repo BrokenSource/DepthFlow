@@ -13,14 +13,17 @@ class DepthFlowMDE:
     def load_model(self) -> None:
         """Load the model"""
         if self.model is None:
-            self.model = torch.hub.load("isl-org/ZoeDepth", "ZoeD_N", pretrained=True)
+            self.model = torch.hub.load(
+                "isl-org/ZoeDepth", "ZoeD_N",
+                pretrained=True, trust_repo=True
+            )
             self.model.to("cuda" if self.cuda else "cpu")
 
     def __call__(self,
-        image: Union[PilImage, PathLike, URL],
+        image: Union[Image, PathLike, URL],
         normalized: bool=True,
         cache: bool=True,
-    ) -> PilImage:
+    ) -> Image:
         """
         Estimate a Depth Map from an input image with a Monocular Depth Estimation model.
 
@@ -42,11 +45,11 @@ class DepthFlowMDE:
         # Calculate hash of the image for caching
         image_hash = hashlib.md5(image.tobytes()).hexdigest()
         cache_path = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash}.jpg"
-        log.info(f"Image hash for Depth Map cache is [{image_hash}]")
+        log.info(f"Image hash for Depth Map cache is ({image_hash})")
 
         # If the depth map is cached, return it
         if cache and cache_path.exists():
-            log.success(f"Depth map already cached on [{cache_path}]")
+            log.success(f"Depth map already cached on ({cache_path})")
             return BrokenUtils.load_image(cache_path).convert("L")
 
         # -----------------------------------------------------------------------------------------|
@@ -73,7 +76,7 @@ class DepthFlowMDE:
 
         # Save image to Cache
         if cache:
-            log.success(f"Saving depth map to cache path [{cache_path}]")
+            log.success(f"Saving depth map to cache path ({cache_path})")
             depth_map.save(cache_path)
 
         return depth_map

@@ -1,6 +1,6 @@
 [tool.poetry]
 name        = "DepthFlow"
-version     = "2024.1.11"
+version     = "2024.2.6"
 description = "Image to 2.5D Parallax Effect Video"
 authors     = ["Tremeschin <tremeschin@users.noreply.github.com>"]
 license     = "AGPLv3-only"
@@ -13,10 +13,10 @@ depthflow = "DepthFlow.__main__:main"
 
 [tool.poe.tasks]
 _install_venv       = "poetry install"
-_install_torch_cuda = "python -m pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118"
-_install_torch_rocm = "python -m pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.6"
-_install_torch_cpu  = "python -m pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu"
-_uninstall_torch    = "python -m pip uninstall -y torch torchvision torchaudio"
+_install_torch_cuda = "python -m pip install torch==2.0.1 torchvision --index-url https://download.pytorch.org/whl/cu118"
+_install_torch_rocm = "python -m pip install torch==2.0.1 torchvision --index-url https://download.pytorch.org/whl/rocm5.7"
+_install_torch_cpu  = "python -m pip install torch==2.0.1 torchvision --index-url https://download.pytorch.org/whl/cpu"
+_uninstall_torch    = "python -m pip uninstall -y torch torchvision"
 cuda                = ["_install_venv", "_uninstall_torch", "_install_torch_cuda"]
 rocm                = ["_install_venv", "_uninstall_torch", "_install_torch_rocm"]
 cpu                 = ["_install_venv", "_uninstall_torch", "_install_torch_cpu" ]
@@ -26,15 +26,17 @@ requires      = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
-python       = ">=3.10,<3.13"
-torch        = {version="2.0.1", source="torch-cpu"}
-transformers = "^4.35.2"
-timm         = "0.6.7"
-gradio       = "^4.13.0"
+python        = ">=3.10,<3.13"
+timm          = "0.6.7"
+gradio        = "^4.13.0"
+broken-source = "^2024.1.15"
+transformers  = "^4.37.1"
+torch         = {version="2.0.1", source="torch-cpu"}
+torchvision   = "0.15.2"
 
 [tool.poetry.dev-dependencies]
-broken     = {path="../../", develop=true}
-shaderflow = {path="../ShaderFlow", develop=true}
+broken-source = {path="../../", develop=true}
+shaderflow    = {path="../ShaderFlow", develop=true}
 
 [[tool.poetry.source]]
 name     = "torch-cpu"
