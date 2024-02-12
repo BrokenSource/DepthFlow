@@ -9,11 +9,11 @@ license     = "AGPLv3-only"
 include = "DepthFlow"
 
 [tool.poetry.scripts]
-depthflow = "DepthFlow.__main__:main"
+main = "DepthFlow.__main__:main"
 
 [tool.poe.tasks]
 _install_venv       = "poetry install"
-_install_torch_cuda = "python -m pip install torch==2.0.1 torchvision --index-url https://download.pytorch.org/whl/cu118"
+_install_torch_cuda = "python -m pip install torch==2.0.1 torchvision"
 _install_torch_rocm = "python -m pip install torch==2.0.1 torchvision --index-url https://download.pytorch.org/whl/rocm5.7"
 _install_torch_cpu  = "python -m pip install torch==2.0.1 torchvision --index-url https://download.pytorch.org/whl/cpu"
 _uninstall_torch    = "python -m pip uninstall -y torch torchvision"
