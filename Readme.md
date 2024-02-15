@@ -1,6 +1,4 @@
-<div align="right">
 【☰】Table of Contents 👆
-</div>
 
 <div align="justify">
 
