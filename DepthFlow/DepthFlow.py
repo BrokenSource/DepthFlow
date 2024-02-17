@@ -95,7 +95,7 @@ class DepthFlowScene(SombreroScene):
             self.parallax(image=DepthFlowScene.DEFAULT_IMAGE)
 
         # Block when rendering (first Scene update)
-        if self.__rendering__ and self.image.is_empty:
+        if self.rendering and self.image.is_empty:
             self.__loading__.join()
 
         # Load new parallax images and parallax shader
