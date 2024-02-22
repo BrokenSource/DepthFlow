@@ -29,9 +29,6 @@ while bool(os.environ.get("PYAPP", False)):
     break
 # -------------------------------------------------------------------------------------------------|
 
-import gradio
-import torch
-import transformers
 from ShaderFlow import *
 
 from Broken import *

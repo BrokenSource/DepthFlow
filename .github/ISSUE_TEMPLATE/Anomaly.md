@@ -20,7 +20,7 @@ Note: Remove this comment of extra information before submitting the issue
 
 - Replace or remove all the text inside the `{}` brackets on this template before submitting
 
-- Issues might be file-specific if the project deals with Audio or Video, consider reproducing the issue with a different file
+- Issues might be file-specific if the project deals with Audio or Video, consider verifying the issue with a different file
 
 - Only the latest version and commits of the Projects are supported (rolling release)
 -->
@@ -58,9 +58,6 @@ Note: Remove this comment of extra information before submitting the issue
 - *GPU Brand:* {NVIDIA, AMD, Intel}
 - *Video Driver:* {Proprietary (AMDGPU, NVIDIA, Apple), Mesa, Nouveau}
 - *Video Server:* {(Linux only) X11, Wayland}
-- *Shell*: {PowerShell, CMD, Bash, Zsh, Fish, etc}
 
 ### Others
-{Any information that you think might be relevant, such as other hardwares you've tested, observations, cursed or blessed behaviors, etc}
-
-
+{Any information that you think might be relevant, such as other hardware you've tested, observations, cursed or blessed behaviors, etc. You can free style this section or the issue as a whole if it's not fitting the template or well formatted}

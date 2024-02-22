@@ -16,7 +16,7 @@ class DepthFlowScene(SombreroScene):
 
     # Parallax parameters
     parallax_fixed     = field(default=True)
-    parallax_height    = field(default=0.3)
+    parallax_height    = field(default=0.2)
     parallax_focus     = field(default=1.0)
     parallax_zoom      = field(default=1.0)
     parallax_isometric = field(default=0.0)
@@ -40,10 +40,10 @@ class DepthFlowScene(SombreroScene):
         self.__load_depth__ = BrokenUtils.load_image(depth or self.mde(image, cache=cache))
 
     def parallax(self,
-        image: Annotated[str,  typer.Option("--image", "-i", help="Image to parallax (path, url)")],
-        depth: Annotated[str,  typer.Option("--depth", "-d", help="Depth map of the Image, None to estimate")]=None,
-        cache: Annotated[bool, typer.Option("--cache", "-c", help="Cache the Depth Map estimations")]=True,
-        block: Annotated[bool, typer.Option("--block", "-b", help="Wait for the Image and Depth Map to be loaded")]=False
+        image: Annotated[str,  TyperOption("--image", "-i", help="Image to parallax (path, url)")],
+        depth: Annotated[str,  TyperOption("--depth", "-d", help="Depth map of the Image, None to estimate")]=None,
+        cache: Annotated[bool, TyperOption("--cache", "-c", help="Cache the Depth Map estimations")]=True,
+        block: Annotated[bool, TyperOption("--block", "-b", help="Wait for the Image and Depth Map to be loaded")]=False
     ):
         """
         Load a new parallax image and depth map. If depth is None, it will be estimated.
@@ -80,13 +80,9 @@ class DepthFlowScene(SombreroScene):
         yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxDolly",     value=self.parallax_dolly)
         yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=(self.parallax_x, self.parallax_y))
 
-    def _setup_(self):
+    def _build_(self):
         self.image = self.engine.new_texture("image").repeat(False)
         self.depth = self.engine.new_texture("depth").repeat(False)
-
-    def _handle_(self, message: SombreroMessage):
-        if isinstance(message, SombreroMessage.Window.FileDrop):
-            self.parallax(image=message.files[0], depth=message.files.get(1))
 
     def _update_(self):
 
@@ -106,6 +102,10 @@ class DepthFlowScene(SombreroScene):
             self.__loading__ = None
             self.time = 0
 
+    def _handle_(self, message: SombreroMessage):
+        if isinstance(message, SombreroMessage.Window.FileDrop):
+            self.parallax(image=message.files[0], depth=message.files.get(1))
+
     # ------------------------------------------|
     # User defined functions
 
@@ -120,11 +120,17 @@ class DepthFlowScene(SombreroScene):
         self.parallax_dolly = 0.5*(1 + math.cos(self.time))
 
         # Infinite 8 loop shift
-        self.parallax_x = 0.06 * math.sin(  self.time)
-        self.parallax_y = 0.06 * math.sin(2*self.time)
+        self.parallax_x = 0.1 * math.sin(  self.time)
+        self.parallax_y = 0.1 * math.sin(2*self.time)
+
+        # Oscillating rotation
+        self.camera.rotate(
+            direction=self.camera.base_z,
+            angle=math.cos(self.time)*self.dt*0.4
+        )
 
         # Zoom out on the start
-        self.parallax_zoom = 0.6 + 0.4*(2/math.pi)*math.atan(3*self.time)
+        # self.parallax_zoom = 0.6 + 0.4*(2/math.pi)*math.atan(3*self.time)
 
     @abstractmethod
     def pipeline(self) -> Iterable[ShaderVariable]:

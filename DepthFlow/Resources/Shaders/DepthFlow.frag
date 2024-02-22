@@ -7,31 +7,28 @@ void main() {
     iCamera.isometric   += iParallaxIsometric;
     iCamera.dolly       += iParallaxDolly;
     iCamera.fov         += iParallaxZoom - 1;
+    iCamera              = iProjectSombreroCamera(iCamera);
 
-    // Project camera Rays
-    iCamera = iProjectSombreroCamera(iCamera);
-
-    // Doesn't intersect with the YZ plane
+    // Doesn't intersect with the XY plane
     if (iCamera.out_of_bounds) {
-        fragColor.rgb = vec3(0.2);
+        fragColor = vec4(vec3(0.2), 1);
         return;
     }
 
-
     // // DepthFlow math
 
-    // Point where the ray intersects with the YZ plane
-    vec2 lambda = iCamera.uv;
+    // Point where the ray intersects with the XY plane
+    vec2 lambda = iCamera.uv; // Fixme: Different results on Headless vs GLFW
 
     // No camera displacement mode, raw parallax
     if (iParallaxFixed) {
         lambda -= iCamera.position.xy;
     }
 
-    // The vector from Lambda to the camera's projection on the YZ plane
+    // The vector from Lambda to the camera's projection on the XY plane
     vec2 displacement = iCamera.origin.xy - lambda;
 
-    // Angle between the Ray's origin and the YZ plane
+    // Angle between the Ray's origin and the XY plane
     float theta = atan(
         length(displacement),
         abs(1 - iCamera.origin.z)

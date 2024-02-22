@@ -58,34 +58,21 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 </details>
 
 <br>
-
-# 🔥 Description
-
-**💡 Base idea:**
-1. Given an image and its depth map, have a shader to generate a parallax effect
-2. Estimate Depth Maps with Neural Networks for generic images
-3. Varying the projections over time generates a 2.5D video
-
-As simple as that, we achieve a similar effect as [**Depthy**](https://depthy.stamina.pl)
-
-<br>
 <br>
 
 # 📦 Installation
 
+## 🪛 From Source Code
+
 > 🔴🟡🟢
 >
-> **Download** and install our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) with all the code and projects first
+> **Download** our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) with all the code and Projects first
 >
 > <sub><b>Note:</b> You cannot run this project in dev mode without the <i>Framework!</i></sub>
-
-<br>
 
 - **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
 
 <br>
-
-## Running the code
 
 After running the `brakeit` script on the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) and inside the Virtual Environment,
 
@@ -93,19 +80,13 @@ After running the `brakeit` script on the [**Monorepo**](https://github.com/Brok
 
 A real time window should pop up.
 
-<br>
-
 #### Selecting the input image
 - Run `broken depthflow parallax --help` for parallax options
 
 - You can also drag and drop an Image File or URL From your Browser
 
-<br>
-
 #### Rendering Options
 - Run `broken depthflow --help` for options and rendering
-
-<br>
 
 #### Full Examples
 - `broken depthflow (--render | -r)`
@@ -116,6 +97,11 @@ A real time window should pop up.
 - `broken depthflow parallax -i (image) -d (depth) main`
 
 <b>Note</b>: A high SSAA `-s 1.5` is recommended for antialiasing due the Steep Parallax
+
+<br>
+
+## 🔮 Prebuilt Binaries
+Whenever stuff gets more stable, we'll likely release PyPI packages so you can just `pip install shaderflow` and run it directly from the source code or prebuilt binaries that you can just download and run `./shaderflow scene.py`
 
 <br>
 <br>
