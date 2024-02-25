@@ -12,17 +12,17 @@ class DepthFlowScene(SombreroScene):
     LOADING_SHADER = (SHADERFLOW.RESOURCES.FRAGMENT/"Loading.frag")
 
     # DepthFlow objects
-    mde: DepthFlowMDE = field(factory=DepthFlowMDE)
+    mde: DepthFlowMDE  = Field(factory=DepthFlowMDE)
 
     # Parallax parameters
-    parallax_fixed     = field(default=True)
-    parallax_height    = field(default=0.2)
-    parallax_focus     = field(default=1.0)
-    parallax_zoom      = field(default=1.0)
-    parallax_isometric = field(default=0.0)
-    parallax_dolly     = field(default=0.0)
-    parallax_x         = field(default=0.0)
-    parallax_y         = field(default=0.0)
+    parallax_fixed     = Field(default=True)
+    parallax_height    = Field(default=0.2)
+    parallax_focus     = Field(default=1.0)
+    parallax_zoom      = Field(default=1.0)
+    parallax_isometric = Field(default=0.0)
+    parallax_dolly     = Field(default=0.0)
+    parallax_x         = Field(default=0.0)
+    parallax_y         = Field(default=0.0)
 
     # ------------------------------------------|
     # Parallax MDE and Loading screen tricky implementation
