@@ -631,33 +631,6 @@ pytz = "*"
 "zope.interface" = "*"
 
 [[package]]
-name = "dearpygui"
-version = "1.10.1"
-description = "DearPyGui: A simple Python GUI Toolkit"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "dearpygui-1.10.1-cp310-cp310-macosx_10_6_x86_64.whl", hash = "sha256:ef1f1a8dbbd2dac9ea4fbf9d37e7812741e9a33de03ce385e398258750966a85"},
-    {file = "dearpygui-1.10.1-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:7dc32b229d89b10ec4f647414738783afc2d6aa09c28c9f7384b07023b6ee261"},
-    {file = "dearpygui-1.10.1-cp310-cp310-win_amd64.whl", hash = "sha256:8047f4ac06fb774c1335a98d3dbb47337b07e17629a85789740298a61e6ae999"},
-    {file = "dearpygui-1.10.1-cp311-cp311-macosx_10_6_x86_64.whl", hash = "sha256:e87016bdd388d0e33080cd2033047f6c58df7808e1c3e14a1b0d736b2184e1ce"},
-    {file = "dearpygui-1.10.1-cp311-cp311-manylinux1_x86_64.whl", hash = "sha256:ac4e1cb01cd53490df20365645fbd0296bac093b8a415c805c18cad0aa85cac6"},
-    {file = "dearpygui-1.10.1-cp311-cp311-win_amd64.whl", hash = "sha256:1711a5cc991eaa6bc8a7a3cadb3845236c16b6753dc46b2fd1f4285db57d998e"},
-    {file = "dearpygui-1.10.1-cp312-cp312-macosx_10_6_x86_64.whl", hash = "sha256:e506507ee5344bb8d059d333c4dd77cd61bb4850f66fc4b5508ffa4f456f5a98"},
-    {file = "dearpygui-1.10.1-cp312-cp312-manylinux1_x86_64.whl", hash = "sha256:ed0d58e057636c4b79aee14d09b78042b122f42a6bef08d9901239de3361449d"},
-    {file = "dearpygui-1.10.1-cp312-cp312-win_amd64.whl", hash = "sha256:5350d2a03da789684fcd384d7ee9e0ea029ecf134bef30d134c439d35c9d60b4"},
-    {file = "dearpygui-1.10.1-cp37-cp37m-macosx_10_6_x86_64.whl", hash = "sha256:d36b16afd0dd22674a59195e2ba37b787ea18bfb4ca96c460d6b7795f2c56980"},
-    {file = "dearpygui-1.10.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:2d94b23bed91e121ad4556b811fe164598c5b4dc94a19e3195bb70a4ff632759"},
-    {file = "dearpygui-1.10.1-cp37-cp37m-win_amd64.whl", hash = "sha256:d1b877a147971e062d3c006027e880fd2b88dad9d198620f12b8407dddb1f795"},
-    {file = "dearpygui-1.10.1-cp38-cp38-macosx_10_6_x86_64.whl", hash = "sha256:0e30634f1f8c13994ec59c58048e97103e672f792145a57aab4a7c39c6445e5e"},
-    {file = "dearpygui-1.10.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:d2cb73d22ec6c186c039c60c22efa5fc94f0562793bf20996d9eeae5ee601d55"},
-    {file = "dearpygui-1.10.1-cp38-cp38-win_amd64.whl", hash = "sha256:2a8a1305ad6bfbc6f46968067b7f02d8404f2df21a13627e8c93cdabbb30f37b"},
-    {file = "dearpygui-1.10.1-cp39-cp39-macosx_10_6_x86_64.whl", hash = "sha256:a2e722e5b1fb8ab8d25e3ed82a790778849c1c66a522a327a73e25e218f98873"},
-    {file = "dearpygui-1.10.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:358a221d5f53b584e7bbc76e2ad7ca012991debdd74ea3a6cfc8e2ed0ea51c92"},
-    {file = "dearpygui-1.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:5ccb75b5377e5d4fcd6358ac2164418301b2747a78fee55422e3995d167d364a"},
-]
-
-[[package]]
 name = "distlib"
 version = "0.3.8"
 description = "Distribution utilities"
@@ -793,13 +766,13 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "fastapi"
-version = "0.109.2"
+version = "0.110.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fastapi-0.109.2-py3-none-any.whl", hash = "sha256:2c9bab24667293b501cad8dd388c05240c850b58ec5876ee3283c47d6e1e3a4d"},
-    {file = "fastapi-0.109.2.tar.gz", hash = "sha256:f3817eac96fe4f65a2ebb4baa000f394e55f5fccdaf7f75250804bc58f354f73"},
+    {file = "fastapi-0.110.0-py3-none-any.whl", hash = "sha256:87a1f6fb632a218222c5984be540055346a8f5d8a68e8f6fb647b1dc9934de4b"},
+    {file = "fastapi-0.110.0.tar.gz", hash = "sha256:266775f0dcc95af9d3ef39bad55cff525329a931d5fd51930aadd4f428bf7ff3"},
 ]
 
 [package.dependencies]
@@ -3698,7 +3671,6 @@ develop = true
 [package.dependencies]
 audioread = "^3.0.0"
 broken-source = "^2024.1.15"
-dearpygui = "^1.9.1"
 glcontext = "^2.4.0"
 glfw = "^2.6.2"
 imageio-ffmpeg = "^0.4.8"
