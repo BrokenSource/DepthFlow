@@ -68,7 +68,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 >
 > **Download** our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) with all the code and Projects first
 >
-> <sub><b>Note:</b> You cannot run this project in dev mode without the <i>Framework!</i></sub>
+> <sub><b>Note:</b> You cannot run this project in dev mode without it !</sub>
 
 - **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
 
@@ -108,33 +108,35 @@ Whenever stuff gets more stable, we'll likely release PyPI packages so you can j
 
 # 🚀 Using your GPU
 
-> By default, Pytorch will be installed with CPU support.
+> By default, Pytorch will be installed with CPU support
 
-If you want to **Speed Up** the **Depth Estimation**, you can add Pytorch with GPU support:
+For Faster **Depth Estimation**, you can switch the PyTorch backend:
 
 <br>
 
-**NVIDIA**<sup>N1</sup> (CUDA):
-- Have the [NVIDIA Drivers](https://www.nvidia.com/download/index.aspx) installed - Windows might already have installed them
+**NVIDIA** + CUDA:
+- Have the [NVIDIA Drivers](https://www.nvidia.com/download/index.aspx) installed
 - Run the command: `broken depthflow poe cuda`
 
-<sub>*N1: Check GPU compatibility (<= GTX 800 series is not supported). Preferably install CUDA from your package manager.</sub>
-
-
 <br>
 
-**AMD**<sup>R1</sup> (ROCm):
+**AMD** + ROCm:
 - Run the command: `broken depthflow poe rocm`
 
-<sub>*R1: Check GPU compatibility (<= RX 500 series is not supported). Preferably install ROCm from your package manager</sub>
+<br>
 
+**macOS**:
+- Run the command: `broken depthflow poe mac`
 
 <br>
 
-**CPU / macOS** (Default):
-
+**CPU**:
 - Run the command: `broken depthflow poe cpu`
 
+<br>
+
+**Reverting** to the default:
+- Run the command: `broken depthflow poe default`
 
 <br>
 <br>
