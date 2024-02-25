@@ -68,7 +68,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 >
 > **Download** our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) with all the code and Projects first
 >
-> <sub><b>Note:</b> You cannot run this project in dev mode without it !</sub>
+> <sub><b>Note:</b> You cannot run this project in development mode without it !</sub>
 
 - **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
 
