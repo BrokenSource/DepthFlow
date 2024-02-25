@@ -40,7 +40,7 @@ class DepthFlowMDE:
         # Caching
 
         # Load the image
-        image = BrokenUtils.load_image(image)
+        image = LoaderImage(image).convert("RGB")
 
         # Calculate hash of the image for caching
         image_hash = hashlib.md5(image.tobytes()).hexdigest()
@@ -50,7 +50,7 @@ class DepthFlowMDE:
         # If the depth map is cached, return it
         if cache and cache_path.exists():
             log.success(f"Depth map already cached on ({cache_path})")
-            return BrokenUtils.load_image(cache_path).convert("L")
+            return LoaderImage(cache_path).convert("L")
 
         # -----------------------------------------------------------------------------------------|
         # Estimating

@@ -6,7 +6,7 @@ void main() {
     iCamera.position.xy += iParallaxPosition;
     iCamera.isometric   += iParallaxIsometric;
     iCamera.dolly       += iParallaxDolly;
-    iCamera.fov         += iParallaxZoom - 1;
+    iCamera.zoom        += iParallaxZoom - 1;
     iCamera              = iProjectSombreroCamera(iCamera);
 
     // Doesn't intersect with the XY plane

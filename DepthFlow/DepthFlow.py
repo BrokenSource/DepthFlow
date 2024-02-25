@@ -36,8 +36,8 @@ class DepthFlowScene(SombreroScene):
         depth: Option[Image, Path, "url"]=None,
         cache: bool=True
     ):
-        self.__load_image__ = BrokenUtils.load_image(image)
-        self.__load_depth__ = BrokenUtils.load_image(depth or self.mde(image, cache=cache))
+        self.__load_image__ = LoaderImage(image)
+        self.__load_depth__ = LoaderImage(depth or self.mde(image, cache=cache))
 
     def parallax(self,
         image: Annotated[str,  TyperOption("--image", "-i", help="Image to parallax (path, url)")],
