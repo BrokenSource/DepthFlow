@@ -72,17 +72,17 @@ class DepthFlowScene(SombreroScene):
             self.parallax_height = max(0, state[1])
 
     def _pipeline_(self) -> Iterable[ShaderVariable]:
-        yield ShaderVariable(qualifier="uniform", type="bool",  name=f"iParallaxFixed",     value=self.parallax_fixed)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxHeight",    value=self.parallax_height)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxFocus",     value=self.parallax_focus)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxZoom",      value=self.parallax_zoom)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxIsometric", value=self.parallax_isometric)
-        yield ShaderVariable(qualifier="uniform", type="float", name=f"iParallaxDolly",     value=self.parallax_dolly)
-        yield ShaderVariable(qualifier="uniform", type="vec2",  name=f"iParallaxPosition",  value=(self.parallax_x, self.parallax_y))
+        yield ShaderVariable("uniform", "bool",  "iParallaxFixed",     self.parallax_fixed)
+        yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.parallax_height)
+        yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.parallax_focus)
+        yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.parallax_zoom)
+        yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.parallax_isometric)
+        yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)
+        yield ShaderVariable("uniform", "vec2",  "iParallaxPosition",  (self.parallax_x, self.parallax_y))
 
     def _build_(self):
-        self.image = self.engine.new_texture("image").repeat(False)
-        self.depth = self.engine.new_texture("depth").repeat(False)
+        self.image = self.add(SombreroTexture(name="image").repeat(False))
+        self.depth = self.add(SombreroTexture(name="depth").repeat(False))
 
     def _update_(self):
 
@@ -96,9 +96,9 @@ class DepthFlowScene(SombreroScene):
 
         # Load new parallax images and parallax shader
         if self.__load_image__ and self.__load_depth__:
-            self.engine.fragment = self.DEPTH_SHADER
             self.image.from_pil(self.__load_image__); self.__load_image__ = None
             self.depth.from_pil(self.__load_depth__); self.__load_depth__ = None
+            self.engine.fragment = self.DEPTH_SHADER
             self.__loading__ = None
             self.time = 0
 

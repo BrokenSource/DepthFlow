@@ -46,15 +46,9 @@ void main() {
     vec2 parallax = lambda;
 
     // The quality of the parallax effect is how tiny the steps are
-    float quality;
-    switch (iQuality) {
-        case 0:  quality = 0.050; break;
-        case 1:  quality = 0.020; break;
-        case 2:  quality = 0.010; break;
-        case 3:  quality = 0.005; break;
-        case 4:  quality = 0.002; break;
-        default: quality = 0.020; break;
-    }
+    const float min_quality = 0.07;
+    const float max_quality = 0.002;
+    float quality = mix(min_quality, max_quality, iQuality);
 
     // Fixme: Can we smartly cache the last walk distance?
     // Fixme: Calculate walk distance based on pixel and angle?
