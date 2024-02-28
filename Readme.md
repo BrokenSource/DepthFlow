@@ -143,6 +143,6 @@ For Faster **Depth Estimation**, you can switch the PyTorch backend:
 
 # ⚖️ License
 
-**See [BrokenSource](https://github.com/BrokenSource/BrokenSource) Repository** for the License of the Code Assets, Projects and User Generated Content.
+**See [BrokenSource](https://github.com/BrokenSource/BrokenSource) Repository** for the License of the Code, Assets, Projects and User Generated Content.
 
 </div>
