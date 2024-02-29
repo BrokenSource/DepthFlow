@@ -33,7 +33,7 @@ timm          = "0.6.7"
 gradio        = "^4.13.0"
 broken-source = "^2024.1.15"
 transformers  = "^4.37.1"
-torch         = "2.0.1"
+torch         = {version="2.0.1", source="torch-cpu"}
 torchvision   = "0.15.2"
 
 [tool.poetry.dev-dependencies]
