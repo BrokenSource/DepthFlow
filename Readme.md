@@ -3,7 +3,7 @@
 <div align="justify">
 
 <div align="center">
-  <img src="./DepthFlow/Resources/DepthFlow.png" width="200">
+  <img src="./DepthFlow/Resources/Images/DepthFlow.png" width="200">
 
   <h1>DepthFlow</h1>
 
