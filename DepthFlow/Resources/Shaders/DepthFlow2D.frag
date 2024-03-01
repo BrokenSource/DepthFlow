@@ -1,4 +1,4 @@
-// This is the old and original DepthFlow shader before SombreroCamera
+// This is the old and original DepthFlow shader before ShaderFlowCamera
 // Kept as a simpler older relic of the past
 
 // ------------------------------------------------------------------------------------------------|

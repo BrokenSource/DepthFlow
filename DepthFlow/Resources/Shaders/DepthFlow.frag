@@ -1,13 +1,13 @@
 
 void main() {
-    SombreroCamera iCamera = iInitSombreroCamera(gluv);
+    ShaderFlowCamera iCamera = iInitShaderFlowCamera(gluv);
 
     // Add parallax options
     iCamera.position.xy += iParallaxPosition;
     iCamera.isometric   += iParallaxIsometric;
     iCamera.dolly       += iParallaxDolly;
     iCamera.zoom        += iParallaxZoom - 1;
-    iCamera              = iProjectSombreroCamera(iCamera);
+    iCamera              = iProjectShaderFlowCamera(iCamera);
 
     // Doesn't intersect with the XY plane
     if (iCamera.out_of_bounds) {

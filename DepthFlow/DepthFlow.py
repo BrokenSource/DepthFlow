@@ -2,7 +2,7 @@ from . import *
 
 
 @define
-class DepthFlowScene(SombreroScene):
+class DepthFlowScene(ShaderFlowScene):
     """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first."""
     __name__ = "DepthFlow"
 
@@ -81,8 +81,8 @@ class DepthFlowScene(SombreroScene):
         yield ShaderVariable("uniform", "vec2",  "iParallaxPosition",  (self.parallax_x, self.parallax_y))
 
     def _build_(self):
-        self.image = self.add(SombreroTexture(name="image").repeat(False))
-        self.depth = self.add(SombreroTexture(name="depth").repeat(False))
+        self.image = self.add(ShaderFlowTexture(name="image").repeat(False))
+        self.depth = self.add(ShaderFlowTexture(name="depth").repeat(False))
 
     def _update_(self):
 
@@ -102,8 +102,8 @@ class DepthFlowScene(SombreroScene):
             self.__loading__ = None
             self.time = 0
 
-    def _handle_(self, message: SombreroMessage):
-        if isinstance(message, SombreroMessage.Window.FileDrop):
+    def _handle_(self, message: ShaderFlowMessage):
+        if isinstance(message, ShaderFlowMessage.Window.FileDrop):
             self.parallax(image=message.files[0], depth=message.files.get(1))
 
     # ------------------------------------------|
@@ -138,6 +138,6 @@ class DepthFlowScene(SombreroScene):
         ...
 
     @abstractmethod
-    def handle(self, message: SombreroMessage):
+    def handle(self, message: ShaderFlowMessage):
         """Handle your own messages here or from an inherited class"""
         ...
