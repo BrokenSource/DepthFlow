@@ -62,7 +62,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 
 # 📦 Installation
 
-## 🪛 From Source Code
+**DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
 
 > 🔴🟡🟢
 >
@@ -70,11 +70,19 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 >
 > <sub><b>Note:</b> You cannot run this project in development mode without it !</sub>
 
-- **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
+- **Windows**: Open a PowerShell in some Folder and run:
+  ```ps
+  irm https://brokensource.github.io/get.ps1 | iex
+  ```
+
+- **Linux and MacOS**: Open a Terminal in some Folder and run:
+  ```ps
+  curl -sS https://brokensource.github.io/get.sh | sh
+  ```
 
 <br>
 
-After running the `brakeit` script on the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code) and inside the Virtual Environment,
+After you are inside the Development Environment of the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code),
 
 - Run the command: `broken depthflow`
 
@@ -98,10 +106,6 @@ A real time window should pop up.
 
 <b>Note</b>: A high SSAA `-s 1.5` is recommended for antialiasing due the Steep Parallax
 
-<br>
-
-## 🔮 Prebuilt Binaries
-Whenever stuff gets more stable, we'll likely release PyPI packages so you can just `pip install shaderflow` and run it directly from the source code or prebuilt binaries that you can just download and run `./shaderflow scene.py`
 
 <br>
 <br>
