@@ -66,25 +66,20 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 
 <br>
 
-> 🔴🟡🟢
+> ➖🔴🟡🟢➖ **For Extra installation Help**, check out our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
 >
-> For **Extra** installation **Help**, check out our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
+> - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Folder and run:
+>   ```ps
+>   curl -sS https://brokensource.github.io/get.sh | sh
+>   ```
 >
-> <sub><b>Note:</b> The commands below are the simplified version</sub>
+> - **💠 Windows**: Open a PowerShell in some Folder and run:
+>   ```ps
+>   irm https://brokensource.github.io/get.ps1 | iex
+>   ```
+>
+> <sub><b>Note:</b> The commands above are the simplified version and assumes installed dependencies
 
-<br>
-
-- **Windows**: Open a PowerShell in some Folder and run:
-  ```ps
-  irm https://brokensource.github.io/get.ps1 | iex
-  ```
-
-- **Linux and MacOS**: Open a Terminal in some Folder and run:
-  ```ps
-  curl -sS https://brokensource.github.io/get.sh | sh
-  ```
-
-<hr>
 <br>
 
 After you are inside the Development Environment of the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code),
