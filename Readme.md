@@ -66,7 +66,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 
 <br>
 
-> ➖🔴🟡🟢➖ **For Extra installation Help**, check out our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
+> 🔴🟡🟢&nbsp; **For Extra installation Help**, check out our [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
 >
 > - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Folder and run:
 >   ```ps
