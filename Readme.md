@@ -70,7 +70,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 >
 > - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Folder and run:
 >   ```ps
->   curl -sS https://brokensource.github.io/get.sh | sh
+>   sh -c "$(curl -sS https://brokensource.github.io/get.sh)"
 >   ```
 >
 > - **💠 Windows**: Open a PowerShell in some Folder and run:
