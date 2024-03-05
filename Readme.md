@@ -70,12 +70,12 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 >
 > - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Folder and run:
 >   ```ps
->   /bin/bash -c "$(curl -sS https://brokensource.github.io/get.sh)"
+>   /bin/bash -c "$(curl -sS https://brakeit.github.io/get.sh)"
 >   ```
 >
 > - **💠 Windows**: Open a PowerShell in some Folder and run:
 >   ```ps
->   irm https://brokensource.github.io/get.ps1 | iex
+>   irm https://brakeit.github.io/get.ps1 | iex
 >   ```
 >
 > <sub><b>Note:</b> The commands above are the simplified version and assumes installed dependencies
