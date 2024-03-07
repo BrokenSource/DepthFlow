@@ -3,6 +3,7 @@ import torch
 import transformers
 from ShaderFlow import *
 
+import Broken
 from Broken import *
 
 DEPTHFLOW = BrokenProject(
@@ -11,6 +12,8 @@ DEPTHFLOW = BrokenProject(
     APP_AUTHOR="BrokenSource",
     RESOURCES=DepthFlowResources,
 )
+
+Broken.PROJECT = DEPTHFLOW
 
 # isort: off
 from .Modules import *

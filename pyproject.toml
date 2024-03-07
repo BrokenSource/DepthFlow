@@ -37,8 +37,9 @@ torch         = {version="2.0.1", source="torch-cpu"}
 torchvision   = "0.15.2"
 
 [tool.poetry.dev-dependencies]
-broken-source = {path="../../", develop=true}
-shaderflow    = {path="../ShaderFlow", develop=true}
+broken-source   = {path="../../", develop=true}
+shaderflow      = {path="../ShaderFlow", develop=true}
+moderngl-window = {path="../ShaderFlow/Custom/ModernGLW", develop=true}
 
 [[tool.poetry.source]]
 name     = "torch-cpu"
