@@ -16,7 +16,7 @@ class DepthFlowScene(ShaderFlowScene):
 
     # Parallax parameters
     parallax_fixed     = Field(default=True)
-    parallax_height    = Field(default=0.2)
+    parallax_height    = Field(default=0.3)
     parallax_focus     = Field(default=1.0)
     parallax_zoom      = Field(default=1.0)
     parallax_isometric = Field(default=0.0)
@@ -27,17 +27,17 @@ class DepthFlowScene(ShaderFlowScene):
     # ------------------------------------------|
     # Parallax MDE and Loading screen tricky implementation
 
-    __loading__:     Thread = None
-    __load_image__:  Image  = None
-    __load_depth__:  Image  = None
+    _loading:    Thread = None
+    _load_image: Image  = None
+    _load_depth: Image  = None
 
-    def __parallax__(self,
+    def _parallax(self,
         image: Option[Image, Path, "url"],
         depth: Option[Image, Path, "url"]=None,
         cache: bool=True
     ):
-        self.__load_image__ = LoaderImage(image)
-        self.__load_depth__ = LoaderImage(depth or self.mde(image, cache=cache))
+        self._load_image = LoaderImage(image)
+        self._load_depth = LoaderImage(depth or self.mde(image, cache=cache))
 
     def parallax(self,
         image: Annotated[str,  TyperOption("--image", "-i", help="Image to parallax (path, url)")],
@@ -49,21 +49,20 @@ class DepthFlowScene(ShaderFlowScene):
         Load a new parallax image and depth map. If depth is None, it will be estimated.
         • If block is True, the function will wait until the images are loaded (implied on rendering)
         """
-        if self.__loading__ and not block:
+        if self._loading and not block:
             return
 
         # Start loading process
         self.engine.fragment = self.LOADING_SHADER
-        self.__loading__ = BrokenThread.new(self.__parallax__,
+        self._loading = BrokenThread.new(self._parallax,
             image=image, depth=depth, cache=cache
         )
 
         # Wait until loading finish
-        if block: self.__loading__.join()
+        if block: self._loading.join()
         self.time = 0
 
     # ------------------------------------------|
-    # DepthFlowScene internal methods
 
     def _ui_(self) -> None:
         if (state := imgui.checkbox("Fixed", self.parallax_fixed))[0]:
@@ -71,20 +70,7 @@ class DepthFlowScene(ShaderFlowScene):
         if (state := imgui.input_float("Height", self.parallax_height, 0.01, 0.01, "%.2f"))[0]:
             self.parallax_height = max(0, state[1])
 
-    def _pipeline_(self) -> Iterable[ShaderVariable]:
-        yield ShaderVariable("uniform", "bool",  "iParallaxFixed",     self.parallax_fixed)
-        yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.parallax_height)
-        yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.parallax_focus)
-        yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.parallax_zoom)
-        yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.parallax_isometric)
-        yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)
-        yield ShaderVariable("uniform", "vec2",  "iParallaxPosition",  (self.parallax_x, self.parallax_y))
-
-    def _build_(self):
-        self.image = self.add(ShaderFlowTexture(name="image").repeat(False))
-        self.depth = self.add(ShaderFlowTexture(name="depth").repeat(False))
-
-    def _update_(self):
+    def _default_image(self):
 
         # Set default image if none provided
         if self.image.is_empty:
@@ -92,29 +78,27 @@ class DepthFlowScene(ShaderFlowScene):
 
         # Block when rendering (first Scene update)
         if self.rendering and self.image.is_empty:
-            self.__loading__.join()
+            self._loading.join()
 
         # Load new parallax images and parallax shader
-        if self.__load_image__ and self.__load_depth__:
-            self.image.from_pil(self.__load_image__); self.__load_image__ = None
-            self.depth.from_pil(self.__load_depth__); self.__load_depth__ = None
+        if self._load_image and self._load_depth:
+            self.image.from_pil(self._load_image); self._load_image = None
+            self.depth.from_pil(self._load_depth); self._load_depth = None
             self.engine.fragment = self.DEPTH_SHADER
-            self.__loading__ = None
+            self._loading = None
             self.time = 0
 
-    def _handle_(self, message: ShaderFlowMessage):
-        if isinstance(message, ShaderFlowMessage.Window.FileDrop):
-            self.parallax(image=message.files[0], depth=message.files.get(1))
-
     # ------------------------------------------|
-    # User defined functions
 
     def commands(self):
         self.broken_typer.command(self.parallax)
 
-    @abstractmethod
+    def build(self):
+        self.image = self.add(ShaderFlowTexture(name="image").repeat(False))
+        self.depth = self.add(ShaderFlowTexture(name="depth").repeat(False))
+
     def update(self):
-        """Define your own update here or from an inherited class"""
+        self._default_image()
 
         # In and out dolly zoom
         self.parallax_dolly = 0.5*(1 + math.cos(self.time))
@@ -132,12 +116,33 @@ class DepthFlowScene(ShaderFlowScene):
         # Zoom out on the start
         # self.parallax_zoom = 0.6 + 0.4*(2/math.pi)*math.atan(3*self.time)
 
-    @abstractmethod
+    def handle(self, message: ShaderFlowMessage):
+        ShaderFlowScene.handle(self, message)
+        if isinstance(message, ShaderFlowMessage.Window.FileDrop):
+            self.parallax(image=message.files[0], depth=message.files.get(1))
+
     def pipeline(self) -> Iterable[ShaderVariable]:
-        """Define your own pipeline here or from an inherited class"""
+        yield from ShaderFlowScene.pipeline(self)
+        yield ShaderVariable("uniform", "bool",  "iParallaxFixed",     self.parallax_fixed)
+        yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.parallax_height)
+        yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.parallax_focus)
+        yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.parallax_zoom)
+        yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.parallax_isometric)
+        yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)
+        yield ShaderVariable("uniform", "vec2",  "iParallaxPosition",  (self.parallax_x, self.parallax_y))
+
+# -------------------------------------------------------------------------------------------------|
+
+class YourFlow(DepthFlowScene):
+    """Example of defining your own class based on DepthFlowScene"""
+
+    def update(self):
+        DepthFlowScene.update(self)
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield from DepthFlowScene.pipeline(self)
         ...
 
-    @abstractmethod
     def handle(self, message: ShaderFlowMessage):
-        """Handle your own messages here or from an inherited class"""
+        DepthFlowScene.handle(self, message)
         ...
