@@ -1,3 +1,5 @@
+from ShaderFlow import *
+
 import Broken
 from Broken import *
 
@@ -7,7 +9,6 @@ _spinner.start()
 import DepthFlow.Resources as DepthFlowResources
 import torch
 import transformers
-from ShaderFlow import *
 
 DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
