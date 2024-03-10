@@ -94,6 +94,7 @@ class DepthFlowScene(ShaderFlowScene):
         self.broken_typer.command(self.parallax)
 
     def build(self):
+        ShaderFlowScene.build(self)
         self.image = self.add(ShaderFlowTexture(name="image").repeat(False))
         self.depth = self.add(ShaderFlowTexture(name="depth").repeat(False))
 

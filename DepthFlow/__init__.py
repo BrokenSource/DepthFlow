@@ -1,10 +1,13 @@
+import Broken
+from Broken import *
+
+_spinner = yaspin(text="Initializing DepthFlow Library")
+_spinner.start()
+
 import DepthFlow.Resources as DepthFlowResources
 import torch
 import transformers
 from ShaderFlow import *
-
-import Broken
-from Broken import *
 
 DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
@@ -18,3 +21,5 @@ Broken.PROJECT = DEPTHFLOW
 # isort: off
 from .Modules import *
 from .DepthFlow import *
+
+_spinner.stop()

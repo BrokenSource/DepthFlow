@@ -58,7 +58,7 @@ class DepthFlowMDE:
         self.load_model()
 
         # Estimate Depth Map
-        with Halo(text=f"Estimating Depth Map for the input image (CUDA: {self.cuda})"):
+        with yaspin(text=f"Estimating Depth Map for the input image (CUDA: {self.cuda})"):
             depth_map = self.model.infer_pil(image)
 
         # -----------------------------------------------------------------------------------------|
