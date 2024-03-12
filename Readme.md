@@ -64,6 +64,8 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 
 **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
 
+- <b>Warning:</b> Recent code changes may cause new bugs. Now working on stability and cleanups ⚠️
+
 <br>
 
 > 🔴🟡🟢&nbsp; **For Extra installation Help**, check out the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)

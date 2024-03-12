@@ -45,12 +45,12 @@ class DepthFlowMDE:
         # Calculate hash of the image for caching
         image_hash = hashlib.md5(image.tobytes()).hexdigest()
         cache_path = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash}.jpg"
-        log.info(f"Image hash for Depth Map cache is ({image_hash})")
 
         # If the depth map is cached, return it
         if cache and cache_path.exists():
-            log.success(f"Depth map already cached on ({cache_path})")
+            log.success(f"DepthMap already cached on ({cache_path})")
             return LoaderImage(cache_path).convert("L")
+        log.info(f"DepthMap will be cached on ({cache_path})")
 
         # -----------------------------------------------------------------------------------------|
         # Estimating

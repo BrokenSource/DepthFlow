@@ -3,7 +3,7 @@ from ShaderFlow import *
 import Broken
 from Broken import *
 
-_spinner = yaspin(text="Initializing Library: DepthFlow")
+_spinner = yaspin(text="Loading Library: DepthFlow")
 _spinner.start()
 
 import DepthFlow.Resources as DepthFlowResources

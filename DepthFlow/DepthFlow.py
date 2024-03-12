@@ -2,7 +2,7 @@ from . import *
 
 
 @define
-class DepthFlowScene(ShaderFlowScene):
+class DepthFlowScene(Scene):
     """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first."""
     __name__ = "DepthFlow"
 
@@ -53,7 +53,7 @@ class DepthFlowScene(ShaderFlowScene):
             return
 
         # Start loading process
-        self.engine.fragment = self.LOADING_SHADER
+        self.shader.fragment = self.LOADING_SHADER
         self._loading = BrokenThread.new(self._parallax,
             image=image, depth=depth, cache=cache
         )
@@ -73,18 +73,18 @@ class DepthFlowScene(ShaderFlowScene):
     def _default_image(self):
 
         # Set default image if none provided
-        if self.image.is_empty:
+        if self.image.is_empty():
             self.parallax(image=DepthFlowScene.DEFAULT_IMAGE)
 
         # Block when rendering (first Scene update)
-        if self.rendering and self.image.is_empty:
+        if self.rendering and self.image.is_empty():
             self._loading.join()
 
         # Load new parallax images and parallax shader
         if self._load_image and self._load_depth:
-            self.image.from_pil(self._load_image); self._load_image = None
-            self.depth.from_pil(self._load_depth); self._load_depth = None
-            self.engine.fragment = self.DEPTH_SHADER
+            self.image.from_image(self._load_image); self._load_image = None
+            self.depth.from_image(self._load_depth); self._load_depth = None
+            self.shader.fragment = self.DEPTH_SHADER
             self._loading = None
             self.time = 0
 
@@ -94,9 +94,9 @@ class DepthFlowScene(ShaderFlowScene):
         self.broken_typer.command(self.parallax)
 
     def build(self):
-        ShaderFlowScene.build(self)
-        self.image = self.add(ShaderFlowTexture(name="image").repeat(False))
-        self.depth = self.add(ShaderFlowTexture(name="depth").repeat(False))
+        Scene.build(self)
+        self.image = Texture(scene=self, name="image").repeat(False)
+        self.depth = Texture(scene=self, name="depth").repeat(False)
 
     def update(self):
         self._default_image()
@@ -117,13 +117,13 @@ class DepthFlowScene(ShaderFlowScene):
         # Zoom out on the start
         # self.parallax_zoom = 0.6 + 0.4*(2/math.pi)*math.atan(3*self.time)
 
-    def handle(self, message: ShaderFlowMessage):
-        ShaderFlowScene.handle(self, message)
-        if isinstance(message, ShaderFlowMessage.Window.FileDrop):
+    def handle(self, message: Message):
+        Scene.handle(self, message)
+        if isinstance(message, Message.Window.FileDrop):
             self.parallax(image=message.files[0], depth=message.files.get(1))
 
     def pipeline(self) -> Iterable[ShaderVariable]:
-        yield from ShaderFlowScene.pipeline(self)
+        yield from Scene.pipeline(self)
         yield ShaderVariable("uniform", "bool",  "iParallaxFixed",     self.parallax_fixed)
         yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.parallax_height)
         yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.parallax_focus)
@@ -144,6 +144,6 @@ class YourFlow(DepthFlowScene):
         yield from DepthFlowScene.pipeline(self)
         ...
 
-    def handle(self, message: ShaderFlowMessage):
+    def handle(self, message: Message):
         DepthFlowScene.handle(self, message)
         ...
