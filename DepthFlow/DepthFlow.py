@@ -16,7 +16,7 @@ class DepthFlowScene(Scene):
 
     # Parallax parameters
     parallax_fixed     = Field(default=True)
-    parallax_height    = Field(default=0.3)
+    parallax_height    = Field(default=0.2)
     parallax_focus     = Field(default=1.0)
     parallax_zoom      = Field(default=1.0)
     parallax_isometric = Field(default=0.0)
