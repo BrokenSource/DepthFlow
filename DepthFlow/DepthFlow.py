@@ -2,7 +2,7 @@ from . import *
 
 
 @define
-class DepthFlowScene(Scene):
+class DepthFlowScene(ShaderScene):
     """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first."""
     __name__ = "DepthFlow"
 
@@ -94,9 +94,9 @@ class DepthFlowScene(Scene):
         self.broken_typer.command(self.parallax)
 
     def build(self):
-        Scene.build(self)
-        self.image = Texture(scene=self, name="image").repeat(False)
-        self.depth = Texture(scene=self, name="depth").repeat(False)
+        ShaderScene.build(self)
+        self.image = ShaderTexture(scene=self, name="image").repeat(False)
+        self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
 
     def update(self):
         self._default_image()
@@ -118,12 +118,12 @@ class DepthFlowScene(Scene):
         # self.parallax_zoom = 0.6 + 0.4*(2/math.pi)*math.atan(3*self.time)
 
     def handle(self, message: Message):
-        Scene.handle(self, message)
+        ShaderScene.handle(self, message)
         if isinstance(message, Message.Window.FileDrop):
             self.parallax(image=message.files[0], depth=message.files.get(1))
 
     def pipeline(self) -> Iterable[ShaderVariable]:
-        yield from Scene.pipeline(self)
+        yield from ShaderScene.pipeline(self)
         yield ShaderVariable("uniform", "bool",  "iParallaxFixed",     self.parallax_fixed)
         yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.parallax_height)
         yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.parallax_focus)
