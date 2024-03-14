@@ -18,7 +18,7 @@ void main() {
     // // DepthFlow math
 
     // Point where the ray intersects with the XY plane
-    vec2 lambda = iCamera.uv; // Fixme: Different results on Headless vs GLFW
+    vec2 lambda = iCamera.gluv; // Fixme: Different results on Headless vs GLFW
 
     // No camera displacement mode, raw parallax
     if (iParallaxFixed) {
