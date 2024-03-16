@@ -1,4 +1,4 @@
-from DepthFlow import *
+from . import *
 
 
 def main():
