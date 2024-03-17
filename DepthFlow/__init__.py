@@ -7,8 +7,6 @@ _spinner = yaspin(text="Loading Library: DepthFlow")
 _spinner.start()
 
 import DepthFlow.Resources as DepthFlowResources
-import torch
-import transformers
 
 DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
@@ -19,7 +17,12 @@ DEPTHFLOW = BrokenProject(
 
 Broken.PROJECT = DEPTHFLOW
 
+_spinner.stop()
+BrokenTorch.manage(DEPTHFLOW.RESOURCES)
+_spinner.start()
+
 # isort: off
+import torch
 from .Modules import *
 from .DepthFlow import *
 
