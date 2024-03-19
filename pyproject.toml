@@ -3,7 +3,7 @@ name        = "DepthFlow"
 version     = "2024.3.18"
 description = "Image to 2.5D Parallax Effect Video"
 authors     = ["Tremeschin <tremeschin@users.noreply.github.com>"]
-license     = "AGPLv3-only"
+license     = "AGPL-3.0-only"
 
 [[tool.poetry.packages]]
 include = "DepthFlow"
