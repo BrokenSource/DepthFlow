@@ -1,3 +1,6 @@
+/*
+// (c) 2023-2024 CC BY-SA 4.0, Tremeschin
+*/
 
 void main() {
     Camera iCamera = iInitCamera(gluv);
