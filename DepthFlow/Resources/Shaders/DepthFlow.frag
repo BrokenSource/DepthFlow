@@ -21,7 +21,7 @@ void main() {
     // // DepthFlow math
 
     // Point where the ray intersects with the XY plane
-    vec2 lambda = iCamera.gluv; // Fixme: Different results on Headless vs GLFW
+    vec2 lambda = iCamera.gluv;
 
     // No camera displacement mode, raw parallax
     if (iParallaxFixed) {
@@ -62,7 +62,7 @@ void main() {
         vec2 sample = gluv2stuv(lambda + i*beta*walk);
 
         // The depth map value
-        float depth_height = iParallaxHeight * (1.0 - draw_image(depth, sample).r);
+        float depth_height = iParallaxHeight * draw_image(depth, sample).r;
         float walk_height  = (i*beta) / tan(theta);
 
         // Update uv until the last height > walk

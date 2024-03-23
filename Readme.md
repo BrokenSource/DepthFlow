@@ -50,9 +50,9 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 <details>
 <summary>🪄 <b>Click</b> to see the Estimated Depth map </summary>
   <br>
-  <img src="https://github.com/BrokenSource/DepthFlow/assets/29046864/7f73775e-0b08-4a4f-bf97-7cb8f3aecad8" alt="Depth Map">
+  <img src="https://github.com/BrokenSource/DepthFlow/assets/29046864/bace7072-5437-4ffd-96f2-91b9be3a4fed" alt="Depth Map">
   <br>
-  The Depth Map was estimated with <a href="https://github.com/isl-org/ZoeDepth"><b>ZoeDepth</b></a> 🚀
+  The Depth Map was estimated with <a href="https://github.com/LiheYoung/Depth-Anything"><b>DepthAnything</b></a> 🚀
   <br>
   <br>
 </details>
@@ -66,7 +66,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 
 <br>
 
-> 🔴🟡🟢&nbsp; **For Extra installation Help**, check out the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
+> 🔴🟡🟢&nbsp; **For Extra Installation Help**, check out the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
 >
 > - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Folder and run:
 >   ```ps
@@ -78,7 +78,7 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 >   irm https://brakeit.github.io/get.ps1 | iex
 >   ```
 >
-> <sub><b>Note:</b> The commands above are the simplified version and assumes installed dependencies
+> <sub><b>Note:</b> The commands above are safe. You can read what they do <b><a href="https://github.com/Brakeit/brakeit.github.io">here</a></b>.</sub>
 
 <br>
 

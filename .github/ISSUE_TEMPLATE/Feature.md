@@ -7,13 +7,9 @@ assignees: 'Tremeschin'
 
 ---
 
-You're allowed to freewheel your ideas and formatting here, but here are some suggestions:
+Hi, some quick Guidelines (please read, it's not long):
 
-- Rejection of ideas on Free and Open Source Software is a common and intimidating problem to newcomers, so we want to reduce the fear and cooperate with you
-
-- Consider getting in touch with us first through [Discord](https://discord.com/invite/KjqvcYwRHm) or [Telegram](https://t.me/brokensource) for discussing the feature and its feasibility, before officializing the request
-
-- Not all suggestions matches the Project's Original Idea. No commentaries are criticizing your person, but your _work_. Stuff needs time and effort to be implemented, consider Donating or Sponsoring us for higher priority.
+- Consider getting in touch on [Discord](https://discord.com/invite/KjqvcYwRHm) or [Telegram](https://t.me/brokensource) before officializing the request for discussing the idea and its feasibility
 
 - **Description**: A description of what the problem is. _"I'm always frustrated when (...)"_
 

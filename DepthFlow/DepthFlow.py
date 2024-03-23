@@ -12,7 +12,7 @@ class DepthFlowScene(ShaderScene):
     LOADING_SHADER = (SHADERFLOW.RESOURCES.FRAGMENT/"Loading.frag")
 
     # DepthFlow objects
-    mde: DepthFlowMDE  = Field(factory=DepthFlowMDE)
+    mde: Monocular = Field(factory=Monocular)
 
     # Parallax parameters
     parallax_fixed     = Field(default=True)
@@ -32,12 +32,12 @@ class DepthFlowScene(ShaderScene):
     _load_depth: Image  = None
 
     def _parallax(self,
-        image: Option[Image, Path, "url"],
-        depth: Option[Image, Path, "url"]=None,
+        image: LoadableImage,
+        depth: LoadableImage=None,
         cache: bool=True
     ):
         self._load_image = LoaderImage(image)
-        self._load_depth = LoaderImage(depth or self.mde(image, cache=cache))
+        self._load_depth = LoaderImage(depth) or self.mde(image, cache=cache)
 
     def parallax(self,
         image: Annotated[str,  TyperOption("--image", "-i", help="Image to parallax (path, url)")],
