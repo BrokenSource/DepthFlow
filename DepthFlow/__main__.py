@@ -1,4 +1,8 @@
-from . import *
+import sys
+
+from Broken.Base import BrokenProfiler
+from DepthFlow import DEPTHFLOW
+from DepthFlow.DepthFlow import DepthFlowScene
 
 
 def main():

@@ -1,4 +1,24 @@
-from . import *
+import math
+from threading import Thread
+from typing import Annotated
+from typing import Iterable
+
+import imgui
+from attr import define
+from attr import field
+from PIL import Image
+from ShaderFlow import SHADERFLOW
+from ShaderFlow.Message import Message
+from ShaderFlow.Optional.Monocular import Monocular
+from ShaderFlow.Scene import ShaderScene
+from ShaderFlow.Texture import ShaderTexture
+from ShaderFlow.Variable import ShaderVariable
+from typer import Option
+
+from Broken.Base import BrokenThread
+from Broken.Loaders.LoaderPIL import LoadableImage
+from Broken.Loaders.LoaderPIL import LoaderImage
+from DepthFlow import DEPTHFLOW
 
 
 @define
@@ -12,17 +32,17 @@ class DepthFlowScene(ShaderScene):
     LOADING_SHADER = (SHADERFLOW.RESOURCES.FRAGMENT/"Loading.frag")
 
     # DepthFlow objects
-    mde: Monocular = Field(factory=Monocular)
+    mde: Monocular = field(factory=Monocular)
 
     # Parallax parameters
-    parallax_fixed     = Field(default=True)
-    parallax_height    = Field(default=0.2)
-    parallax_focus     = Field(default=1.0)
-    parallax_zoom      = Field(default=1.0)
-    parallax_isometric = Field(default=0.0)
-    parallax_dolly     = Field(default=0.0)
-    parallax_x         = Field(default=0.0)
-    parallax_y         = Field(default=0.0)
+    parallax_fixed     = field(default=True)
+    parallax_height    = field(default=0.2)
+    parallax_focus     = field(default=1.0)
+    parallax_zoom      = field(default=1.0)
+    parallax_isometric = field(default=0.0)
+    parallax_dolly     = field(default=0.0)
+    parallax_x         = field(default=0.0)
+    parallax_y         = field(default=0.0)
 
     # ------------------------------------------|
     # Parallax MDE and Loading screen tricky implementation
@@ -40,10 +60,10 @@ class DepthFlowScene(ShaderScene):
         self._load_depth = LoaderImage(depth) or self.mde(image, cache=cache)
 
     def parallax(self,
-        image: Annotated[str,  TyperOption("--image", "-i", help="Image to parallax (path, url)")],
-        depth: Annotated[str,  TyperOption("--depth", "-d", help="Depth map of the Image, None to estimate")]=None,
-        cache: Annotated[bool, TyperOption("--cache", "-c", help="Cache the Depth Map estimations")]=True,
-        block: Annotated[bool, TyperOption("--block", "-b", help="Wait for the Image and Depth Map to be loaded")]=False
+        image: Annotated[str,  Option("--image", "-i", help="Image to parallax (path, url)")],
+        depth: Annotated[str,  Option("--depth", "-d", help="Depth map of the Image, None to estimate")]=None,
+        cache: Annotated[bool, Option("--cache", "-c", help="Cache the Depth Map estimations")]=True,
+        block: Annotated[bool, Option("--block", "-b", help="Wait for the Image and Depth Map to be loaded")]=False
     ):
         """
         Load a new parallax image and depth map. If depth is None, it will be estimated.
@@ -82,8 +102,8 @@ class DepthFlowScene(ShaderScene):
 
         # Load new parallax images and parallax shader
         if self._load_image and self._load_depth:
-            self.image.from_image(self._load_image); self._load_image = None
-            self.depth.from_image(self._load_depth); self._load_depth = None
+            self._load_image = self.image.from_image(self._load_image) and None
+            self._load_depth = self.depth.from_image(self._load_depth) and None
             self.shader.fragment = self.DEPTH_SHADER
             self._loading = None
             self.time = 0
