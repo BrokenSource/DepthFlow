@@ -118,29 +118,25 @@ For Faster **Depth Estimation**, you can switch the PyTorch backend:
 
 <br>
 
-**NVIDIA** + CUDA:
+**NVIDIA** + [**CUDA**](https://en.wikipedia.org/wiki/CUDA):
 - Have the [NVIDIA Drivers](https://www.nvidia.com/download/index.aspx) installed
 - Run the command: `broken depthflow poe cuda`
 
 <br>
 
-**AMD** + ROCm:
+**AMD** + [**ROCm**](https://en.wikipedia.org/wiki/ROCm):
+- Have the [AMD Drivers](https://www.amd.com/en/support) installed
 - Run the command: `broken depthflow poe rocm`
 
 <br>
 
-**macOS**:
-- Run the command: `broken depthflow poe mac`
-
-<br>
-
-**CPU**:
+**CPU** (Default):
 - Run the command: `broken depthflow poe cpu`
 
 <br>
 
-**Reverting** to the default:
-- Run the command: `broken depthflow poe default`
+**"Unflavored"** PyTorch:
+- Run the command: `broken depthflow poe base`
 
 <br>
 <br>
