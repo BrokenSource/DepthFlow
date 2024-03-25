@@ -140,7 +140,8 @@ class DepthFlowScene(ShaderScene):
     def handle(self, message: Message):
         ShaderScene.handle(self, message)
         if isinstance(message, Message.Window.FileDrop):
-            self.parallax(image=message.files[0], depth=message.files.get(1))
+            files = iter(message.files)
+            self.parallax(image=next(files), depth=next(files, None))
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
