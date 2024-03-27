@@ -95,9 +95,9 @@ After activating the Virtual Environment on `.venv`, install [**PyTorch**](https
 
   | Type    | **Hardware** | **Command** | **Notes** |
   |---------|--------------|-------------|-----------|
-  | GPUs    | [**NVIDIA**](https://www.nvidia.com/download/index.aspx) + [CUDA](https://en.wikipedia.org/wiki/CUDA) | `poe cuda` | -
-  | -       | [**AMD**](https://www.amd.com/en/support) + [ROCm](https://en.wikipedia.org/wiki/ROCm) | `poe rocm` | [Linux Only >= RX 5000](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html)
-  | -       | Intel ARC    |  -          | -   |
+  | GPU     | [**NVIDIA**](https://www.nvidia.com/download/index.aspx) + [CUDA](https://en.wikipedia.org/wiki/CUDA) | `poe cuda` | -
+  | GPU     | [**AMD**](https://www.amd.com/en/support) + [ROCm](https://en.wikipedia.org/wiki/ROCm) | `poe rocm` | [Linux only, >= RX 5000](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html)
+  | GPU     | Intel ARC    |  -          | -   |
   | CPU     | Any          | `poe cpu`   | Slow |
   | MacOS   | -            | `poe base`  | -   |
 
