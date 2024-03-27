@@ -62,81 +62,77 @@ https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-876
 
 # 📦 Installation
 
-**DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
+- **DepthFlow** directly uses [**ShaderFlow**](https://github.com/BrokenSource/ShaderFlow). _Check it out!_ 🚀
+- Amazing Depth Estimations by [**DepthAnything**](https://github.com/LiheYoung/Depth-Anything)
 
 <br>
 
-> 🔴🟡🟢&nbsp; **For Extra Installation Help**, check out the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
+> 🔴🟡🟢&nbsp; **For Extra** and **Alternative Installation Help**, check out the [**Monorepo**](https://github.com/BrokenSource/BrokenSource#-running-from-the-source-code)
 >
-> - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Folder and run:
->   ```ps
->   /bin/bash -c "$(curl -sS https://brakeit.github.io/get.sh)"
->   ```
->
-> - **💠 Windows**: Open a PowerShell in some Folder and run:
+> - **💠 Windows**: Open a Folder, Press <kbd>Ctrl+L</kbd>, Run `powershell` and execute
 >   ```ps
 >   irm https://brakeit.github.io/get.ps1 | iex
 >   ```
+>
+> - **🐧 Linux and MacOS 🍎**: Open a Terminal in some Directory and run
+>   ```ps
+>   /bin/bash -c "$(curl -sS https://brakeit.github.io/get.sh)"
+>   ```
+> <sub><b>⚠️ Warning:</b> Recent Tooling changes may cause new issues. Get in touch for any issues 🤝</sub>
 >
 > <sub><b>Note:</b> The commands above are safe. You can read what they do <b><a href="https://github.com/Brakeit/brakeit.github.io">here</a></b>.</sub>
 
 <br>
 
-After you are inside the Development Environment:
+After activating the Virtual Environment on `.venv`, install [**PyTorch**](https://pytorch.org/):
 
-- Run the command: `broken depthflow`
+<br>
 
-A real time window should pop up.
+## 🚀 Chosing a PyTorch Flavor
+**Pick** one option below for your **Hardware** and run the **Command**. Have **Drivers installed**
 
-#### Selecting the input image
-- Run `broken depthflow parallax --help` for parallax options
+<div align="center">
 
-- You can also drag and drop an Image File or URL From your Browser
+  | Type    | **Hardware** | **Command** | **Notes** |
+  |---------|--------------|-------------|-----------|
+  | GPUs    | [**NVIDIA**](https://www.nvidia.com/download/index.aspx) + [CUDA](https://en.wikipedia.org/wiki/CUDA) | `poe cuda` | -
+  | -       | [**AMD**](https://www.amd.com/en/support) + [ROCm](https://en.wikipedia.org/wiki/ROCm) | `poe rocm` | [Linux Only >= RX 5000](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html)
+  | -       | Intel ARC    |  -          | -   |
+  | CPU     | Any          | `poe cpu`   | Slow |
+  | MacOS   | -            | `poe base`  | -   |
 
-#### Rendering Options
-- Run `broken depthflow --help` for options and rendering
+</div>
 
-#### Full Examples
-- `broken depthflow (--render | -r)`
-- `broken depthflow -r -w 1280 -h 720 -f 30`
-- `broken depthflow -r -o ./video_name --format mkv`
-- `broken depthflow parallax --image (url | path) main --render -s 2`
-- `broken depthflow -r -t 2 --open`
-- `broken depthflow parallax -i (image) -d (depth) main`
+<sub><b>Note:</b> I don't have an AMD GPU or Macbook to test and give full support</sub>
+
+<br>
+
+## 🎮 Running DepthFlow
+With PyTorch installed, simply run `depthflow`, a window will open
+- Models will be Downloaded on the first run
+
+### Selecting the input image
+- Run `depthflow input --help` for options
+- Drag and drop an Image File or URL From your Browser
+
+### Rendering Options
+- Run `depthflow --help` for options and rendering
+
+### Animation Presets
+There's currently no mechanism for presets, but it is planned
+
+- For now, manually change the `.update()` function on `DepthFlow/DepthFlow.py`
+
+### Full Examples
+- `depthflow (--render | -r)`
+- `depthflow -r -w 1280 -h 720 -f 30`
+- `depthflow -r -o ./video_name --format mkv`
+- `depthflow input --image (url | path) main --render -s 2`
+- `depthflow -r -t 2 --open`
+- `depthflow input -i (image) -d (depth) main`
 
 <b>Note</b>: A high SSAA `-s 1.5` is recommended for antialiasing due the Steep Parallax
 
-
-<br>
-<br>
-
-# 🚀 Using your GPU
-
-> By default, Pytorch will be installed with CPU support
-
-For Faster **Depth Estimation**, you can switch the PyTorch backend:
-
-<br>
-
-**NVIDIA** + [**CUDA**](https://en.wikipedia.org/wiki/CUDA):
-- Have the [NVIDIA Drivers](https://www.nvidia.com/download/index.aspx) installed
-- Run the command: `broken depthflow poe cuda`
-
-<br>
-
-**AMD** + [**ROCm**](https://en.wikipedia.org/wiki/ROCm):
-- Have the [AMD Drivers](https://www.amd.com/en/support) installed
-- Run the command: `broken depthflow poe rocm`
-
-<br>
-
-**CPU** (Default):
-- Run the command: `broken depthflow poe cpu`
-
-<br>
-
-**"Unflavored"** PyTorch:
-- Run the command: `broken depthflow poe base`
 
 <br>
 <br>

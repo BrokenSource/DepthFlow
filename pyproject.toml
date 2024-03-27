@@ -1,56 +1,28 @@
-[tool.poetry]
-name        = "DepthFlow"
-version     = "2024.3.24"
-description = "Image to 2.5D Parallax Effect Video"
-authors     = ["Tremeschin <tremeschin@users.noreply.github.com>"]
-license     = "AGPL-3.0-only"
+[project]
+name         = "depthflow"
+version      = "2024.3.27"
+description  = "Image to 2.5D Parallax Effect Video"
+authors      = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
+readme       = "Readme.md"
+dependencies = [
+    "broken-source>=2024.1.15",
+]
+requires-python = ">=3.10"
 
-[[tool.poetry.packages]]
-include = "DepthFlow"
+[project.scripts]
+depthflow = "DepthFlow.__main__:main"
 
-[tool.poetry.scripts]
-main = "DepthFlow.__main__:main"
+[tool.rye]
+managed = true
 
-[tool.poe.tasks]
-_install_venv       = "poetry install"
-_install_torch_base = "python -m pip install torch==2.2.1 torchvision"
-_install_torch_cuda = "python -m pip install torch==2.2.1 torchvision --index-url https://download.pytorch.org/whl/cu118"
-_install_torch_rocm = "python -m pip install torch==2.2.1 torchvision --index-url https://download.pytorch.org/whl/rocm5.7"
-_install_torch_cpu  = "python -m pip install torch==2.2.1 torchvision --index-url https://download.pytorch.org/whl/cpu"
-_uninstall_torch    = "python -m pip uninstall -y torch torchvision"
-base                = ["_install_venv", "_uninstall_torch", "_install_torch_base"]
-cuda                = ["_install_venv", "_uninstall_torch", "_install_torch_cuda"]
-rocm                = ["_install_venv", "_uninstall_torch", "_install_torch_rocm"]
-cpu                 = ["_install_venv", "_uninstall_torch", "_install_torch_cpu" ]
+# # Hatchling
+
+[tool.hatch.build.targets.wheel]
+packages = ["DepthFlow"]
 
 [build-system]
-requires      = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires      = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.dependencies]
-python        = ">=3.10,<3.13"
-timm          = "0.6.7"
-gradio        = "^4.13.0"
-broken-source = "^2024.1.15"
-torch         = {version="2.2.1", source="torch-cpu"}
-torchvision   = {version="^0.17.1", source="torch-cpu"}
-
-[tool.poetry.dev-dependencies]
-broken-source   = {path="../../", develop=true}
-shaderflow      = {path="../ShaderFlow", develop=true}
-moderngl-window = {path="../../Meta/Fork/ModernGLW", develop=true}
-
-[[tool.poetry.source]]
-name     = "torch-cpu"
-priority = "explicit"
-url      = "https://download.pytorch.org/whl/cpu"
-
-[[tool.poetry.source]]
-name     = "torch-cuda"
-priority = "explicit"
-url      = "https://download.pytorch.org/whl/cu118"
-
-[[tool.poetry.source]]
-name     = "torch-rocm"
-priority = "explicit"
-url      = "https://download.pytorch.org/whl/rocm5.4.2"
+[tool.hatch.metadata]
+allow-direct-references = true

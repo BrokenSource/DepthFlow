@@ -1,11 +1,9 @@
 import math
 from threading import Thread
-from typing import Annotated
-from typing import Iterable
+from typing import Annotated, Iterable
 
 import imgui
-from attr import define
-from attr import field
+from attr import define, field
 from PIL import Image
 from ShaderFlow import SHADERFLOW
 from ShaderFlow.Message import Message
@@ -16,8 +14,7 @@ from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
 from Broken.Base import BrokenThread
-from Broken.Loaders.LoaderPIL import LoadableImage
-from Broken.Loaders.LoaderPIL import LoaderImage
+from Broken.Loaders.LoaderPIL import LoadableImage, LoaderImage
 from DepthFlow import DEPTHFLOW
 
 
@@ -51,7 +48,7 @@ class DepthFlowScene(ShaderScene):
     _load_image: Image  = None
     _load_depth: Image  = None
 
-    def _parallax(self,
+    def parallax(self,
         image: LoadableImage,
         depth: LoadableImage=None,
         cache: bool=True
@@ -59,11 +56,11 @@ class DepthFlowScene(ShaderScene):
         self._load_image = LoaderImage(image)
         self._load_depth = LoaderImage(depth) or self.mde(image, cache=cache)
 
-    def parallax(self,
+    def input(self,
         image: Annotated[str,  Option("--image", "-i", help="Image to parallax (path, url)")],
         depth: Annotated[str,  Option("--depth", "-d", help="Depth map of the Image, None to estimate")]=None,
         cache: Annotated[bool, Option("--cache", "-c", help="Cache the Depth Map estimations")]=True,
-        block: Annotated[bool, Option("--block", "-b", help="Wait for the Image and Depth Map to be loaded")]=False
+        block: Annotated[bool, Option("--block", "-b", help="Freeze until Depth Map is estimated, no loading screen")]=False
     ):
         """
         Load a new parallax image and depth map. If depth is None, it will be estimated.
@@ -74,7 +71,7 @@ class DepthFlowScene(ShaderScene):
 
         # Start loading process
         self.shader.fragment = self.LOADING_SHADER
-        self._loading = BrokenThread.new(self._parallax,
+        self._loading = BrokenThread.new(self.parallax,
             image=image, depth=depth, cache=cache
         )
 
@@ -94,7 +91,7 @@ class DepthFlowScene(ShaderScene):
 
         # Set default image if none provided
         if self.image.is_empty():
-            self.parallax(image=DepthFlowScene.DEFAULT_IMAGE)
+            self.input(image=DepthFlowScene.DEFAULT_IMAGE)
 
         # Block when rendering (first Scene update)
         if self.rendering and self.image.is_empty():
@@ -111,7 +108,7 @@ class DepthFlowScene(ShaderScene):
     # ------------------------------------------|
 
     def commands(self):
-        self.broken_typer.command(self.parallax)
+        self.broken_typer.command(self.input)
 
     def build(self):
         ShaderScene.build(self)
@@ -141,7 +138,7 @@ class DepthFlowScene(ShaderScene):
         ShaderScene.handle(self, message)
         if isinstance(message, Message.Window.FileDrop):
             files = iter(message.files)
-            self.parallax(image=next(files), depth=next(files, None))
+            self.input(image=next(files), depth=next(files, None))
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
