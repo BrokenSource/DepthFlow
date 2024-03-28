@@ -112,13 +112,13 @@ With PyTorch installed, simply run `depthflow`, a window will open
 - Models will be Downloaded on the first run
 
 ### Rendering Options
-- Run `depthflow --help` for options and rendering
+- Run `depthflow --help` for all Options and Exporting to a Video File
 
 ### Selecting the input image
-- Run `depthflow input --help` for options on the CLI/Rendering
-- Drag and drop an Image File or URL From your Browser
+- Run `depthflow input --help`. The exported Video File Image is the one defined here
+- Drag and drop an Image File or URL From your Browser to the Window in Realtime Mode
 
-**Note**: This resizes<sup>*1</sup> the Window to the image size, there's options:
+**Note**: This resizes<sup>*1</sup> the Window to the image resolution, there's options:
 - Only sending `--width` or `--height` adjusts the other to Aspect Ratio
 - Sending Both will force the resolution (can also be set on `main -w -h`)
 - Sending None will use the Image's resolution (default)
