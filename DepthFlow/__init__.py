@@ -11,6 +11,6 @@ DEPTHFLOW = BrokenProject(
     RESOURCES=DepthFlowResources,
 )
 
-Broken.PROJECT = DEPTHFLOW
+Broken.set_project(DEPTHFLOW)
 
 BrokenTorch.manage(DEPTHFLOW.RESOURCES)
