@@ -14,7 +14,7 @@ from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
 from Broken.Base import BrokenThread
-from Broken.Loaders.LoaderPIL import LoadableImage, LoaderImage
+from Broken.Loaders.LoaderPIL import LoaderImage
 from DepthFlow import DEPTHFLOW
 
 
@@ -31,16 +31,6 @@ class DepthFlowScene(ShaderScene):
     # DepthFlow objects
     mde: Monocular = field(factory=Monocular)
 
-    # Parallax parameters
-    parallax_fixed     = field(default=True)
-    parallax_height    = field(default=0.2)
-    parallax_focus     = field(default=1.0)
-    parallax_zoom      = field(default=1.0)
-    parallax_isometric = field(default=0.0)
-    parallax_dolly     = field(default=0.0)
-    parallax_x         = field(default=0.0)
-    parallax_y         = field(default=0.0)
-
     # ------------------------------------------|
     # Parallax MDE and Loading screen tricky implementation
 
@@ -48,36 +38,45 @@ class DepthFlowScene(ShaderScene):
     _load_image: Image  = None
     _load_depth: Image  = None
 
-    def parallax(self,
-        image: LoadableImage,
-        depth: LoadableImage=None,
-        cache: bool=True
-    ):
-        self._load_image = LoaderImage(image)
-        self._load_depth = LoaderImage(depth) or self.mde(image, cache=cache)
-
     def input(self,
-        image: Annotated[str,  Option("--image", "-i", help="Image to parallax (path, url)")],
-        depth: Annotated[str,  Option("--depth", "-d", help="Depth map of the Image, None to estimate")]=None,
-        cache: Annotated[bool, Option("--cache", "-c", help="Cache the Depth Map estimations")]=True,
-        block: Annotated[bool, Option("--block", "-b", help="Freeze until Depth Map is estimated, no loading screen")]=False
+        image:  Annotated[str,   Option("--image",  "-i", help="Image to parallax (Path, URL, NumPy, PIL)")],
+        depth:  Annotated[str,   Option("--depth",  "-d", help="Depth map of the Image, None to estimate")]=None,
+        cache:  Annotated[bool,  Option("--cache",  "-c", help="Cache the Depth Map estimations")]=True,
+        width:  Annotated[int,   Option("--width",  "-w", help="Final video Width,  None for the Image's one. Adjusts to Aspect Ratio")]=None,
+        height: Annotated[int,   Option("--height", "-h", help="Final video Height, None for the Image's one. Adjusts to Aspect Ratio")]=None,
+        scale:  Annotated[float, Option("--scale",  "-s", help="Premultiply the Image resolution by a factor")]=1.0,
+        block:  Annotated[bool,  Option("--block",  "-b", help="Freeze until Depth Map is estimated, no loading screen")]=False
     ):
-        """
-        Load a new parallax image and depth map. If depth is None, it will be estimated.
-        • If block is True, the function will wait until the images are loaded (implied on rendering)
-        """
+        # Already loading something
         if self._loading and not block:
             return
 
+        def load():
+            nonlocal image, depth, cache, width, height, scale
+            self._load_image = LoaderImage(image)
+            iwidth, iheight = self._load_image.size
+            aspect_ratio = (iwidth/iheight)
+
+            # Force resolution if both set or image's one, else ajust to aspect ratio
+            if (bool(width) == bool(height)):
+                resolution = ((width or iwidth), (height or iheight))
+            else:
+                resolution = (
+                    ((height or 0)*aspect_ratio) or width,
+                    ((width  or 0)/aspect_ratio) or height,
+                )
+
+            # The order of calling imports here for rendering
+            self.eloop.once(callback=self.resize, args=[x*scale for x in resolution])
+            self._load_depth = LoaderImage(depth) or self.mde(image, cache=cache)
+            self.time = 0
+
         # Start loading process
         self.shader.fragment = self.LOADING_SHADER
-        self._loading = BrokenThread.new(self.parallax,
-            image=image, depth=depth, cache=cache
-        )
+        self._loading = BrokenThread.new(load)
 
         # Wait until loading finish
         if block: self._loading.join()
-        self.time = 0
 
     # ------------------------------------------|
 
@@ -87,7 +86,7 @@ class DepthFlowScene(ShaderScene):
         if (state := imgui.input_float("Height", self.parallax_height, 0.01, 0.01, "%.2f"))[0]:
             self.parallax_height = max(0, state[1])
 
-    def _default_image(self):
+    def _load_new_or_default(self):
 
         # Set default image if none provided
         if self.image.is_empty():
@@ -107,8 +106,21 @@ class DepthFlowScene(ShaderScene):
 
     # ------------------------------------------|
 
+    # Parallax parameters
+    parallax_fixed     = field(default=True)
+    parallax_height    = field(default=0.2)
+    parallax_focus     = field(default=1.0)
+    parallax_zoom      = field(default=1.0)
+    parallax_isometric = field(default=0.0)
+    parallax_dolly     = field(default=0.0)
+    parallax_x         = field(default=0.0)
+    parallax_y         = field(default=0.0)
+
     def commands(self):
         self.broken_typer.command(self.input)
+
+    def setup(self):
+        self._load_new_or_default()
 
     def build(self):
         ShaderScene.build(self)
@@ -116,7 +128,7 @@ class DepthFlowScene(ShaderScene):
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
 
     def update(self):
-        self._default_image()
+        self._load_new_or_default()
 
         # In and out dolly zoom
         self.parallax_dolly = 0.5*(1 + math.cos(self.time))

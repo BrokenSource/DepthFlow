@@ -111,25 +111,31 @@ After activating the Virtual Environment on `.venv`, install [**PyTorch**](https
 With PyTorch installed, simply run `depthflow`, a window will open
 - Models will be Downloaded on the first run
 
-### Selecting the input image
-- Run `depthflow input --help` for options
-- Drag and drop an Image File or URL From your Browser
-
 ### Rendering Options
 - Run `depthflow --help` for options and rendering
 
+### Selecting the input image
+- Run `depthflow input --help` for options on the CLI/Rendering
+- Drag and drop an Image File or URL From your Browser
+
+**Note**: This resizes the Window to the image size, there's options:
+- Only sending `--width` or `--height` adjusts the other to Aspect Ratio
+- Sending Both will force the resolution (can also be set on `main -w -h`)
+- Sending None will use the Image's resolution (default)
+- Use `--scale` to post-multiply the new resolution
+
 ### Animation Presets
 There's currently no mechanism for presets, but it is planned
-
 - For now, manually change the `.update()` function on `DepthFlow/DepthFlow.py`
 
 ### Full Examples
 - `depthflow (--render | -r)`
-- `depthflow -r -w 1280 -h 720 -f 30`
+- `depthflow -r -f 30`
 - `depthflow -r -o ./video_name --format mkv`
 - `depthflow input --image (url | path) main --render -s 2`
 - `depthflow -r -t 2 --open`
 - `depthflow input -i (image) -d (depth) main`
+- `depthflow input -i (image) -w 600 --scale 2 main -r`
 
 <b>Note</b>: A high SSAA `-s 1.5` is recommended for antialiasing due the Steep Parallax
 
