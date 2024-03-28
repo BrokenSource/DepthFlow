@@ -118,11 +118,13 @@ With PyTorch installed, simply run `depthflow`, a window will open
 - Run `depthflow input --help` for options on the CLI/Rendering
 - Drag and drop an Image File or URL From your Browser
 
-**Note**: This resizes the Window to the image size, there's options:
+**Note**: This resizes<sup>*1</sup> the Window to the image size, there's options:
 - Only sending `--width` or `--height` adjusts the other to Aspect Ratio
 - Sending Both will force the resolution (can also be set on `main -w -h`)
 - Sending None will use the Image's resolution (default)
 - Use `--scale` to post-multiply the new resolution
+
+<sup><i>*1 The Resolution is limited by the `MONITOR=0` Flag (0=Primary), only on Realtime mode</i></sup>
 
 ### Animation Presets
 There's currently no mechanism for presets, but it is planned
