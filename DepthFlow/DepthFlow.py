@@ -29,7 +29,7 @@ class DepthFlowScene(ShaderScene):
     LOADING_SHADER = (SHADERFLOW.RESOURCES.FRAGMENT/"Loading.frag")
 
     # DepthFlow objects
-    mde: Monocular = field(factory=Monocular)
+    monocular: Monocular = field(factory=Monocular)
 
     # ------------------------------------------|
     # Parallax MDE and Loading screen tricky implementation
@@ -44,7 +44,7 @@ class DepthFlowScene(ShaderScene):
         cache:  Annotated[bool,  Option("--cache",  "-c", help="Cache the Depth Map estimations")]=True,
         width:  Annotated[int,   Option("--width",  "-w", help="Final video Width,  None for the Image's one. Adjusts to Aspect Ratio")]=None,
         height: Annotated[int,   Option("--height", "-h", help="Final video Height, None for the Image's one. Adjusts to Aspect Ratio")]=None,
-        scale:  Annotated[float, Option("--scale",  "-s", help="Premultiply the Image resolution by a factor")]=1.0,
+        scale:  Annotated[float, Option("--scale",  "-s", help="Post-multiply the Image resolution by a factor")]=1.0,
         block:  Annotated[bool,  Option("--block",  "-b", help="Freeze until Depth Map is estimated, no loading screen")]=False
     ):
         # Already loading something
@@ -68,11 +68,12 @@ class DepthFlowScene(ShaderScene):
 
             # The order of calling imports here for rendering
             self.eloop.once(callback=self.resize, args=[x*scale for x in resolution])
-            self._load_depth = LoaderImage(depth) or self.mde(image, cache=cache)
+            self._load_depth = LoaderImage(depth) or self.monocular(image, cache=cache)
             self.time = 0
 
         # Start loading process
         self.shader.fragment = self.LOADING_SHADER
+        self.shader.load_shaders()
         self._loading = BrokenThread.new(load)
 
         # Wait until loading finish
@@ -101,6 +102,7 @@ class DepthFlowScene(ShaderScene):
             self._load_image = self.image.from_image(self._load_image) and None
             self._load_depth = self.depth.from_image(self._load_depth) and None
             self.shader.fragment = self.DEPTH_SHADER
+            self.shader.load_shaders()
             self._loading = None
             self.time = 0
 
