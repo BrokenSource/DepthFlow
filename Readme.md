@@ -22,7 +22,7 @@
 
   <br>
 
-  **[**[**DepthFlow**](https://github.com/BrokenSource/DepthFlow)**]**: Image to → **2.5D Parallax** Effect Video. A Professional **[**[**Depthy**](https://depthy.stamina.pl)**]** Alternative.
+  **Image to → 2.5D Parallax** Effect Video. A **Free** and **Open Source** **[**Leiapix**](https://convert.leiapix.com)** Alternative
 </div>
 
 <br>
