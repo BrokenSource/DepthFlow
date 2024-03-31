@@ -1,5 +1,3 @@
-【☰】Table of Contents 👆
-
 <div align="justify">
 
 <div align="center">
