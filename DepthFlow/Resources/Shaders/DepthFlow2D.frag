@@ -1,3 +1,7 @@
+/*
+// (c) 2023 CC BY-SA 4.0, Tremeschin
+*/
+
 // This is the old and original DepthFlow shader before Camera
 // Kept as a simpler older relic of the past
 

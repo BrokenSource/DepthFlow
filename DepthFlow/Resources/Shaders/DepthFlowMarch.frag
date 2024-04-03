@@ -1,5 +1,5 @@
 /*
-// (c) 2023-2024 CC BY-SA 4.0, Tremeschin
+// (c) 2024 CC BY-SA 4.0, Tremeschin
 */
 
 // Note: Experimental DepthFlow shader using Ray Marching concepts

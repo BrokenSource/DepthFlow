@@ -10,6 +10,7 @@
 
 ## 🎮 Running DepthFlow
 With PyTorch installed, simply run `depthflow`, a window will open
+
 - Models will be Downloaded on the first run
 
 ### Rendering Options
@@ -20,6 +21,7 @@ With PyTorch installed, simply run `depthflow`, a window will open
 - Drag and drop an Image File or URL From your Browser to the Window in Realtime Mode
 
 **Note**: This resizes<sup>*1</sup> the Window to the image resolution, there's options:
+
 - Only sending `--width` or `--height` adjusts the other to Aspect Ratio
 - Sending Both will force the resolution (can also be set on `main -w -h`)
 - Sending None will use the Image's resolution (default)
