@@ -82,17 +82,17 @@ class DepthFlowScene(ShaderScene):
     # ------------------------------------------|
 
     def ui(self) -> None:
-        if (state := imgui.checkbox("Fixed", self.parallax_fixed))[0]:
-            self.parallax_fixed = state[1]
         if (state := imgui.slider_float("Height", self.parallax_height, 0, 1, "%.2f"))[0]:
             self.parallax_height = max(0, state[1])
         if (state := imgui.slider_float("Focus", self.parallax_focus, 0, 1, "%.2f"))[0]:
             self.parallax_focus = max(0, state[1])
+        if (state := imgui.slider_float("Invert", self.parallax_invert, 0, 1, "%.2f"))[0]:
+            self.parallax_invert = max(0, state[1])
         if (state := imgui.slider_float("Zoom", self.parallax_zoom, 0, 2, "%.2f"))[0]:
             self.parallax_zoom = max(0, state[1])
         if (state := imgui.slider_float("Isometric", self.parallax_isometric, 0, 1, "%.2f"))[0]:
             self.parallax_isometric = max(0, state[1])
-        if (state := imgui.slider_float("Dolly", self.parallax_dolly, 0, 10, "%.2f"))[0]:
+        if (state := imgui.slider_float("Dolly", self.parallax_dolly, 0, 5, "%.2f"))[0]:
             self.parallax_dolly = max(0, state[1])
         if (state := imgui.slider_float("Offset X", self.parallax_offset[0], -2, 2, "%.2f"))[0]:
             self.parallax_offset[0] = state[1]
@@ -124,16 +124,16 @@ class DepthFlowScene(ShaderScene):
 
     # ------------------------------------------|
 
-    parallax_fixed: bool = field(default=True)
-    """Force ray target projections to the image area (offsets by minus camera position)"""
-
     parallax_height: float = field(default=0.3)
-    """Peak value of the depth map, in the range [0, 1]. The camera is 1 distance away from depth=0
+    """Peak value of the Depth Map, in the range [0, 1]. The camera is 1 distance away from depth=0
     at the z=1 plane, so this also controls the intensity of the effect"""
 
     parallax_focus: float = field(default=0.0)
     """Focal depth of the effect, in the range [0, 1]. A value of 0 makes the background (depth=0)
-    stationary, while a value of 1 makes the foreground (depth=1) stationary on any offsets"""
+    stationary, while a value of 1 makes the foreground (depth=1) stationary on displacements"""
+
+    parallax_invert: float = field(default=0.0)
+    """Interpolate between (0=max, 1=min)=0 or (0=min, 1=max)=1 Depth Map's value interpretation"""
 
     parallax_zoom: float = field(default=1.0)
     """Camera zoom factor, in the range [0, inf]. 2 means a quarter of the image is visible"""
@@ -191,9 +191,9 @@ class DepthFlowScene(ShaderScene):
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
-        yield ShaderVariable("uniform", "bool",  "iParallaxFixed",     self.parallax_fixed)
         yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.parallax_height)
         yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.parallax_focus)
+        yield ShaderVariable("uniform", "float", "iParallaxInvert",    self.parallax_invert)
         yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.parallax_zoom)
         yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.parallax_isometric)
         yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)

@@ -20,16 +20,15 @@ void main() {
 
     // // DepthFlow math
 
-    // Point where the ray intersects with the XY plane
-    vec2 lambda = iCamera.gluv;
+    // Point where the ray intersects with the fixed image plane
+    vec2 lambda = (iCamera.gluv - iCamera.position.xy);
 
-    // No camera displacement mode, raw parallax
-    if (iParallaxFixed) {
-        lambda -= iCamera.position.xy;
-    }
+    // Same as above but overshooted by depth focal point (fixed point at depth=focus)
+    vec2 sigma  = iCamera.gluv - iCamera.position.xy * (1 + iParallaxFocus*iParallaxHeight);
 
     // The vector from Lambda to the camera's projection on the XY plane
-    vec2 displacement = iCamera.origin.xy - lambda + iParallaxCenter;
+    vec2 displacement = (iCamera.origin.xy - lambda) + iParallaxCenter;
+    vec2 walk = normalize(displacement);
 
     // Angle between the Ray's origin and the XY plane
     float theta = atan(
@@ -42,33 +41,31 @@ void main() {
     float alpha = abs(tan(theta) * (1 - iCamera.origin.z));
     float beta  = abs(alpha - delta);
 
-    // The vector we should walk towards
-    vec2 walk = normalize(displacement);
-
     // Start the parallax on the point itself
-    vec2 parallax = lambda;
+    vec2 parallax = gluv2stuv(sigma);
 
     // The quality of the parallax effect is how tiny the steps are
     const float min_quality = 0.07;
     const float max_quality = 0.002;
     float quality = mix(min_quality, max_quality, iQuality);
 
+    // Note: The Very Expensive Loop
     // Fixme: Can we smartly cache the last walk distance?
     // Fixme: Calculate walk distance based on pixel and angle?
-    // The Very Expensive Loop™
-    for (float i=0.0; i<1.0; i+=quality) {
+    for (float i=1; i>0; i-=quality) {
 
         // Get the uv we'll check for the heights
-        vec2 sample = gluv2stuv(lambda + i*beta*walk);
+        vec2 sample = gluv2stuv(sigma + i*beta*walk);
 
         // Interpolate between (0=max) and (0=min) depending on focus
         float height       = draw_image(depth, sample).r;
-        float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxFocus);
+        float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxInvert);
         float walk_height  = (i*beta) / tan(theta);
 
-        // Update uv until the last height > walk
+        // Stop whenever an intersection is found
         if (depth_height >= walk_height) {
             parallax = sample;
+            break;
         }
     }
 
