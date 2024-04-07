@@ -1,6 +1,6 @@
 import math
 from threading import Thread
-from typing import Annotated, Iterable
+from typing import Annotated, Iterable, Tuple
 
 import imgui
 from attr import define, field
@@ -81,11 +81,27 @@ class DepthFlowScene(ShaderScene):
 
     # ------------------------------------------|
 
-    def _ui_(self) -> None:
+    def ui(self) -> None:
         if (state := imgui.checkbox("Fixed", self.parallax_fixed))[0]:
             self.parallax_fixed = state[1]
-        if (state := imgui.input_float("Height", self.parallax_height, 0.01, 0.01, "%.2f"))[0]:
+        if (state := imgui.slider_float("Height", self.parallax_height, 0, 1, "%.2f"))[0]:
             self.parallax_height = max(0, state[1])
+        if (state := imgui.slider_float("Focus", self.parallax_focus, 0, 1, "%.2f"))[0]:
+            self.parallax_focus = max(0, state[1])
+        if (state := imgui.slider_float("Zoom", self.parallax_zoom, 0, 2, "%.2f"))[0]:
+            self.parallax_zoom = max(0, state[1])
+        if (state := imgui.slider_float("Isometric", self.parallax_isometric, 0, 1, "%.2f"))[0]:
+            self.parallax_isometric = max(0, state[1])
+        if (state := imgui.slider_float("Dolly", self.parallax_dolly, 0, 10, "%.2f"))[0]:
+            self.parallax_dolly = max(0, state[1])
+        if (state := imgui.slider_float("Offset X", self.parallax_offset[0], -2, 2, "%.2f"))[0]:
+            self.parallax_offset[0] = state[1]
+        if (state := imgui.slider_float("Offset Y", self.parallax_offset[1], -2, 2, "%.2f"))[0]:
+            self.parallax_offset[1] = state[1]
+        if (state := imgui.slider_float("Center X", self.parallax_center[0], -2, 2, "%.2f"))[0]:
+            self.parallax_center[0] = state[1]
+        if (state := imgui.slider_float("Center Y", self.parallax_center[1], -2, 2, "%.2f"))[0]:
+            self.parallax_center[1] = state[1]
 
     def _load_new_or_default(self):
 
@@ -108,15 +124,32 @@ class DepthFlowScene(ShaderScene):
 
     # ------------------------------------------|
 
-    # Parallax parameters
-    parallax_fixed     = field(default=True)
-    parallax_height    = field(default=0.2)
-    parallax_focus     = field(default=1.0)
-    parallax_zoom      = field(default=1.0)
-    parallax_isometric = field(default=0.0)
-    parallax_dolly     = field(default=0.0)
-    parallax_x         = field(default=0.0)
-    parallax_y         = field(default=0.0)
+    parallax_fixed: bool = field(default=True)
+    """Force ray target projections to the image area (offsets by minus camera position)"""
+
+    parallax_height: float = field(default=0.3)
+    """Peak value of the depth map, in the range [0, 1]. The camera is 1 distance away from depth=0
+    at the z=1 plane, so this also controls the intensity of the effect"""
+
+    parallax_focus: float = field(default=0.0)
+    """Focal depth of the effect, in the range [0, 1]. A value of 0 makes the background (depth=0)
+    stationary, while a value of 1 makes the foreground (depth=1) stationary on any offsets"""
+
+    parallax_zoom: float = field(default=1.0)
+    """Camera zoom factor, in the range [0, inf]. 2 means a quarter of the image is visible"""
+
+    parallax_isometric: float = field(default=0.0)
+    """Isometric factor of the camera projection. Zero is fully perspective, 1 is orthographic"""
+
+    parallax_dolly: float = field(default=0.0)
+    """Same effect as isometric, but with "natural units" of AFAIK `isometric = atan(dolly)*(2/pi)`.
+    Keeps the ray target constant and move back ray origins by this amount"""
+
+    parallax_offset: Tuple[float, float] = field(factory=lambda: [0, 0])
+    """The effect displacement offset, change this over time for the 3D parallax effect"""
+
+    parallax_center: Tuple[float, float] = field(factory=lambda: [0, 0])
+    """Focal point of the offsets, use this to center off-screen objects"""
 
     def commands(self):
         self.broken_typer.command(self.input)
@@ -136,17 +169,19 @@ class DepthFlowScene(ShaderScene):
         self.parallax_dolly = 0.5*(1 + math.cos(self.time))
 
         # Infinite 8 loop shift
-        self.parallax_x = 0.1 * math.sin(  self.time)
-        self.parallax_y = 0.1 * math.sin(2*self.time)
+        self.parallax_offset = [
+            0.1 * math.sin(self.time),
+            0.1 * math.sin(2*self.time)
+        ]
 
-        # Oscillating rotation
+        # # Oscillating rotation
         self.camera.rotate(
             direction=self.camera.base_z,
             angle=math.cos(self.time)*self.dt*0.4
         )
 
-        # Zoom out on the start
-        # self.parallax_zoom = 0.6 + 0.4*(2/math.pi)*math.atan(3*self.time)
+        # Zoom in on the start
+        # self.parallax_zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
 
     def handle(self, message: Message):
         ShaderScene.handle(self, message)
@@ -162,7 +197,8 @@ class DepthFlowScene(ShaderScene):
         yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.parallax_zoom)
         yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.parallax_isometric)
         yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)
-        yield ShaderVariable("uniform", "vec2",  "iParallaxPosition",  (self.parallax_x, self.parallax_y))
+        yield ShaderVariable("uniform", "vec2",  "iParallaxOffset",    self.parallax_offset)
+        yield ShaderVariable("uniform", "vec2",  "iParallaxCenter",    self.parallax_center)
 
 # -------------------------------------------------------------------------------------------------|
 

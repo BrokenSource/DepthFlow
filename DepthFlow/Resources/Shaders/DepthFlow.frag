@@ -6,7 +6,7 @@ void main() {
     Camera iCamera = iInitCamera(gluv);
 
     // Add parallax options
-    iCamera.position.xy += iParallaxPosition;
+    iCamera.position.xy += iParallaxOffset;
     iCamera.isometric   += iParallaxIsometric;
     iCamera.dolly       += iParallaxDolly;
     iCamera.zoom        += iParallaxZoom - 1;
@@ -29,7 +29,7 @@ void main() {
     }
 
     // The vector from Lambda to the camera's projection on the XY plane
-    vec2 displacement = iCamera.origin.xy - lambda;
+    vec2 displacement = iCamera.origin.xy - lambda + iParallaxCenter;
 
     // Angle between the Ray's origin and the XY plane
     float theta = atan(
@@ -61,8 +61,9 @@ void main() {
         // Get the uv we'll check for the heights
         vec2 sample = gluv2stuv(lambda + i*beta*walk);
 
-        // The depth map value
-        float depth_height = iParallaxHeight * draw_image(depth, sample).r;
+        // Interpolate between (0=max) and (0=min) depending on focus
+        float height       = draw_image(depth, sample).r;
+        float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxFocus);
         float walk_height  = (i*beta) / tan(theta);
 
         // Update uv until the last height > walk
