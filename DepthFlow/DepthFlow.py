@@ -1,10 +1,8 @@
 import math
-from threading import Thread
 from typing import Annotated, Iterable, Tuple
 
 import imgui
 from attr import define, field
-from PIL import Image
 from ShaderFlow import SHADERFLOW
 from ShaderFlow.Message import Message
 from ShaderFlow.Optional.Monocular import Monocular
@@ -13,8 +11,10 @@ from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken.Base import BrokenThread
-from Broken.Loaders.LoaderPIL import LoaderImage
+from Broken import BrokenResolution, image_hash
+from Broken.Externals.Upscaler import BrokenUpscaler
+from Broken.Externals.Upscaler.ncnn import BrokenRealEsrgan
+from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
 
 
@@ -30,101 +30,39 @@ class DepthFlowScene(ShaderScene):
 
     # DepthFlow objects
     monocular: Monocular = field(factory=Monocular)
+    upscaler: BrokenUpscaler = field(factory=BrokenRealEsrgan)
 
     # ------------------------------------------|
     # Parallax MDE and Loading screen tricky implementation
 
-    _loading:    Thread = None
-    _load_image: Image  = None
-    _load_depth: Image  = None
-
     def input(self,
-        image:  Annotated[str,   Option("--image",  "-i", help="Image to parallax (Path, URL, NumPy, PIL)")],
-        depth:  Annotated[str,   Option("--depth",  "-d", help="Depth map of the Image, None to estimate")]=None,
-        cache:  Annotated[bool,  Option("--cache",  "-c", help="Cache the Depth Map estimations")]=True,
-        width:  Annotated[int,   Option("--width",  "-w", help="Final video Width,  None for the Image's one. Adjusts to Aspect Ratio")]=None,
-        height: Annotated[int,   Option("--height", "-h", help="Final video Height, None for the Image's one. Adjusts to Aspect Ratio")]=None,
-        scale:  Annotated[float, Option("--scale",  "-s", help="Post-multiply the Image resolution by a factor")]=1.0,
-        block:  Annotated[bool,  Option("--block",  "-b", help="Freeze until Depth Map is estimated, no loading screen")]=False
+        image:  Annotated[str,   Option("--image",   "-i", help="• (Basic  ) Image to Parallax (Path, URL, NumPy, PIL)")],
+        depth:  Annotated[str,   Option("--depth",   "-d", help="• (Basic  ) Depthmap of the Image, None to estimate")]=None,
+        cache:  Annotated[bool,  Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
+        width:  Annotated[int,   Option("--width",   "-w", help="• (Size   ) Final video Width, None for the Image's one. Adjusts to Aspect Ratio")]=None,
+        height: Annotated[int,   Option("--height",  "-h", help="• (Size   ) Final video Height, same as above")]=None,
+        scale:  Annotated[float, Option("--scale",   "-s", help="• (Size   ) Post-multiply the Image resolution by a factor")]=1.0,
+        ratio:  Annotated[Tuple[int, int], Option("--upscale", "-u", help="• (Upscale) Upscale the Input and Depthmap respectively with Realesrgan (1, 2, 3, 4)")]=(1, 1),
     ):
-        # Already loading something
-        if self._loading and not block:
-            return
+        # Load base input images
+        image = LoaderImage(image)
+        depth = LoaderImage(depth) or self.monocular.estimate(image, cache=cache)
 
-        def load():
-            nonlocal image, depth, cache, width, height, scale
-            self._load_image = LoaderImage(image)
-            iwidth, iheight = self._load_image.size
-            aspect_ratio = (iwidth/iheight)
+        # Upscale either inputs
+        cache = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash(image)}"
+        depth = self.upscaler.upscale(depth, scale=ratio[1])
+        image = self.upscaler.upscale(image, scale=ratio[0])
 
-            # Force resolution if both set or image's one, else ajust to aspect ratio
-            if (bool(width) == bool(height)):
-                resolution = ((width or iwidth), (height or iheight))
-            else:
-                resolution = (
-                    ((height or 0)*aspect_ratio) or width,
-                    ((width  or 0)/aspect_ratio) or height,
-                )
-
-            # The order of calling imports here for rendering
-            self.eloop.once(callback=self.resize, args=[x*scale for x in resolution])
-            self._load_depth = LoaderImage(depth) or self.monocular(image, cache=cache)
-            self.time = 0
-
-        # Start loading process
-        self.shader.fragment = self.LOADING_SHADER
-        self.shader.load_shaders()
-        self._loading = BrokenThread.new(load)
-
-        # Wait until loading finish
-        if block: self._loading.join()
+        # The order of calling imports here for rendering
+        self.resize(*BrokenResolution.fitscar(*image.size, w=width, h=height, s=scale))
+        # depth = self.upscaler.upscale(depth)
+        self.image.from_image(image)
+        self.depth.from_image(depth)
+        self.time = 0
 
     # ------------------------------------------|
 
-    def ui(self) -> None:
-        if (state := imgui.slider_float("Height", self.parallax_height, 0, 1, "%.2f"))[0]:
-            self.parallax_height = max(0, state[1])
-        if (state := imgui.slider_float("Focus", self.parallax_focus, 0, 1, "%.2f"))[0]:
-            self.parallax_focus = max(0, state[1])
-        if (state := imgui.slider_float("Invert", self.parallax_invert, 0, 1, "%.2f"))[0]:
-            self.parallax_invert = max(0, state[1])
-        if (state := imgui.slider_float("Zoom", self.parallax_zoom, 0, 2, "%.2f"))[0]:
-            self.parallax_zoom = max(0, state[1])
-        if (state := imgui.slider_float("Isometric", self.parallax_isometric, 0, 1, "%.2f"))[0]:
-            self.parallax_isometric = max(0, state[1])
-        if (state := imgui.slider_float("Dolly", self.parallax_dolly, 0, 5, "%.2f"))[0]:
-            self.parallax_dolly = max(0, state[1])
-        if (state := imgui.slider_float("Offset X", self.parallax_offset[0], -2, 2, "%.2f"))[0]:
-            self.parallax_offset[0] = state[1]
-        if (state := imgui.slider_float("Offset Y", self.parallax_offset[1], -2, 2, "%.2f"))[0]:
-            self.parallax_offset[1] = state[1]
-        if (state := imgui.slider_float("Center X", self.parallax_center[0], -2, 2, "%.2f"))[0]:
-            self.parallax_center[0] = state[1]
-        if (state := imgui.slider_float("Center Y", self.parallax_center[1], -2, 2, "%.2f"))[0]:
-            self.parallax_center[1] = state[1]
-
-    def _load_new_or_default(self):
-
-        # Set default image if none provided
-        if self.image.is_empty():
-            self.input(image=DepthFlowScene.DEFAULT_IMAGE)
-
-        # Block when rendering (first Scene update)
-        if self.rendering and self.image.is_empty():
-            self._loading.join()
-
-        # Load new parallax images and parallax shader
-        if self._load_image and self._load_depth:
-            self._load_image = self.image.from_image(self._load_image) and None
-            self._load_depth = self.depth.from_image(self._load_depth) and None
-            self.shader.fragment = self.DEPTH_SHADER
-            self.shader.load_shaders()
-            self._loading = None
-            self.time = 0
-
-    # ------------------------------------------|
-
-    parallax_height: float = field(default=0.3)
+    parallax_height: float = field(default=0.2)
     """Peak value of the Depth Map, in the range [0, 1]. The camera is 1 distance away from depth=0
     at the z=1 plane, so this also controls the intensity of the effect"""
 
@@ -155,15 +93,16 @@ class DepthFlowScene(ShaderScene):
         self.broken_typer.command(self.input)
 
     def setup(self):
-        self._load_new_or_default()
+        if self.image.is_empty():
+            self.input(image=DepthFlowScene.DEFAULT_IMAGE)
 
     def build(self):
         ShaderScene.build(self)
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
+        self.shader.fragment = self.DEPTH_SHADER
 
     def update(self):
-        self._load_new_or_default()
 
         # In and out dolly zoom
         self.parallax_dolly = 0.5*(1 + math.cos(self.time))
@@ -185,6 +124,7 @@ class DepthFlowScene(ShaderScene):
 
     def handle(self, message: Message):
         ShaderScene.handle(self, message)
+
         if isinstance(message, Message.Window.FileDrop):
             files = iter(message.files)
             self.input(image=next(files), depth=next(files, None))
@@ -199,6 +139,30 @@ class DepthFlowScene(ShaderScene):
         yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)
         yield ShaderVariable("uniform", "vec2",  "iParallaxOffset",    self.parallax_offset)
         yield ShaderVariable("uniform", "vec2",  "iParallaxCenter",    self.parallax_center)
+
+    # ------------------------------------------|
+
+    def ui(self) -> None:
+        if (state := imgui.slider_float("Height", self.parallax_height, 0, 1, "%.2f"))[0]:
+            self.parallax_height = max(0, state[1])
+        if (state := imgui.slider_float("Focus", self.parallax_focus, 0, 1, "%.2f"))[0]:
+            self.parallax_focus = max(0, state[1])
+        if (state := imgui.slider_float("Invert", self.parallax_invert, 0, 1, "%.2f"))[0]:
+            self.parallax_invert = max(0, state[1])
+        if (state := imgui.slider_float("Zoom", self.parallax_zoom, 0, 2, "%.2f"))[0]:
+            self.parallax_zoom = max(0, state[1])
+        if (state := imgui.slider_float("Isometric", self.parallax_isometric, 0, 1, "%.2f"))[0]:
+            self.parallax_isometric = max(0, state[1])
+        if (state := imgui.slider_float("Dolly", self.parallax_dolly, 0, 5, "%.2f"))[0]:
+            self.parallax_dolly = max(0, state[1])
+        if (state := imgui.slider_float("Offset X", self.parallax_offset[0], -2, 2, "%.2f"))[0]:
+            self.parallax_offset[0] = state[1]
+        if (state := imgui.slider_float("Offset Y", self.parallax_offset[1], -2, 2, "%.2f"))[0]:
+            self.parallax_offset[1] = state[1]
+        if (state := imgui.slider_float("Center X", self.parallax_center[0], -2, 2, "%.2f"))[0]:
+            self.parallax_center[0] = state[1]
+        if (state := imgui.slider_float("Center Y", self.parallax_center[1], -2, 2, "%.2f"))[0]:
+            self.parallax_center[1] = state[1]
 
 # -------------------------------------------------------------------------------------------------|
 

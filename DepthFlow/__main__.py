@@ -1,6 +1,6 @@
 import sys
 
-from Broken.Base import BrokenProfiler
+from Broken import BrokenProfiler
 from DepthFlow import DEPTHFLOW
 from DepthFlow.DepthFlow import DepthFlowScene
 

@@ -1,8 +1,7 @@
 
 import Broken
 import DepthFlow.Resources as DepthFlowResources
-from Broken.Base import BrokenTorch
-from Broken.Project import BrokenProject
+from Broken import BrokenProject, BrokenTorch
 
 DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
@@ -12,5 +11,4 @@ DEPTHFLOW = BrokenProject(
 )
 
 Broken.set_project(DEPTHFLOW)
-
 BrokenTorch.manage(DEPTHFLOW.RESOURCES)

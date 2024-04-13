@@ -42,7 +42,7 @@ void main() {
     float beta  = abs(alpha - delta);
 
     // Start the parallax on the point itself
-    vec2 parallax = gluv2stuv(sigma);
+    vec2 parallax = sigma;
 
     // The quality of the parallax effect is how tiny the steps are
     const float min_quality = 0.07;
@@ -55,10 +55,10 @@ void main() {
     for (float i=1; i>0; i-=quality) {
 
         // Get the uv we'll check for the heights
-        vec2 sample = gluv2stuv(sigma + i*beta*walk);
+        vec2 sample = sigma + (i*beta*walk);
 
         // Interpolate between (0=max) and (0=min) depending on focus
-        float height       = draw_image(depth, sample).r;
+        float height       = gtexture(depth, sample).r;
         float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxInvert);
         float walk_height  = (i*beta) / tan(theta);
 
@@ -70,6 +70,6 @@ void main() {
     }
 
     // Draw the parallax image
-    fragColor = draw_image(image, parallax);
+    fragColor = gtexture(image, parallax);
 }
 
