@@ -10,7 +10,6 @@ def main():
         DEPTHFLOW.welcome()
         depthflow = DepthFlowScene()
         depthflow.cli(sys.argv[1:])
-        depthflow.destroy()
 
 if __name__ == "__main__":
     main()

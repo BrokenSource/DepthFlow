@@ -36,26 +36,18 @@ class DepthFlowScene(ShaderScene):
     # Parallax MDE and Loading screen tricky implementation
 
     def input(self,
-        image:  Annotated[str,   Option("--image",   "-i", help="• (Basic  ) Image to Parallax (Path, URL, NumPy, PIL)")],
-        depth:  Annotated[str,   Option("--depth",   "-d", help="• (Basic  ) Depthmap of the Image, None to estimate")]=None,
-        cache:  Annotated[bool,  Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
-        width:  Annotated[int,   Option("--width",   "-w", help="• (Size   ) Final video Width, None for the Image's one. Adjusts to Aspect Ratio")]=None,
-        height: Annotated[int,   Option("--height",  "-h", help="• (Size   ) Final video Height, same as above")]=None,
-        scale:  Annotated[float, Option("--scale",   "-s", help="• (Size   ) Post-multiply the Image resolution by a factor")]=1.0,
-        ratio:  Annotated[Tuple[int, int], Option("--upscale", "-u", help="• (Upscale) Upscale the Input and Depthmap respectively with Realesrgan (1, 2, 3, 4)")]=(1, 1),
+        image: Annotated[str,   Option("--image",   "-i", help="• (Basic  ) Image to Parallax (Path, URL, NumPy, PIL)")],
+        depth: Annotated[str,   Option("--depth",   "-d", help="• (Basic  ) Depthmap of the Image, None to estimate")]=None,
+        cache: Annotated[bool,  Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
+        ratio: Annotated[Tuple[int, int], Option("--upscale", "-u", help="• (Upscale) Upscale the Input and Depthmap respectively with Realesrgan (1, 2, 3, 4)")]=(1, 1),
     ):
-        # Load base input images
         image = LoaderImage(image)
         depth = LoaderImage(depth) or self.monocular.estimate(image, cache=cache)
-
-        # Upscale either inputs
+        width, height = image.size
         cache = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash(image)}"
         depth = self.upscaler.upscale(depth, scale=ratio[1])
         image = self.upscaler.upscale(image, scale=ratio[0])
-
-        # The order of calling imports here for rendering
-        self.resize(*BrokenResolution.fitscar(*image.size, w=width, h=height, s=scale))
-        # depth = self.upscaler.upscale(depth)
+        self.aspect_ratio = (width/height)
         self.image.from_image(image)
         self.depth.from_image(depth)
         self.time = 0
@@ -83,10 +75,10 @@ class DepthFlowScene(ShaderScene):
     """Same effect as isometric, but with "natural units" of AFAIK `isometric = atan(dolly)*(2/pi)`.
     Keeps the ray target constant and move back ray origins by this amount"""
 
-    parallax_offset: Tuple[float, float] = field(factory=lambda: [0, 0])
+    parallax_offset: Tuple[float, float] = field(factory=lambda: [0.0, 0.0])
     """The effect displacement offset, change this over time for the 3D parallax effect"""
 
-    parallax_center: Tuple[float, float] = field(factory=lambda: [0, 0])
+    parallax_center: Tuple[float, float] = field(factory=lambda: [0.0, 0.0])
     """Focal point of the offsets, use this to center off-screen objects"""
 
     def commands(self):
