@@ -11,7 +11,7 @@ from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken import BrokenResolution, image_hash
+from Broken import image_hash
 from Broken.Externals.Upscaler import BrokenUpscaler
 from Broken.Externals.Upscaler.ncnn import BrokenRealEsrgan
 from Broken.Loaders import LoaderImage
@@ -36,9 +36,9 @@ class DepthFlowScene(ShaderScene):
     # Parallax MDE and Loading screen tricky implementation
 
     def input(self,
-        image: Annotated[str,   Option("--image",   "-i", help="• (Basic  ) Image to Parallax (Path, URL, NumPy, PIL)")],
-        depth: Annotated[str,   Option("--depth",   "-d", help="• (Basic  ) Depthmap of the Image, None to estimate")]=None,
-        cache: Annotated[bool,  Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
+        image: Annotated[str,  Option("--image",   "-i", help="• (Basic  ) Image to Parallax (Path, URL, NumPy, PIL)")],
+        depth: Annotated[str,  Option("--depth",   "-d", help="• (Basic  ) Depthmap of the Image, None to estimate")]=None,
+        cache: Annotated[bool, Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
         ratio: Annotated[Tuple[int, int], Option("--upscale", "-u", help="• (Upscale) Upscale the Input and Depthmap respectively with Realesrgan (1, 2, 3, 4)")]=(1, 1),
     ):
         image = LoaderImage(image)
