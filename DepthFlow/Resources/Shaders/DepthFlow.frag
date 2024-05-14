@@ -45,7 +45,7 @@ void main() {
     vec2 parallax = sigma;
 
     // The quality of the parallax effect is how tiny the steps are
-    const float min_quality = 0.07;
+    const float min_quality = 0.05;
     const float max_quality = 0.002;
     float quality = mix(min_quality, max_quality, iQuality);
 
@@ -58,7 +58,7 @@ void main() {
         vec2 sample = sigma + (i*beta*walk);
 
         // Interpolate between (0=max) and (0=min) depending on focus
-        float height       = gtexture(depth, sample).r;
+        float height       = gmtexture(depth, sample).r;
         float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxInvert);
         float walk_height  = (i*beta) / tan(theta);
 
@@ -70,6 +70,6 @@ void main() {
     }
 
     // Draw the parallax image
-    fragColor = gtexture(image, parallax);
+    fragColor = gmtexture(image, parallax);
 }
 
