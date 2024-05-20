@@ -58,7 +58,7 @@ void main() {
         vec2 sample = sigma + (i*beta*walk);
 
         // Interpolate between (0=max) and (0=min) depending on focus
-        float height       = gmtexture(depth, sample).r;
+        float height       = gtexture(depth, sample, iParallaxMirror).r;
         float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxInvert);
         float walk_height  = (i*beta) / tan(theta);
 
@@ -70,6 +70,6 @@ void main() {
     }
 
     // Draw the parallax image
-    fragColor = gmtexture(image, parallax);
+    fragColor = gtexture(image, parallax, iParallaxMirror);
 }
 

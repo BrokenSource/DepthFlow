@@ -20,7 +20,7 @@ from DepthFlow import DEPTHFLOW
 
 @define
 class DepthFlowScene(ShaderScene):
-    """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first."""
+    """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first"""
     __name__ = "DepthFlow"
 
     # Constants
@@ -81,6 +81,9 @@ class DepthFlowScene(ShaderScene):
     parallax_center: Tuple[float, float] = field(factory=lambda: [0.0, 0.0])
     """Focal point of the offsets, use this to center off-screen objects"""
 
+    parallax_mirror: bool = field(default=True)
+    """Apply GL_MIRRORED_REPEAT to the image, makes it continuous"""
+
     def commands(self):
         self.broken_typer.command(self.input)
 
@@ -131,6 +134,7 @@ class DepthFlowScene(ShaderScene):
         yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.parallax_dolly)
         yield ShaderVariable("uniform", "vec2",  "iParallaxOffset",    self.parallax_offset)
         yield ShaderVariable("uniform", "vec2",  "iParallaxCenter",    self.parallax_center)
+        yield ShaderVariable("uniform", "bool",  "iParallaxMirror",    self.parallax_mirror)
 
     # ------------------------------------------|
 
@@ -158,7 +162,7 @@ class DepthFlowScene(ShaderScene):
 
 # -------------------------------------------------------------------------------------------------|
 
-class YourFlow(DepthFlowScene):
+class YourScene(DepthFlowScene):
     """Example of defining your own class based on DepthFlowScene"""
 
     def update(self):
