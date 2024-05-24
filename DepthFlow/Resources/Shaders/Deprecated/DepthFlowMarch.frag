@@ -39,7 +39,7 @@ void main() {
     for (float i=0.0; i<walk+quality; i+=quality) {
         vec3 sample = ray + i*direction;
         sample.xy = gluv2stuv(sample.xy);
-        float depth_height = iParallaxHeight * draw_image(depth, sample.xy).r;
+        float depth_height = iParallaxHeight * stexture(depth, sample.xy).r;
         float walk_height  = 1 - sample.z;
 
         if (walk_height <= depth_height) {
@@ -48,6 +48,6 @@ void main() {
         }
     }
 
-    fragColor = draw_image(image, parallax);
+    fragColor = stexture(image, parallax);
 }
 

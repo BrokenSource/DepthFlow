@@ -10,7 +10,7 @@
 // Get the clamped depth of a image (no overshooting) based on iFocus
 // - Zero depth means the object does not move
 float get_depth(vec2 stuv, sampler2D depth) {
-    return iFocus - draw_image(depth, stuv).r;
+    return iFocus - stexture(depth, stuv).r;
 }
 
 // Depth-Layer displacement for a pixel, composed of the camera displacement times max
@@ -56,7 +56,7 @@ vec4 image_parallax(vec2 stuv, sampler2D image, sampler2D depth) {
     }
 
     // Sample the texture on the parallax space
-    return draw_image(image, parallax_uv);
+    return stexture(image, parallax_uv);
 }
 
 // ------------------------------------------------------------------------------------------------|
