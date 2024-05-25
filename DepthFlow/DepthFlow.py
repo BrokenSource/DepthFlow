@@ -23,13 +23,17 @@ from DepthFlow import DEPTHFLOW
 
 class DepthFlowState(BaseModel):
 
-    height: float = Field(default=0.2)
+    height: float = Field(default=0.35)
     """Peak value of the Depth Map, in the range [0, 1]. The camera is 1 distance away from depth=0
     at the z=1 plane, so this also controls the intensity of the effect"""
 
     focus: float = Field(default=0.0)
-    """Focal depth of the effect, in the range [0, 1]. A value of 0 makes the background (depth=0)
-    stationary, while a value of 1 makes the foreground (depth=1) stationary on displacements"""
+    """Focal depth of offsets, in the range [0, 1]. A value of 0 makes the background (depth=0)
+    stationary, while a value of 1 makes the foreground (depth=1) stationary on offset changes"""
+
+    plane: float = Field(default=0.5)
+    """Focal depth of projections, in the range [0, 1]. A value of 0 makes the background (depth=0)
+    stationaty, while a value of 1 makes the foreground (depth=1) stationary on isometric changes"""
 
     invert: float = Field(default=0.0)
     """Interpolate between (0=max, 1=min)=0 or (0=min, 1=max)=1 Depth Map's value interpretation"""
@@ -157,6 +161,7 @@ class DepthFlowScene(ShaderScene):
         yield from ShaderScene.pipeline(self)
         yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.state.height)
         yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.state.focus)
+        yield ShaderVariable("uniform", "float", "iParallaxPlane",     self.state.plane)
         yield ShaderVariable("uniform", "float", "iParallaxInvert",    self.state.invert)
         yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.state.zoom)
         yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.state.isometric)
@@ -170,6 +175,8 @@ class DepthFlowScene(ShaderScene):
             self.state.height = max(0, state[1])
         if (state := imgui.slider_float("Focus", self.state.focus, 0, 1, "%.2f"))[0]:
             self.state.focus = max(0, state[1])
+        if (state := imgui.slider_float("Plane", self.state.plane, 0, 1, "%.2f"))[0]:
+            self.state.plane = max(0, state[1])
         if (state := imgui.slider_float("Invert", self.state.invert, 0, 1, "%.2f"))[0]:
             self.state.invert = max(0, state[1])
         if (state := imgui.slider_float("Zoom", self.state.zoom, 0, 2, "%.2f"))[0]:

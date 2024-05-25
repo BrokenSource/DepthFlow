@@ -5,11 +5,15 @@
 void main() {
     Camera iCamera = iInitCamera(gluv);
 
+    // The distance the maximum depth projection plane is from the camera.
+    float iParallaxDistance = 1 + mix(0, iParallaxHeight, iParallaxPlane);
+
     // Add parallax options
     iCamera.position.xy += iParallaxOffset;
     iCamera.isometric   += iParallaxIsometric;
     iCamera.dolly       += iParallaxDolly;
-    iCamera.zoom        += iParallaxZoom - 1;
+    iCamera.zoom        += (iParallaxZoom - 1) + (iParallaxDistance - 1);
+    iCamera.plane_point  = vec3(0, 0, iParallaxDistance);
     iCamera              = iProjectCamera(iCamera);
 
     // Doesn't intersect with the XY plane
@@ -23,8 +27,8 @@ void main() {
     // Point where the ray intersects with the fixed image plane
     vec2 lambda = (iCamera.gluv - iCamera.position.xy);
 
-    // Same as above but overshooted by depth focal point (fixed point at depth=focus)
-    vec2 sigma  = iCamera.gluv - iCamera.position.xy * (1 + iParallaxFocus*iParallaxHeight);
+    // Same as above but overshoot by depth focal point (fixed offsets point at depth=focus)
+    vec2 sigma  = iCamera.gluv - iCamera.position.xy * (1 + iParallaxFocus*iParallaxHeight/iParallaxDistance);
 
     // The vector from Lambda to the camera's projection on the XY plane
     vec2 displacement = (iCamera.origin.xy - lambda) + iParallaxCenter;
@@ -33,13 +37,13 @@ void main() {
     // Angle between the Ray's origin and the XY plane
     float theta = atan(
         length(displacement),
-        abs(1 - iCamera.origin.z)
+        abs(iParallaxDistance - iCamera.origin.z)
     );
 
     // The distance Beta we care for the depth map
-    float delta = abs(tan(theta) * (1 - iCamera.origin.z - iParallaxHeight));
-    float alpha = abs(tan(theta) * (1 - iCamera.origin.z));
-    float beta  = abs(alpha - delta);
+    float delta = tan(theta) * (iParallaxDistance - iCamera.origin.z - iParallaxHeight);
+    float alpha = tan(theta) * (iParallaxDistance - iCamera.origin.z);
+    float beta  = alpha - delta;
 
     // Start the parallax on the point itself
     vec2 parallax = sigma;
