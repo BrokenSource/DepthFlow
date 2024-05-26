@@ -131,6 +131,7 @@ class DepthFlowScene(ShaderScene):
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
         self.shader.fragment = self.DEPTH_SHADER
         self.aspect_ratio = (16/9)
+        self.ssaa = 1.5
 
     def update(self):
 
