@@ -85,6 +85,54 @@ class DepthFlowState(BaseModel):
         for name, field in self.model_fields.items(): # noqa
             setattr(self, name, field.default)
 
+    class _PFX_DOF(BaseModel):
+        enable:     bool  = Field(default=False)
+        start:      float = Field(default=0.6)
+        end:        float = Field(default=1.0)
+        exponent:   float = Field(default=2.0)
+        intensity:  float = Field(default=1)
+        quality:    int   = Field(default=4)
+        directions: int   = Field(default=16)
+
+        def pipeline(self) -> Iterable[ShaderVariable]:
+            yield ShaderVariable("uniform", "bool",  "iDofEnable",     self.enable)
+            yield ShaderVariable("uniform", "float", "iDofStart",      self.start)
+            yield ShaderVariable("uniform", "float", "iDofEnd",        self.end)
+            yield ShaderVariable("uniform", "float", "iDofExponent",   self.exponent)
+            yield ShaderVariable("uniform", "float", "iDofIntensity",  self.intensity/100)
+            yield ShaderVariable("uniform", "int",   "iDofQuality",    self.quality)
+            yield ShaderVariable("uniform", "int",   "iDofDirections", self.directions)
+
+    dof: _PFX_DOF = Field(default_factory=_PFX_DOF)
+    """Depth of Field Post-Processing configuration"""
+
+    class _PFX_Vignette(BaseModel):
+        enable:    bool  = Field(default=False)
+        intensity: float = Field(default=30)
+        decay:     float = Field(default=0.1)
+
+        def pipeline(self) -> Iterable[ShaderVariable]:
+            yield ShaderVariable("uniform", "bool",  "iVignetteEnable",    self.enable)
+            yield ShaderVariable("uniform", "float", "iVignetteIntensity", self.intensity)
+            yield ShaderVariable("uniform", "float", "iVignetteDecay",     self.decay)
+
+    vignette: _PFX_Vignette = Field(default_factory=_PFX_Vignette)
+    """Vignette Post-Processing configuration"""
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.height)
+        yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.focus)
+        yield ShaderVariable("uniform", "float", "iParallaxPlane",     self.plane)
+        yield ShaderVariable("uniform", "float", "iParallaxInvert",    self.invert)
+        yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.zoom)
+        yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.isometric)
+        yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.dolly)
+        yield ShaderVariable("uniform", "vec2",  "iParallaxOffset",    self.offset)
+        yield ShaderVariable("uniform", "vec2",  "iParallaxCenter",    self.center)
+        yield ShaderVariable("uniform", "bool",  "iParallaxMirror",    self.mirror)
+        yield from self.dof.pipeline()
+        yield from self.vignette.pipeline()
+
 # -------------------------------------------------------------------------------------------------|
 
 @define
@@ -160,16 +208,7 @@ class DepthFlowScene(ShaderScene):
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
-        yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.state.height)
-        yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.state.focus)
-        yield ShaderVariable("uniform", "float", "iParallaxPlane",     self.state.plane)
-        yield ShaderVariable("uniform", "float", "iParallaxInvert",    self.state.invert)
-        yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.state.zoom)
-        yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.state.isometric)
-        yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.state.dolly)
-        yield ShaderVariable("uniform", "vec2",  "iParallaxOffset",    self.state.offset)
-        yield ShaderVariable("uniform", "vec2",  "iParallaxCenter",    self.state.center)
-        yield ShaderVariable("uniform", "bool",  "iParallaxMirror",    self.state.mirror)
+        yield from self.state.pipeline()
 
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:

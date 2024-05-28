@@ -45,8 +45,9 @@ void main() {
     float alpha = tan(theta) * (iParallaxDistance - iCamera.origin.z);
     float beta  = alpha - delta;
 
-    // Start the parallax on the point itself
-    vec2 parallax = sigma;
+    // Start the parallax on the intersection point itself
+    vec2 point_gluv = sigma;
+    float point_height = 0;
 
     // The quality of the parallax effect is how tiny the steps are
     const float min_quality = 0.05;
@@ -62,18 +63,40 @@ void main() {
         vec2 sample = sigma + (i*beta*walk);
 
         // Interpolate between (0=max) and (0=min) depending on focus
-        float height       = gtexture(depth, sample, iParallaxMirror).r;
-        float depth_height = iParallaxHeight * mix(height, 1-height, iParallaxInvert);
+        float true_height  = gtexture(depth, sample, iParallaxMirror).r;
+        float depth_height = iParallaxHeight * mix(true_height, 1-true_height, iParallaxInvert);
         float walk_height  = (i*beta) / tan(theta);
 
         // Stop whenever an intersection is found
         if (depth_height >= walk_height) {
-            parallax = sample;
+            point_height = true_height;
+            point_gluv = sample;
             break;
         }
     }
 
-    // Draw the parallax image
-    fragColor = gtexture(image, parallax, iParallaxMirror);
+    // Start the color with the center point
+    fragColor = gtexture(image, point_gluv, iParallaxMirror);
+
+    // Depth of Field (A bit expensive of a blur)
+    if (iDofEnable) {
+        float intensity = iDofIntensity * pow(smoothstep(iDofStart, iDofEnd, 1 - point_height), iDofExponent);
+        vec4 color = fragColor;
+
+        for (float angle=0; angle<TAU; angle+=TAU/iDofDirections) {
+            for (float walk=1.0/iDofQuality; walk<=1.001; walk+=1.0/iDofQuality) {
+                vec2 displacement = vec2(cos(angle), sin(angle)) * walk * intensity;
+                color += gtexture(image, point_gluv + displacement, iParallaxMirror);
+            }
+        }
+        fragColor = color / (iDofDirections*iDofQuality);
+    }
+
+    // Vignette post processing
+    if (iVignetteEnable) {
+        vec2 away = astuv * (1 - astuv.yx);
+        float linear = iVignetteIntensity * (away.x*away.y);
+        fragColor.rgb *= clamp(pow(linear, iVignetteDecay), 0, 1);
+    }
 }
 

@@ -8,7 +8,7 @@
 !!! note "This Project needs PyTorch"
     Choose and run a <a href="../../get/pytorch" target="_blank"><b>Single Command</b></a> to install a PyTorch flavor
 
-## 🎮 Running DepthFlow
+## Running DepthFlow
 With PyTorch installed, simply run `depthflow`, a window will open
 
 - Models will be Downloaded on the first run

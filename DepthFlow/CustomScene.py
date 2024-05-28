@@ -22,6 +22,5 @@ class YourScene(DepthFlowScene):
 
 if __name__ == "__main__":
     scene = YourScene()
-    scene.build()
     scene.cli(sys.argv[1:])
 
