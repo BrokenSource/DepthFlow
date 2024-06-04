@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import math
-from typing import Annotated, Iterable, Self, Tuple
+from typing import Annotated, Iterable, Tuple
 
 import imgui
 from attr import define, field
 from pydantic import BaseModel, Field
-from ShaderFlow import SHADERFLOW
-from ShaderFlow.Message import Message
+from ShaderFlow.Message import ShaderMessage
 from ShaderFlow.Optional.Monocular import DepthEstimator
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
@@ -155,6 +154,7 @@ class DepthFlowScene(ShaderScene):
         cache: Annotated[bool, Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
         ratio: Annotated[Tuple[int, int], Option("--upscale", "-u", help="• (Upscale) Upscale the Input and Depthmap respectively with Realesrgan (1, 2, 3, 4)")]=(1, 1),
     ) -> None:
+        """Load an Image from Path, URL and its estimated DepthMap to the Scene, and optionally upscale it. See 'input --help'"""
         image = LoaderImage(image)
         depth = LoaderImage(depth) or self.estimator.estimate(image, cache=cache)
         width, height = image.size
@@ -167,7 +167,7 @@ class DepthFlowScene(ShaderScene):
         self.time = 0
 
     def commands(self):
-        self.broken_typer.command(self.input)
+        self.typer.command(self.input)
 
     def setup(self):
         if self.image.is_empty():
@@ -199,10 +199,10 @@ class DepthFlowScene(ShaderScene):
         # Zoom in on the start
         # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
 
-    def handle(self, message: Message):
+    def handle(self, message: ShaderMessage):
         ShaderScene.handle(self, message)
 
-        if isinstance(message, Message.Window.FileDrop):
+        if isinstance(message, ShaderMessage.Window.FileDrop):
             files = iter(message.files)
             self.input(image=next(files), depth=next(files, None))
 

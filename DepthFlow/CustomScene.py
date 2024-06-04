@@ -1,6 +1,6 @@
 import sys
 
-from ShaderFlow import Message
+from ShaderFlow import ShaderMessage
 
 from DepthFlow import DepthFlowScene
 
@@ -15,7 +15,7 @@ class YourScene(DepthFlowScene):
         yield from DepthFlowScene.pipeline(self)
         ...
 
-    def handle(self, message: Message):
+    def handle(self, message: ShaderMessage):
         DepthFlowScene.handle(self, message)
         ...
 
