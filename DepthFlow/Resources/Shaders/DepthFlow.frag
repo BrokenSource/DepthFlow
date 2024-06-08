@@ -52,36 +52,70 @@ void main() {
     vec2 point_gluv = sigma;
     float point_height = 0;
 
-    // The quality of the parallax effect is how tiny the steps are
-    const float min_quality = 0.05;
-    const float max_quality = 0.002;
-    float quality = mix(min_quality, max_quality, iQuality);
+    /* Main loop */ {
 
-    // Note: The Very Expensive Loop
-    // Fixme: Can we smartly cache the last walk distance?
-    // Fixme: Calculate walk distance based on pixel and angle?
-    for (float i=1; i>0; i-=quality) {
+        // The quality of the parallax effect is how tiny the steps are
+        // defined in pixels here. '* max_offset' without distortions
+        float max_dimension = max(iResolution.x, iResolution.y);
+        float max_quality = max_dimension * 0.50;
+        float min_quality = max_dimension * 0.05;
+        float quality = mix(min_quality, max_quality, iQuality);
 
-        // Get the uv we'll check for the heights
-        vec2 sample = sigma + (i*beta*walk);
+        // Optimization: We'll do two swipes, one that is of lower quality (probe) just to find the
+        // nearest intersection with the depth map, and then flip direction, at a finer (quality)
+        float probe = mix(50, 100, iQuality);
+        bool  swipe = true;
+        float i = 1;
 
-        // Interpolate between (0=max) and (0=min) depending on focus
-        float true_height  = gtexture(depth, sample, iParallaxMirror).r;
-        float depth_height = iParallaxHeight * mix(true_height, 1-true_height, iParallaxInvert);
-        float walk_height  = (i*beta) / tan_theta;
+        for (int stage=0; stage<2; stage++) {
+            bool FORWARD  = (stage == 0);
+            bool BACKWARD = (stage == 1);
 
-        // Stop whenever an intersection is found
-        if (depth_height >= walk_height) {
-            point_height = true_height;
-            point_gluv = sample;
-            break;
+            while (swipe) {
+
+                // Touched z=1 plane, no intersection
+                if (FORWARD) {
+                    if (i < 0) {
+                        swipe = false;
+                        break;
+                    }
+
+                // Out of bounds walking up
+                } else if (1 < i) {
+                    break;
+                }
+
+                // Integrate 'i', the ray parametric distance
+                i -= FORWARD ? (1.0/probe) : (-1.0/quality);
+
+                // Walk the util distance vector
+                vec2 sample = sigma + (i*beta*walk);
+
+                // Interpolate between (0=max) and (0=min) depending on focus
+                float true_height  = gtexture(depth, sample, iParallaxMirror).r;
+                float depth_height = iParallaxHeight * mix(true_height, 1-true_height, iParallaxInvert);
+                float walk_height  = (i*beta) / tan_theta;
+
+                // Stop the first moment we're inside the surface
+                if (depth_height >= walk_height) {
+                    if (FORWARD) break;
+
+                // Finish when we're outside at smaller steps
+                } else if (BACKWARD) {
+                    point_height = true_height;
+                    point_gluv = sample;
+                    break;
+                }
+            }
         }
     }
 
     // Start the color with the center point
     fragColor = gtexture(image, point_gluv, iParallaxMirror);
 
-    // Depth of Field (A bit expensive of a blur)
+    // --------------------------------------------------------------------------------------------|
+    // Depth of Field
+
     if (iDofEnable) {
         float intensity = iDofIntensity * pow(smoothstep(iDofStart, iDofEnd, 1 - point_height), iDofExponent);
         vec4 color = fragColor;
@@ -95,7 +129,9 @@ void main() {
         fragColor = color / (iDofDirections*iDofQuality);
     }
 
+    // --------------------------------------------------------------------------------------------|
     // Vignette post processing
+
     if (iVignetteEnable) {
         vec2 away = astuv * (1 - astuv.yx);
         float linear = iVignetteIntensity * (away.x*away.y);
