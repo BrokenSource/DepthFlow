@@ -40,9 +40,12 @@ void main() {
         abs(iParallaxDistance - iCamera.origin.z)
     );
 
+    // Cache tan(theta), we'll use it a lot
+    float tan_theta = tan(theta);
+
     // The distance Beta we care for the depth map
-    float delta = tan(theta) * (iParallaxDistance - iCamera.origin.z - iParallaxHeight);
-    float alpha = tan(theta) * (iParallaxDistance - iCamera.origin.z);
+    float delta = tan_theta * (iParallaxDistance - iCamera.origin.z - iParallaxHeight);
+    float alpha = tan_theta * (iParallaxDistance - iCamera.origin.z);
     float beta  = alpha - delta;
 
     // Start the parallax on the intersection point itself
@@ -65,7 +68,7 @@ void main() {
         // Interpolate between (0=max) and (0=min) depending on focus
         float true_height  = gtexture(depth, sample, iParallaxMirror).r;
         float depth_height = iParallaxHeight * mix(true_height, 1-true_height, iParallaxInvert);
-        float walk_height  = (i*beta) / tan(theta);
+        float walk_height  = (i*beta) / tan_theta;
 
         // Stop whenever an intersection is found
         if (depth_height >= walk_height) {
