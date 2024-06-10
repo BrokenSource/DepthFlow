@@ -26,7 +26,7 @@ class DepthFlowState(BaseModel):
     """Peak value of the Depth Map, in the range [0, 1]. The camera is 1 distance away from depth=0
     at the z=1 plane, so this also controls the intensity of the effect"""
 
-    focus: float = Field(default=0.0)
+    focus: float = Field(default=0.25)
     """Focal depth of offsets, in the range [0, 1]. A value of 0 makes the background (depth=0)
     stationary, while a value of 1 makes the foreground (depth=1) stationary on offset changes"""
 
@@ -183,16 +183,16 @@ class DepthFlowScene(ShaderScene):
     def update(self):
 
         # In and out dolly zoom
-        self.state.dolly = (0.5 + 0.5*math.cos(self.time))
+        self.state.dolly = (0.5 + 0.5*math.cos(self.cycle))
 
         # Infinite 8 loop shift
-        self.state.offset_x = (0.1 * math.sin(self.time))
-        self.state.offset_y = (0.1 * math.sin(2*self.time))
+        self.state.offset_x = (0.2 * math.sin(1*self.cycle))
+        self.state.offset_y = (0.2 * math.sin(2*self.cycle))
 
-        # # Oscillating rotation
+        # Oscillating rotation
         self.camera.rotate(
             direction=self.camera.base_z,
-            angle=math.cos(self.time)*self.dt*0.4
+            angle=math.cos(self.cycle)*self.dt*0.4
         )
 
         # Zoom in on the start
