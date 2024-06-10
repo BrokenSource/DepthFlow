@@ -7,7 +7,7 @@ import imgui
 from attr import define, field
 from pydantic import BaseModel, Field
 from ShaderFlow.Message import ShaderMessage
-from ShaderFlow.Modules.Depth import DepthAnything, ZoeDepth
+from ShaderFlow.Modules.Depth import DepthAnything, Marigold, ZoeDepth
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
