@@ -7,7 +7,7 @@ import imgui
 from attr import define, field
 from pydantic import BaseModel, Field
 from ShaderFlow.Message import ShaderMessage
-from ShaderFlow.Optional.Monocular import DepthEstimator
+from ShaderFlow.Modules.Depth import DepthAnything, ZoeDepth
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
@@ -141,10 +141,10 @@ class DepthFlowScene(ShaderScene):
 
     # Constants
     DEFAULT_IMAGE = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-    DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.frag")
+    DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
 
     # DepthFlow objects
-    estimator: DepthEstimator = field(factory=DepthEstimator)
+    estimator: DepthAnything = field(factory=DepthAnything)
     upscaler: BrokenUpscaler = field(factory=BrokenRealEsrgan)
     state: DepthFlowState = field(factory=DepthFlowState)
 
