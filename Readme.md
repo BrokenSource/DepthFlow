@@ -9,7 +9,7 @@
 
 👇 Right click and **loop me**!
 
-<video src="https://github.com/BrokenSource/DepthFlow/assets/29046864/cf9e23f0-e64b-435a-8762-e49936602071" loop controls autoplay></video>
+<video src="https://github.com/BrokenSource/DepthFlow/assets/29046864/aac0b531-83e4-4847-98d8-25d396dfec17" loop controls autoplay></video>
 
 <sup><b>Note:</b> Yes, the only input to DepthFlow was the Original Image</sup>
 
