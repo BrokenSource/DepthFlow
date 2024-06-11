@@ -37,7 +37,7 @@ class DepthFlowState(BaseModel):
     invert: float = Field(default=0.0)
     """Interpolate between (0=max, 1=min)=0 or (0=min, 1=max)=1 Depth Map's value interpretation"""
 
-    zoom: float = Field(default=1.0)
+    zoom: float = Field(default=0.88)
     """Camera zoom factor, in the range [0, inf]. 2 means a quarter of the image is visible"""
 
     isometric: float = Field(default=0.0)
