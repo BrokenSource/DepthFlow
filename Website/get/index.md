@@ -5,9 +5,6 @@
 !!! tip "Unified Installation"
     Follow the main <a href="../../get" target="_blank"><b>Installation Guide</b></a>, then continue from here
 
-!!! note "This Project needs PyTorch"
-    Choose and run a <a href="../../get/pytorch" target="_blank"><b>Single Command</b></a> to install a PyTorch flavor
-
 ## Running DepthFlow
 With PyTorch installed, simply run `depthflow`, a window will open
 
@@ -31,14 +28,15 @@ With PyTorch installed, simply run `depthflow`, a window will open
 
 ### Animation Presets
 There's currently no mechanism for presets, but it is planned
+
 - For now, manually change the `.update()` function on `DepthFlow/DepthFlow.py`
 
 ### Full Examples
-- `depthflow (--render | -r)`
-- `depthflow -r -f 30`
-- `depthflow -r -o ./video_name --format mkv`
+- `depthflow main (--render | -r)`
+- `depthflow main -r -f 30`
+- `depthflow main -r -o ./video_name --format mkv`
 - `depthflow input --image (url | path) main --render -s 2`
-- `depthflow -r -t 2 --open`
+- `depthflow main -r -t 2 --open`
 - `depthflow input -i (image) -d (depth) main`
 - `depthflow input -i (image) -w 600 --scale 2 main -r`
 

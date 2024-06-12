@@ -14,8 +14,7 @@ from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
 from Broken import image_hash
-from Broken.Externals.Upscaler import BrokenUpscaler
-from Broken.Externals.Upscaler.ncnn import BrokenRealEsrgan
+from Broken.Externals.Upscaler import BrokenUpscaler, RealEsrgan
 from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
 
@@ -145,22 +144,21 @@ class DepthFlowScene(ShaderScene):
 
     # DepthFlow objects
     estimator: DepthAnything = field(factory=DepthAnything)
-    upscaler: BrokenUpscaler = field(factory=BrokenRealEsrgan)
+    upscaler: BrokenUpscaler = field(factory=RealEsrgan)
     state: DepthFlowState = field(factory=DepthFlowState)
 
     def input(self,
-        image: Annotated[str,  Option("--image",   "-i", help="• (Basic  ) Image to Parallax (Path, URL, NumPy, PIL)")],
-        depth: Annotated[str,  Option("--depth",   "-d", help="• (Basic  ) Depthmap of the Image, None to estimate")]=None,
-        cache: Annotated[bool, Option(" /--nc",          help="• (Basic  ) Cache the Depthmap estimations on Disk")]=True,
-        ratio: Annotated[Tuple[int, int], Option("--upscale", "-u", help="• (Upscale) Upscale the Input and Depthmap respectively with Realesrgan (1, 2, 3, 4)")]=(1, 1),
+        image: Annotated[str,  Option("--image",   "-i", help="• Image to Parallax (Path, URL, NumPy, PIL)")],
+        depth: Annotated[str,  Option("--depth",   "-d", help="• Depthmap of the Image, None to estimate")]=None,
+        cache: Annotated[bool, Option(" /--nc",          help="• Cache the Depthmap estimations on Disk")]=True,
+        ratio: Annotated[int,  Option("--upscale", "-u", help="• Upscale the Input image by a ratio (1, 2, 3, 4)")]=1,
     ) -> None:
         """Load an Image from Path, URL and its estimated DepthMap to the Scene, and optionally upscale it. See 'input --help'"""
         image = LoaderImage(image)
         depth = LoaderImage(depth) or self.estimator.estimate(image, cache=cache)
         width, height = image.size
         cache = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash(image)}"
-        depth = self.upscaler.upscale(depth, scale=ratio[1])
-        image = self.upscaler.upscale(image, scale=ratio[0])
+        image = self.upscaler.upscale(image, scale=ratio)
         self.aspect_ratio = (width/height)
         self.image.from_image(image)
         self.depth.from_image(depth)
