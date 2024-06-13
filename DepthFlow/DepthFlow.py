@@ -25,11 +25,11 @@ class DepthFlowState(BaseModel):
     """Peak value of the Depth Map, in the range [0, 1]. The camera is 1 distance away from depth=0
     at the z=1 plane, so this also controls the intensity of the effect"""
 
-    focus: float = Field(default=0.25)
+    static: float = Field(default=0.25)
     """Focal depth of offsets, in the range [0, 1]. A value of 0 makes the background (depth=0)
     stationary, while a value of 1 makes the foreground (depth=1) stationary on offset changes"""
 
-    plane: float = Field(default=0.5)
+    focus: float = Field(default=0.5)
     """Focal depth of projections, in the range [0, 1]. A value of 0 makes the background (depth=0)
     stationaty, while a value of 1 makes the foreground (depth=1) stationary on isometric changes"""
 
@@ -46,6 +46,45 @@ class DepthFlowState(BaseModel):
     """Same effect as isometric, but with "natural units" of AFAIK `isometric = atan(dolly)*(2/pi)`.
     Keeps the ray target constant and move back ray origins by this amount"""
 
+    mirror: bool = Field(default=True)
+    """Apply GL_MIRRORED_REPEAT to the image, makes it continuous"""
+
+    # # Center
+
+    center_x: float = Field(default=0)
+    """Horizontal 'true' offset of the camera, the camea *is* above this point"""
+
+    center_y: float = Field(default=0)
+    """Vertical 'true' offset of the camera, the camea *is* above this point"""
+
+    @property
+    def center(self) -> Tuple[float, float]:
+        """'True' offset of the camera, the camea *is* above this point"""
+        return (self.center_x, self.center_y)
+
+    @center.setter
+    def center(self, value: Tuple[float, float]):
+        self.center_x, self.center_y = value
+
+    # # Origin
+
+    origin_x: float = Field(default=0)
+    """Hozirontal focal point of the offsets, *as if* the camera was above this point"""
+
+    origin_y: float = Field(default=0)
+    """Vertical focal point of the offsets, *as if* the camera was above this point"""
+
+    @property
+    def origin(self) -> Tuple[float, float]:
+        """Focal point of the offsets, *as if* the camera was above this point"""
+        return (self.origin_x, self.origin_y)
+
+    @origin.setter
+    def origin(self, value: Tuple[float, float]):
+        self.origin_x, self.origin_y = value
+
+    # # Parallax
+
     offset_x: float = Field(default=0)
     """Parallax horizontal displacement, change this over time for the 3D effect"""
 
@@ -61,23 +100,7 @@ class DepthFlowState(BaseModel):
     def offset(self, value: Tuple[float, float]):
         self.offset_x, self.offset_y = value
 
-    center_x: float = Field(default=0)
-    """Hozirontal focal point of the offset, as if the camera was above this point"""
-
-    center_y: float = Field(default=0)
-    """Vertical focal point of the offset, as if the camera was above this point"""
-
-    @property
-    def center(self) -> Tuple[float, float]:
-        """Focal point of the offset, as if the camera was above this point"""
-        return (self.center_x, self.center_y)
-
-    @center.setter
-    def center(self, value: Tuple[float, float]):
-        self.center_x, self.center_y = value
-
-    mirror: bool = Field(default=True)
-    """Apply GL_MIRRORED_REPEAT to the image, makes it continuous"""
+    # # Special
 
     def reset(self) -> None:
         for name, field in self.model_fields.items(): # noqa
@@ -118,16 +141,17 @@ class DepthFlowState(BaseModel):
     """Vignette Post-Processing configuration"""
 
     def pipeline(self) -> Iterable[ShaderVariable]:
-        yield ShaderVariable("uniform", "float", "iParallaxHeight",    self.height)
-        yield ShaderVariable("uniform", "float", "iParallaxFocus",     self.focus)
-        yield ShaderVariable("uniform", "float", "iParallaxPlane",     self.plane)
-        yield ShaderVariable("uniform", "float", "iParallaxInvert",    self.invert)
-        yield ShaderVariable("uniform", "float", "iParallaxZoom",      self.zoom)
-        yield ShaderVariable("uniform", "float", "iParallaxIsometric", self.isometric)
-        yield ShaderVariable("uniform", "float", "iParallaxDolly",     self.dolly)
-        yield ShaderVariable("uniform", "vec2",  "iParallaxOffset",    self.offset)
-        yield ShaderVariable("uniform", "vec2",  "iParallaxCenter",    self.center)
-        yield ShaderVariable("uniform", "bool",  "iParallaxMirror",    self.mirror)
+        yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)
+        yield ShaderVariable("uniform", "float", "iDepthStatic",    self.static)
+        yield ShaderVariable("uniform", "float", "iDepthFocus",     self.focus)
+        yield ShaderVariable("uniform", "float", "iDepthInvert",    self.invert)
+        yield ShaderVariable("uniform", "float", "iDepthZoom",      self.zoom)
+        yield ShaderVariable("uniform", "float", "iDepthIsometric", self.isometric)
+        yield ShaderVariable("uniform", "float", "iDepthDolly",     self.dolly)
+        yield ShaderVariable("uniform", "vec2",  "iDepthCenter",    self.center)
+        yield ShaderVariable("uniform", "vec2",  "iDepthOrigin",    self.origin)
+        yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
+        yield ShaderVariable("uniform", "bool",  "iDepthMirror",    self.mirror)
         yield from self.dof.pipeline()
         yield from self.vignette.pipeline()
 
@@ -210,10 +234,10 @@ class DepthFlowScene(ShaderScene):
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:
             self.state.height = max(0, state[1])
+        if (state := imgui.slider_float("Static", self.state.static, 0, 1, "%.2f"))[0]:
+            self.state.static = max(0, state[1])
         if (state := imgui.slider_float("Focus", self.state.focus, 0, 1, "%.2f"))[0]:
             self.state.focus = max(0, state[1])
-        if (state := imgui.slider_float("Plane", self.state.plane, 0, 1, "%.2f"))[0]:
-            self.state.plane = max(0, state[1])
         if (state := imgui.slider_float("Invert", self.state.invert, 0, 1, "%.2f"))[0]:
             self.state.invert = max(0, state[1])
         if (state := imgui.slider_float("Zoom", self.state.zoom, 0, 2, "%.2f"))[0]:
@@ -222,11 +246,21 @@ class DepthFlowScene(ShaderScene):
             self.state.isometric = max(0, state[1])
         if (state := imgui.slider_float("Dolly", self.state.dolly, 0, 5, "%.2f"))[0]:
             self.state.dolly = max(0, state[1])
-        if (state := imgui.slider_float("Offset X", self.state.offset_x, -2, 2, "%.2f"))[0]:
-            self.state.offset_x = state[1]
-        if (state := imgui.slider_float("Offset Y", self.state.offset_y, -2, 2, "%.2f"))[0]:
-            self.state.offset_y = state[1]
+
+        imgui.text("- True camera position")
         if (state := imgui.slider_float("Center X", self.state.center_x, -self.aspect_ratio, self.aspect_ratio, "%.2f"))[0]:
             self.state.center_x = state[1]
         if (state := imgui.slider_float("Center Y", self.state.center_y, -1, 1, "%.2f"))[0]:
             self.state.center_y = state[1]
+
+        imgui.text("- Fixed point at height changes")
+        if (state := imgui.slider_float("Origin X", self.state.origin_x, -self.aspect_ratio, self.aspect_ratio, "%.2f"))[0]:
+            self.state.origin_x = state[1]
+        if (state := imgui.slider_float("Origin Y", self.state.origin_y, -1, 1, "%.2f"))[0]:
+            self.state.origin_y = state[1]
+
+        imgui.text("- Parallax offset")
+        if (state := imgui.slider_float("Offset X", self.state.offset_x, -2, 2, "%.2f"))[0]:
+            self.state.offset_x = state[1]
+        if (state := imgui.slider_float("Offset Y", self.state.offset_y, -2, 2, "%.2f"))[0]:
+            self.state.offset_y = state[1]
