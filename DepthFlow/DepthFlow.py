@@ -7,7 +7,13 @@ import imgui
 from attr import define, field
 from pydantic import BaseModel, Field
 from ShaderFlow.Message import ShaderMessage
-from ShaderFlow.Modules.Depth import DepthAnything, Marigold, ZoeDepth
+from ShaderFlow.Modules.Depth import (
+    DepthAnything,
+    DepthAnythingV2,
+    DepthEstimator,
+    Marigold,
+    ZoeDepth,
+)
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
@@ -167,7 +173,7 @@ class DepthFlowScene(ShaderScene):
     DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
 
     # DepthFlow objects
-    estimator: DepthAnything = field(factory=DepthAnything)
+    estimator: DepthEstimator = field(factory=DepthAnything)
     upscaler: BrokenUpscaler = field(factory=RealEsrgan)
     state: DepthFlowState = field(factory=DepthFlowState)
 
