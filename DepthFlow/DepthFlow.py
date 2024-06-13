@@ -148,17 +148,17 @@ class DepthFlowScene(ShaderScene):
     state: DepthFlowState = field(factory=DepthFlowState)
 
     def input(self,
-        image: Annotated[str,  Option("--image",   "-i", help="• Image to Parallax (Path, URL, NumPy, PIL)")],
-        depth: Annotated[str,  Option("--depth",   "-d", help="• Depthmap of the Image, None to estimate")]=None,
-        cache: Annotated[bool, Option(" /--nc",          help="• Cache the Depthmap estimations on Disk")]=True,
-        ratio: Annotated[int,  Option("--upscale", "-u", help="• Upscale the Input image by a ratio (1, 2, 3, 4)")]=1,
+        image:   Annotated[str,  Option("--image",   "-i", help="• Image to Parallax (Path, URL, NumPy, PIL)")],
+        depth:   Annotated[str,  Option("--depth",   "-d", help="• Depthmap of the Image, None to estimate")]=None,
+        cache:   Annotated[bool, Option(" /--nc",          help="• Cache the Depthmap estimations on Disk")]=True,
+        upscale: Annotated[int,  Option("--upscale", "-u", help="• Upscale the Input image by a ratio (1, 2, 3, 4)")]=1,
     ) -> None:
         """Load an Image from Path, URL and its estimated DepthMap to the Scene, and optionally upscale it. See 'input --help'"""
         image = LoaderImage(image)
         depth = LoaderImage(depth) or self.estimator.estimate(image, cache=cache)
         width, height = image.size
         cache = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash(image)}"
-        image = self.upscaler.upscale(image, scale=ratio)
+        image = self.upscaler.upscale(image, scale=upscale)
         self.aspect_ratio = (width/height)
         self.image.from_image(image)
         self.depth.from_image(depth)
