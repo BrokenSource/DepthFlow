@@ -12,4 +12,4 @@ DEPTHFLOW = BrokenProject(
 Broken.set_project(DEPTHFLOW)
 BrokenTorch.install()
 
-from DepthFlow.DepthFlow import DepthFlowScene, DepthFlowState
+from DepthFlow.DepthScene import DepthFlowScene, DepthFlowState

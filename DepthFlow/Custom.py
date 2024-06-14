@@ -1,6 +1,7 @@
+import math
 import sys
 
-from ShaderFlow import ShaderMessage
+from ShaderFlow.Message import ShaderMessage
 
 from DepthFlow import DepthFlowScene
 
@@ -9,7 +10,7 @@ class YourScene(DepthFlowScene):
     """Example of defining your own class based on DepthFlowScene"""
 
     def update(self):
-        DepthFlowScene.update(self)
+        self.state.offset_x = math.sin(2*self.cycle)
 
     def pipeline(self):
         yield from DepthFlowScene.pipeline(self)
