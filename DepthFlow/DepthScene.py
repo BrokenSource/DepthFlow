@@ -40,7 +40,7 @@ class DepthFlowState(BaseModel):
     invert: float = Field(default=0.0)
     """Interpolate between (0=max, 1=min)=0 or (0=min, 1=max)=1 Depth Map's value interpretation"""
 
-    zoom: float = Field(default=0.88)
+    zoom: float = Field(default=1.0)
     """Camera zoom factor, in the range [0, inf]. 2 means a quarter of the image is visible"""
 
     isometric: float = Field(default=0.0)
@@ -216,10 +216,7 @@ class DepthFlowScene(ShaderScene):
         self.state.offset_y = (0.2 * math.sin(2*self.cycle))
 
         # Oscillating rotation
-        self.camera.rotate(
-            direction=self.camera.base_z,
-            angle=math.cos(self.cycle)*self.dt*0.4
-        )
+        self.camera.rotate2d(1.5*math.sin(self.cycle))
 
         # Zoom in on the start
         # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
