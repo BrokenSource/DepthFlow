@@ -2,7 +2,7 @@
   <a href="https://brokensrc.dev/depthflow"><img src="./DepthFlow/Resources/Images/DepthFlow.png" onerror="this.onerror=null; this.src='./resources/images/depthflow.png'" width="200"></a>
   <h1>DepthFlow</h1>
   <br>
-  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://convert.leiapix.com" target="_blank"><b>Leiapix</b></a> Alternative
+  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>Leiapix</b></a> Alternative
 </div>
 
 <br>
