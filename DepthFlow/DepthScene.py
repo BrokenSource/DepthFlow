@@ -18,7 +18,7 @@ from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
 from Broken import image_hash
-from Broken.Externals.Upscaler import BrokenUpscaler, RealEsrgan
+from Broken.Externals.Upscaler import BrokenUpscaler, Realesr
 from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
 
@@ -172,28 +172,25 @@ class DepthFlowScene(ShaderScene):
 
     # DepthFlow objects
     estimator: DepthEstimator = field(factory=DepthAnything)
-    upscaler: BrokenUpscaler = field(factory=RealEsrgan)
+    upscaler: BrokenUpscaler = field(factory=Realesr)
     state: DepthFlowState = field(factory=DepthFlowState)
 
     def input(self,
-        image:   Annotated[str,  Option("--image",   "-i", help="• Image to Parallax (Path, URL, NumPy, PIL)")],
-        depth:   Annotated[str,  Option("--depth",   "-d", help="• Depthmap of the Image, None to estimate")]=None,
-        cache:   Annotated[bool, Option(" /--nc",          help="• Cache the Depthmap estimations on Disk")]=True,
-        upscale: Annotated[int,  Option("--upscale", "-u", help="• Upscale the Input image by a ratio (1, 2, 3, 4)")]=1,
+        image: Annotated[str,  Option("--image",   "-i", help="• Image to Parallax (Path, URL, NumPy, PIL)")],
+        depth: Annotated[str,  Option("--depth",   "-d", help="• Depthmap of the Image, None to estimate")]=None,
     ) -> None:
         """Load an Image from Path, URL and its estimated DepthMap to the Scene, and optionally upscale it. See 'input --help'"""
-        image = LoaderImage(image)
-        depth = LoaderImage(depth) or self.estimator.estimate(image, cache=cache)
-        width, height = image.size
-        cache = DEPTHFLOW.DIRECTORIES.CACHE/f"{image_hash(image)}"
-        image = self.upscaler.upscale(image, scale=upscale)
-        self.aspect_ratio = (width/height)
+        image = self.upscaler.upscale(LoaderImage(image))
+        depth = LoaderImage(depth) or self.estimator.estimate(image)
+        self.aspect_ratio = (image.width/image.height)
         self.image.from_image(image)
         self.depth.from_image(depth)
         self.time = 0
 
     def commands(self):
         self.typer.command(self.input)
+        self.typer.command(self.upscaler, panel="Upscaler")
+        self.upscaler.scale = 1
 
     def setup(self):
         if self.image.is_empty():
@@ -215,8 +212,14 @@ class DepthFlowScene(ShaderScene):
         self.state.offset_x = (0.2 * math.sin(1*self.cycle))
         self.state.offset_y = (0.2 * math.sin(2*self.cycle))
 
-        # Oscillating rotation
-        self.camera.rotate2d(1.5*math.sin(self.cycle))
+        # Integral rotation (better for realtime)
+        self.camera.rotate(
+            direction=self.camera.base_z,
+            angle=math.cos(self.cycle)*self.dt*0.4
+        )
+
+        # Fixed known rotation
+        # self.camera.rotate2d(1.5*math.sin(self.cycle))
 
         # Zoom in on the start
         # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
