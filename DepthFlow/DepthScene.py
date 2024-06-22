@@ -176,8 +176,8 @@ class DepthFlowScene(ShaderScene):
     state: DepthFlowState = field(factory=DepthFlowState)
 
     def input(self,
-        image: Annotated[str,  Option("--image",   "-i", help="• Image to Parallax (Path, URL, NumPy, PIL)")],
-        depth: Annotated[str,  Option("--depth",   "-d", help="• Depthmap of the Image, None to estimate")]=None,
+        image: Annotated[str, Option("--image", "-i", help="[bold][red](🔴 Basic)[/red][/bold] Background Image [green](Path, URL, NumPy, PIL)[/green]")],
+        depth: Annotated[str, Option("--depth", "-d", help="[bold][red](🔴 Basic)[/red][/bold] Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
     ) -> None:
         """Load an Image from Path, URL and its estimated DepthMap to the Scene, and optionally upscale it. See 'input --help'"""
         image = self.upscaler.upscale(LoaderImage(image))
