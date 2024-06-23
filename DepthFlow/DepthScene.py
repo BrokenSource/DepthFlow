@@ -1,5 +1,6 @@
+import functools
 import math
-from typing import Annotated, Iterable, Tuple
+from typing import Annotated, Any, Iterable, Tuple
 
 import imgui
 from attr import define, field
@@ -17,8 +18,8 @@ from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken import image_hash
-from Broken.Externals.Upscaler import BrokenUpscaler, Realesr
+from Broken import pydantic_cli
+from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
 from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
 
@@ -161,9 +162,20 @@ class DepthFlowState(BaseModel):
 
 # -------------------------------------------------------------------------------------------------|
 
+DEPTHFLOW_ABOUT = """
+🌊 Image to → 2.5D Parallax Effect Video. High quality, user first.\n
+
+Usage: Chain commands, at minimum just [green]main[/green] for a realtime window, drag and drop images
+       - The --main command is used for exporting videos, setting quality, resolution
+       - All commands have a --help option with extensible configuration
+
+Examples:
+• (depthflow realesr --scale 2 input -i ~/image.png main -o ./output.mp4 --ssaa 1.5)
+• (depthflow input -i ~/image16x9.png main -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
+"""
+
 @define
 class DepthFlowScene(ShaderScene):
-    """🌊 Image to → 2.5D Parallax Effect Video. High quality, user first"""
     __name__ = "DepthFlow"
 
     # Constants
@@ -172,12 +184,12 @@ class DepthFlowScene(ShaderScene):
 
     # DepthFlow objects
     estimator: DepthEstimator = field(factory=DepthAnything)
-    upscaler: BrokenUpscaler = field(factory=Realesr)
+    upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthFlowState = field(factory=DepthFlowState)
 
     def input(self,
-        image: Annotated[str, Option("--image", "-i", help="[bold][red](🔴 Basic)[/red][/bold] Background Image [green](Path, URL, NumPy, PIL)[/green]")],
-        depth: Annotated[str, Option("--depth", "-d", help="[bold][red](🔴 Basic)[/red][/bold] Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
+        image: Annotated[str,  Option("--image",   "-i", help="Background Image [green](Path, URL, NumPy, PIL)[/green]")],
+        depth: Annotated[str,  Option("--depth",   "-d", help="Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
     ) -> None:
         """Load an Image from Path, URL and its estimated DepthMap to the Scene, and optionally upscale it. See 'input --help'"""
         image = self.upscaler.upscale(LoaderImage(image))
@@ -185,16 +197,39 @@ class DepthFlowScene(ShaderScene):
         self.aspect_ratio = (image.width/image.height)
         self.image.from_image(image)
         self.depth.from_image(depth)
-        self.time = 0
+
+    def _pydantic_cli(self, option: Any, attribute: str) -> None:
+        @functools.wraps(pydantic_cli(option))
+        def wrapper(*args, **kwargs) -> None:
+            for name, value in kwargs.items():
+                setattr(option, name, value)
+            setattr(self, attribute, option)
+        return wrapper
 
     def commands(self):
+        self.typer.description = DEPTHFLOW_ABOUT
         self.typer.command(self.input)
-        self.typer.command(self.upscaler, panel="Upscaler")
-        self.upscaler.scale = 1
+
+        with self.typer.panel("⭐️ Upscalers"):
+            self.typer.command(self._pydantic_cli(Realesr(), "upscaler"), name="realesr",
+                help="Configure and use RealESRGAN [green](See 'realesr --help' for options)[/green] [dim](by https://github.com/xinntao/Real-ESRGAN)[/dim]")
+            self.typer.command(self._pydantic_cli(Waifu2x(), "upscaler"), name="waifu2x",
+                help="Configure and use Waifu2x    [green](See 'waifu2x --help' for options)[/green] [dim](by https://github.com/nihui/waifu2x-ncnn-vulkan)[/dim]")
+
+        with self.typer.panel("🌊 Depth Estimators"):
+            self.typer.command(self._pydantic_cli(DepthAnything(), "estimator"), name="anything",
+                help="Configure and use DepthAnything   [green](See 'anything  --help' for options)[/green] [dim](by https://github.com/LiheYoung/Depth-Anything)[/dim]")
+            self.typer.command(self._pydantic_cli(DepthAnythingV2(), "estimator"), name="anything2",
+                help="Configure and use DepthAnythingV2 [green](See 'anything2 --help' for options)[/green] [dim](by https://github.com/DepthAnything/Depth-Anything-V2)[/dim]")
+            self.typer.command(self._pydantic_cli(ZoeDepth(), "estimator"), name="zoedepth",
+                help="Configure and use ZoeDepth        [green](See 'zoedepth  --help' for options)[/green] [dim](by https://github.com/isl-org/ZoeDepth)[/dim]")
+            self.typer.command(self._pydantic_cli(Marigold(), "estimator"), name="marigold",
+                help="Configure and use Marigold        [green](See 'marigold  --help' for options)[/green] [dim](by https://github.com/prs-eth/Marigold)[/dim]")
 
     def setup(self):
         if self.image.is_empty():
             self.input(image=DepthFlowScene.DEFAULT_IMAGE)
+        self.time = 0
 
     def build(self):
         ShaderScene.build(self)
