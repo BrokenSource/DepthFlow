@@ -27,8 +27,26 @@ from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu
 from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
 
+DEPTHFLOW_ABOUT = """
+🌊 Image to → 2.5D Parallax Effect Video. High quality, user first.\n
+
+Usage: Chain commands, at minimum just [green]main[/green] for a realtime window, drag and drop images
+• The --main command is used for exporting videos, setting quality, resolution
+• All commands have a --help option with extensible configuration
+
+Examples:
+• Upscaler:    (depthflow realesr --scale 2 input -i ~/image.png main -o ./output.mp4 --ssaa 1.5)
+• Convenience: (depthflow input -i ~/image16x9.png main -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
+• Estimator:   (depthflow anything2 --model large input -i ~/image.png main)
+• Post FX:     (depthflow dof -e vignette -e main)
+
+Notes:
+• The rendered video loops perfectly, the duration is the main's --time
+• The last two commands must be --input and --main in order to work
+"""
 
 class DepthFlowState(BaseModel):
+    """Set parallax parameter values on the state [green](See 'config --help' for options)[/green]"""
 
     height: Annotated[float, typer.Option("--height", "-h", min=0, max=1,
         help="[bold][red](🔴 Basic   )[/red][/bold] Depthmap's peak value, the effect [bold][cyan]intensity[/cyan][/bold] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[/medium_purple3]")] = \
@@ -129,6 +147,7 @@ class DepthFlowState(BaseModel):
             setattr(self, name, field.default)
 
     class _PFX_DOF(BaseModel):
+        """Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
         enable: Annotated[bool, typer.Option("--enable", "-e",
             help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Depth of field effect")] = \
             Field(default=False)
@@ -170,6 +189,7 @@ class DepthFlowState(BaseModel):
     """Depth of Field Post-Processing configuration"""
 
     class _PFX_Vignette(BaseModel):
+        """Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
         enable: Annotated[bool, typer.Option("--enable", "-e",
             help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Vignette effect")] = \
             Field(default=False)
@@ -215,24 +235,6 @@ class DepthFlowAnimation(BaseModel, ABC):
 
 # -------------------------------------------------------------------------------------------------|
 
-DEPTHFLOW_ABOUT = """
-🌊 Image to → 2.5D Parallax Effect Video. High quality, user first.\n
-
-Usage: Chain commands, at minimum just [green]main[/green] for a realtime window, drag and drop images
-• The --main command is used for exporting videos, setting quality, resolution
-• All commands have a --help option with extensible configuration
-
-Examples:
-• Upscaler:    (depthflow realesr --scale 2 input -i ~/image.png main -o ./output.mp4 --ssaa 1.5)
-• Convenience: (depthflow input -i ~/image16x9.png main -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
-• Estimator:   (depthflow anything2 --model large input -i ~/image.png main)
-• Post FX:     (depthflow dof -e vignette -e main)
-
-Notes:
-• The rendered video loops perfectly, the duration is the main's --time
-• The last two commands must be --input and --main in order to work
-"""
-
 @define
 class DepthFlowScene(ShaderScene):
     __name__ = "DepthFlow"
@@ -257,41 +259,30 @@ class DepthFlowScene(ShaderScene):
         self.image.from_image(image)
         self.depth.from_image(depth)
 
-    def _pydantic_cli(self, option: Any, attribute: str) -> None:
-        @functools.wraps(pydantic_cli(option))
-        def wrapper(*args, **kwargs) -> None:
-            for name, value in kwargs.items():
-                setattr(option, name, value)
-            setattr(self, attribute, option)
-        return wrapper
+    def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
+        self.upscaler = upscaler
+
+    def set_estimator(self, estimator: DepthEstimator) -> None:
+        self.estimator = estimator
 
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
         self.typer.command(self.input)
-        self.typer.command(self.state, name="config", requires=True,
-            help="Set parallax parameter values on the state [green](See 'config --help' for options)[/green]")
+        self.typer.command(self.state, name="config", requires=True)
 
         with self.typer.panel("🌊 Depth estimators"):
-            self.typer.command(self._pydantic_cli(DepthAnything(), "estimator"), name="anything",
-                help="Configure and use DepthAnything   [green](See 'anything  --help' for options)[/green] [dim](by https://github.com/LiheYoung/Depth-Anything)[/dim]")
-            self.typer.command(self._pydantic_cli(DepthAnythingV2(), "estimator"), name="anything2",
-                help="Configure and use DepthAnythingV2 [green](See 'anything2 --help' for options)[/green] [dim](by https://github.com/DepthAnything/Depth-Anything-V2)[/dim]")
-            self.typer.command(self._pydantic_cli(ZoeDepth(), "estimator"), name="zoedepth",
-                help="Configure and use ZoeDepth        [green](See 'zoedepth  --help' for options)[/green] [dim](by https://github.com/isl-org/ZoeDepth)[/dim]")
-            self.typer.command(self._pydantic_cli(Marigold(), "estimator"), name="marigold",
-                help="Configure and use Marigold        [green](See 'marigold  --help' for options)[/green] [dim](by https://github.com/prs-eth/Marigold)[/dim]")
+            self.typer.command(pydantic_cli(DepthAnything(), post=self.set_estimator), name="anything1")
+            self.typer.command(pydantic_cli(DepthAnythingV2(), post=self.set_estimator), name="anything2")
+            self.typer.command(pydantic_cli(ZoeDepth(), post=self.set_estimator), name="zoedepth")
+            self.typer.command(pydantic_cli(Marigold(), post=self.set_estimator), name="marigold")
 
         with self.typer.panel("⭐️ Upscalers"):
-            self.typer.command(self._pydantic_cli(Realesr(), "upscaler"), name="realesr", requires=True,
-                help="Configure and use RealESRGAN [green](See 'realesr --help' for options)[/green] [dim](by https://github.com/xinntao/Real-ESRGAN)[/dim]")
-            self.typer.command(self._pydantic_cli(Waifu2x(), "upscaler"), name="waifu2x", requires=True,
-                help="Configure and use Waifu2x    [green](See 'waifu2x --help' for options)[/green] [dim](by https://github.com/nihui/waifu2x-ncnn-vulkan)[/dim]")
+            self.typer.command(pydantic_cli(Realesr(), post=self.set_upscaler), name="realesr", requires=True)
+            self.typer.command(pydantic_cli(Waifu2x(), post=self.set_upscaler), name="waifu2x", requires=True)
 
         with self.typer.panel("✨ Post processing"):
-            self.typer.command(self.state._vignette, name="vignette", requires=True,
-                help="Set vignette parameters [green](See 'vignette --help' for options)[/green]")
-            self.typer.command(self.state._dof, name="dof", requires=True,
-                help="Set depth of field parameters [green](See 'dof --help' for options)[/green]")
+            self.typer.command(self.state._vignette, name="vignette", requires=True)
+            self.typer.command(self.state._dof, name="dof", requires=True)
 
     def setup(self):
         if self.image.is_empty():
