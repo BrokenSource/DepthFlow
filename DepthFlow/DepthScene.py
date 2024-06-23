@@ -10,19 +10,19 @@ import typer
 from attr import define, field
 from pydantic import BaseModel, Field, PrivateAttr
 from ShaderFlow.Message import ShaderMessage
-from ShaderFlow.Modules.Depth import (
-    DepthAnything,
-    DepthAnythingV2,
-    DepthEstimator,
-    Marigold,
-    ZoeDepth,
-)
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
 from Broken import pydantic_cli
+from Broken.Externals.Depthmap import (
+    DepthAnything,
+    DepthAnythingV2,
+    DepthEstimator,
+    Marigold,
+    ZoeDepth,
+)
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
 from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
