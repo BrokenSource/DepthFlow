@@ -17,7 +17,7 @@ from typer import Option
 
 from Broken import pydantic_cli
 from Broken.Externals.Depthmap import (
-    DepthAnything,
+    DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
     Marigold,
@@ -244,7 +244,7 @@ class DepthFlowScene(ShaderScene):
     DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
 
     # DepthFlow objects
-    estimator: DepthEstimator = field(factory=DepthAnything)
+    estimator: DepthEstimator = field(factory=DepthAnythingV1)
     upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthFlowState = field(factory=DepthFlowState)
 
@@ -271,7 +271,7 @@ class DepthFlowScene(ShaderScene):
         self.typer.command(self.state, name="config", requires=True)
 
         with self.typer.panel("🌊 Depth estimators"):
-            self.typer.command(pydantic_cli(DepthAnything(), post=self.set_estimator), name="anything1")
+            self.typer.command(pydantic_cli(DepthAnythingV1(), post=self.set_estimator), name="anything1")
             self.typer.command(pydantic_cli(DepthAnythingV2(), post=self.set_estimator), name="anything2")
             self.typer.command(pydantic_cli(ZoeDepth(), post=self.set_estimator), name="zoedepth")
             self.typer.command(pydantic_cli(Marigold(), post=self.set_estimator), name="marigold")
