@@ -268,21 +268,21 @@ class DepthFlowScene(ShaderScene):
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
         self.typer.command(self.input)
-        self.typer.command(self.state, name="config", requires=True)
+        self.typer.command(self.state, name="config", naih=True)
 
         with self.typer.panel("🌊 Depth estimators"):
-            self.typer.command(pydantic_cli(DepthAnythingV1(), post=self.set_estimator), name="anything1")
-            self.typer.command(pydantic_cli(DepthAnythingV2(), post=self.set_estimator), name="anything2")
-            self.typer.command(pydantic_cli(ZoeDepth(), post=self.set_estimator), name="zoedepth")
-            self.typer.command(pydantic_cli(Marigold(), post=self.set_estimator), name="marigold")
+            self.typer.command(pydantic_cli(DepthAnythingV1(), post=self.set_estimator), name="anything1", naih=True)
+            self.typer.command(pydantic_cli(DepthAnythingV2(), post=self.set_estimator), name="anything2", naih=True)
+            self.typer.command(pydantic_cli(ZoeDepth(), post=self.set_estimator), name="zoedepth", naih=True)
+            self.typer.command(pydantic_cli(Marigold(), post=self.set_estimator), name="marigold", naih=True)
 
         with self.typer.panel("⭐️ Upscalers"):
-            self.typer.command(pydantic_cli(Realesr(), post=self.set_upscaler), name="realesr", requires=True)
-            self.typer.command(pydantic_cli(Waifu2x(), post=self.set_upscaler), name="waifu2x", requires=True)
+            self.typer.command(pydantic_cli(Realesr(), post=self.set_upscaler), name="realesr", naih=True)
+            self.typer.command(pydantic_cli(Waifu2x(), post=self.set_upscaler), name="waifu2x", naih=True)
 
         with self.typer.panel("✨ Post processing"):
-            self.typer.command(self.state._vignette, name="vignette", requires=True)
-            self.typer.command(self.state._dof, name="dof", requires=True)
+            self.typer.command(self.state._vignette, name="vignette", naih=True)
+            self.typer.command(self.state._dof, name="dof", naih=True)
 
     def setup(self):
         if self.image.is_empty():
