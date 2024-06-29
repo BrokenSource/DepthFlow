@@ -1,12 +1,12 @@
 import sys
 
 from Broken import BrokenProfiler
-from DepthFlow.DepthScene import DepthFlowScene
+from DepthFlow import DepthScene
 
 
 def main():
     with BrokenProfiler("DEPTHFLOW"):
-        depthflow = DepthFlowScene()
+        depthflow = DepthScene()
         depthflow.cli(sys.argv[1:])
 
 if __name__ == "__main__":

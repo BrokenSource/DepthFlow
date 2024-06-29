@@ -1,4 +1,5 @@
-import Broken
+from __future__ import annotations
+
 import DepthFlow.Resources as DepthFlowResources
 from Broken import BrokenProject, BrokenTorch
 
@@ -11,4 +12,4 @@ DEPTHFLOW = BrokenProject(
 
 BrokenTorch.install()
 
-from DepthFlow.DepthScene import DepthFlowScene, DepthFlowState
+from DepthFlow.Scene import DepthScene
