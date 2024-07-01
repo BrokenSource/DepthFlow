@@ -23,7 +23,13 @@ from Broken.Externals.Depthmap import (
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
 from Broken.Loaders import LoaderImage
 from DepthFlow import DEPTHFLOW
-from DepthFlow.Animation import Constant, DepthAnimation, DepthPreset, Linear
+from DepthFlow.Animation import (
+    Constant,
+    DepthAnimation,
+    DepthPreset,
+    Linear,
+    Sine,
+)
 from DepthFlow.State import DepthState
 
 DEPTHFLOW_ABOUT = """
@@ -60,6 +66,15 @@ class DepthScene(ShaderScene):
     upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthState = field(factory=DepthState)
 
+    def add_animation(self, animation: DepthAnimation) -> None:
+        self.animation.append(copy.deepcopy(animation))
+
+    def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
+        self.upscaler = upscaler
+
+    def set_estimator(self, estimator: DepthEstimator) -> None:
+        self.estimator = estimator
+
     def input(self,
         image: Annotated[str, Option("--image", "-i", help="Background Image [green](Path, URL, NumPy, PIL)[/green]")],
         depth: Annotated[str, Option("--depth", "-d", help="Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
@@ -68,16 +83,9 @@ class DepthScene(ShaderScene):
         image = self.upscaler.upscale(LoaderImage(image))
         depth = LoaderImage(depth) or self.estimator.estimate(image)
         self.aspect_ratio = (image.width/image.height)
+        self.normal.from_numpy(self.estimator.normal_map(depth))
         self.image.from_image(image)
         self.depth.from_image(depth)
-
-    # Add and set methods for the CLI or manual usage
-    def add_animation(self, animation: DepthAnimation) -> None:
-        self.animation.append(copy.deepcopy(animation))
-    def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
-        self.upscaler = upscaler
-    def set_estimator(self, estimator: DepthEstimator) -> None:
-        self.estimator = estimator
 
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
@@ -97,6 +105,7 @@ class DepthScene(ShaderScene):
         with self.typer.panel("🔮 Animation (Components)"):
             self.typer.command(pydantic_cli(Linear(), post=self.add_animation), name="linear", naih=True)
             self.typer.command(pydantic_cli(Constant(), post=self.add_animation), name="constant", naih=True)
+            self.typer.command(pydantic_cli(Sine(), post=self.add_animation), name="sine", naih=True)
 
         with self.typer.panel("🔮 Animation (Presets)"):
             ...
@@ -115,6 +124,7 @@ class DepthScene(ShaderScene):
         ShaderScene.build(self)
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
+        self.normal = ShaderTexture(scene=self, name="normal").repeat(False)
         self.shader.fragment = self.DEPTH_SHADER
         self.aspect_ratio = (16/9)
 

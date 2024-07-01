@@ -6,8 +6,6 @@ from pydantic import BaseModel, Field, PrivateAttr
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken import BrokenEnum
-
 
 class DepthState(BaseModel):
     """Set parallax parameter values on the state [green](See 'config --help' for options)[/green]"""
@@ -111,6 +109,8 @@ class DepthState(BaseModel):
             for name, field in object.model_fields.items(): # noqa
                 setattr(object, name, field.default)
 
+    # ---------------------------------------------------------------------------------------------|
+
     class _PFX_DOF(BaseModel):
         """Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
         enable: Annotated[bool, Option("--enable", "-e",
@@ -142,7 +142,7 @@ class DepthState(BaseModel):
             Field(default=16)
 
         def pipeline(self) -> Iterable[ShaderVariable]:
-            yield ShaderVariable("uniform", "bool",  "iDofEnable",     self.enable)
+            yield ShaderVariable("uniform", "bool",  "iDofEnable",     bool(self.enable))
             yield ShaderVariable("uniform", "float", "iDofStart",      self.start)
             yield ShaderVariable("uniform", "float", "iDofEnd",        self.end)
             yield ShaderVariable("uniform", "float", "iDofExponent",   self.exponent)
@@ -152,6 +152,12 @@ class DepthState(BaseModel):
 
     _dof: _PFX_DOF = PrivateAttr(default_factory=_PFX_DOF)
     """Depth of Field Post-Processing configuration"""
+
+    @property
+    def dof(self) -> _PFX_DOF:
+        return self._dof
+
+    # ---------------------------------------------------------------------------------------------|
 
     class _PFX_Vignette(BaseModel):
         """Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
@@ -175,6 +181,12 @@ class DepthState(BaseModel):
     _vignette: _PFX_Vignette = PrivateAttr(default_factory=_PFX_Vignette)
     """Vignette Post-Processing configuration"""
 
+    @property
+    def vignette(self) -> _PFX_Vignette:
+        return self._vignette
+
+    # ---------------------------------------------------------------------------------------------|
+
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)
         yield ShaderVariable("uniform", "float", "iDepthStatic",    self.static)
@@ -186,32 +198,6 @@ class DepthState(BaseModel):
         yield ShaderVariable("uniform", "vec2",  "iDepthCenter",    self.center)
         yield ShaderVariable("uniform", "vec2",  "iDepthOrigin",    self.origin)
         yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
-        yield ShaderVariable("uniform", "bool",  "iDepthMirror",    self.mirror)
+        yield ShaderVariable("uniform", "bool",  "iDepthMirror",    bool(self.mirror))
         yield from self._dof.pipeline()
         yield from self._vignette.pipeline()
-
-class StateTarget(BrokenEnum):
-    Height    = "height"
-    Static    = "static"
-    Focus     = "focus"
-    Zoom      = "zoom"
-    Isometric = "isometric"
-    Dolly     = "dolly"
-    Invert    = "invert"
-    Mirror    = "mirror"
-    CenterX   = "center_x"
-    CenterY   = "center_y"
-    OriginX   = "origin_x"
-    OriginY   = "origin_y"
-    OffsetX   = "offset_x"
-    OffsetY   = "offset_y"
-    DOF_Enable     = "dof-enable"
-    DOF_Start      = "dof-start"
-    DOF_End        = "dof-end"
-    DOF_Exponent   = "dof-exponent"
-    DOF_Intensity  = "dof-intensity"
-    DOF_Quality    = "dof-quality"
-    DOF_Directions = "dof-directions"
-    VignetteEnable    = "vignette-enable"
-    VignetteIntensity = "vignette-intensity"
-    VignetteDecay     = "vignette-decay"
