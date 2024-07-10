@@ -1,10 +1,14 @@
 [project]
 name        = "depthflow"
-version     = "0.0.0"
+version     = "0.4.0.dev1"
 description = "Image to 2.5D Parallax Effect Video"
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
 readme      = "Readme.md"
 license     = "AGPL-3.0"
+dependencies = [
+    "broken-source", # dynamic
+    "shaderflow", # dynamic
+]
 
 [tool.rye]
 managed = true

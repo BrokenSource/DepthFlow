@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import DepthFlow.Resources as DepthFlowResources
 from Broken import BrokenProject, BrokenTorch
 
