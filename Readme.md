@@ -1,4 +1,4 @@
-<sup>⚠️ **Warning**: This repository [**shouldn't be cloned alone**](https://brokensrc.dev/get/source) ⚠️</sup>
+<sup>⚠️ **Warning**: This repository [**shouldn't be cloned alone**](https://brokensrc.dev/get/source)</sup>
 
 <div align="center">
   <a href="https://brokensrc.dev/depthflow"><img src="./DepthFlow/Resources/Images/DepthFlow.png" onerror="this.onerror=null; this.src='./resources/images/depthflow.png'" width="200"></a>
