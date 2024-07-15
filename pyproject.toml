@@ -1,3 +1,9 @@
+[project.urls]
+issues        = "https://github.com/BrokenSource/DepthFlow/issues"
+repository    = "https://github.com/BrokenSource/DepthFlow"
+documentation = "https://brokensrc.dev/depthflow"
+homepage      = "https://brokensrc.dev"
+
 [project]
 name        = "depthflow"
 version     = "0.0.0"
@@ -6,8 +12,8 @@ authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.gith
 readme      = "Readme.md"
 license     = "AGPL-3.0"
 dependencies = [
-    "broken-source", # dynamic
-    "shaderflow", # dynamic
+    "broken-source>=0.0.0",
+    "shaderflow>=0.0.0",
 ]
 
 [tool.rye]
