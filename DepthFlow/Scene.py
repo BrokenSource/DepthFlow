@@ -62,7 +62,7 @@ class DepthScene(ShaderScene):
 
     # DepthFlow objects
     animation: List[Union[DepthAnimation, DepthPreset]] = field(factory=list)
-    estimator: DepthEstimator = field(factory=DepthAnythingV1)
+    estimator: DepthEstimator = field(factory=DepthAnythingV2)
     upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthState = field(factory=DepthState)
 
