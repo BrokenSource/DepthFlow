@@ -18,7 +18,7 @@ void main() {
 
     // Doesn't intersect with the XY plane
     if (iCamera.out_of_bounds) {
-        fragColor = vec4(vec3(0.2), 1);
+        fragColor = vec4(vec3(0.0), 1);
         return;
     }
 
