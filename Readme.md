@@ -1,12 +1,35 @@
-<sup>⚠️ **Warning**: This repository [**shouldn't be cloned alone**](https://brokensrc.dev/get/source), per [**monorepo**](https://github.com/BrokenSource/BrokenSource) structure</sup>
+> [!IMPORTANT]
+> <sub>This repository is part of a [**monorepo**](https://github.com/BrokenSource/BrokenSource) and [**shouldn't be cloned alone**](https://brokensrc.dev/get/source)</sub>
+
 <div align="center">
   <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/Master/DepthFlow/Resources/Images/DepthFlow.png" width="200"></a>
   <h1>DepthFlow</h1>
   <br>
-  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>Leiapix</b></a> Alternative
+  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>ImmersityAI</b></a> Alternative
 </div>
 
 <br>
+
+# 🔥 Description
+
+> **DepthFlow** is a heavily customizable **steep parallax shader** for adding soul to your images.
+
+- **🛡️ Open Source**, trust and transparency, cross platform, configurable
+- **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060
+- **🎨 Post Processing**: easy vignette, depth of field, lens distortion
+- **⚙️ Flexible**: multiple parameters to tweak and create movement
+- **🎥 Presets**: quality built-in extensively configurable animations `(soon)`
+- **📈 Upscaler** pipeline built-in, powered by [**RealESR**](https://github.com/xinntao/Real-ESRGAN) `(optional)`
+- **♻️ Seamless loops**: perfect for backgrounds, wallpapers, fillers
+- **📔 Video Codecs**: easily export to H264, HEVC, AV1, (+NVENC)
+- **🔱 High Quality**, any resolution, framerate, bitrate, SSAA
+- **⭐️ Smooth borders**: no artifacts, _petite_ step size
+- **🎨 No Watermarks**, user first experience
+- **🌵 Fastest** rendering times in the west
+
+<br>
+
+# 📸 Showcase
 
 👇 Right click and **loop me**!
 
