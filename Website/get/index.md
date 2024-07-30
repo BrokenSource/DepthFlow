@@ -2,8 +2,7 @@
 
 !!! warning "🚧 Better Documentation is Work in Progress 🚧"
 
-!!! tip "Unified Installation"
-    Follow the main <a href="../../get" target="_blank"><b>Installation Guide</b></a>, then continue from here
+{% include-markdown "include/install.md" %}
 
 ## Running DepthFlow
 With PyTorch installed, simply run `depthflow`, a window will open
