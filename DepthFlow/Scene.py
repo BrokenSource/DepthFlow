@@ -12,7 +12,6 @@ from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken import pydantic_cli
 from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -42,7 +41,7 @@ Usage: Chain commands, at minimum just [green]main[/green] for a realtime window
 Examples:
 • Upscaler:    (depthflow realesr --scale 2 input -i ~/image.png main -o ./output.mp4 --ssaa 1.5)
 • Convenience: (depthflow input -i ~/image16x9.png main -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
-• Estimator:   (depthflow anything2 --model large input -i ~/image.png main)
+• Estimator:   (depthflow dav2 --model large input -i ~/image.png main)
 • Post FX:     (depthflow dof -e vignette -e main)
 
 Notes:
@@ -90,29 +89,29 @@ class DepthScene(ShaderScene):
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
         self.typer.command(self.input)
-        self.typer.command(self.state, name="config", naih=True)
+        self.typer.command(self.state, name="config")
 
         with self.typer.panel("🌊 Depth estimators"):
-            self.typer.command(pydantic_cli(DepthAnythingV1(), post=self.set_estimator), name="anything1", naih=True)
-            self.typer.command(pydantic_cli(DepthAnythingV2(), post=self.set_estimator), name="anything2", naih=True)
-            self.typer.command(pydantic_cli(ZoeDepth(), post=self.set_estimator), name="zoedepth", naih=True)
-            self.typer.command(pydantic_cli(Marigold(), post=self.set_estimator), name="marigold", naih=True)
+            self.typer.command(DepthAnythingV1, post=self.set_estimator, name="dav1")
+            self.typer.command(DepthAnythingV2, post=self.set_estimator, name="dav2")
+            self.typer.command(ZoeDepth, post=self.set_estimator)
+            self.typer.command(Marigold, post=self.set_estimator)
 
         with self.typer.panel("⭐️ Upscalers"):
-            self.typer.command(pydantic_cli(Realesr(), post=self.set_upscaler), name="realesr", naih=True)
-            self.typer.command(pydantic_cli(Waifu2x(), post=self.set_upscaler), name="waifu2x", naih=True)
+            self.typer.command(Realesr, post=self.set_upscaler)
+            self.typer.command(Waifu2x, post=self.set_upscaler)
 
         with self.typer.panel("🔮 Animation (Components)"):
-            self.typer.command(pydantic_cli(Linear(), post=self.add_animation), name="linear", naih=True)
-            self.typer.command(pydantic_cli(Constant(), post=self.add_animation), name="constant", naih=True)
-            self.typer.command(pydantic_cli(Sine(), post=self.add_animation), name="sine", naih=True)
+            self.typer.command(Linear,   post=self.add_animation)
+            self.typer.command(Constant, post=self.add_animation)
+            self.typer.command(Sine,     post=self.add_animation)
 
         with self.typer.panel("🔮 Animation (Presets)"):
             ...
 
         with self.typer.panel("✨ Post processing"):
-            self.typer.command(self.state._vignette, name="vignette", naih=True)
-            self.typer.command(self.state._dof, name="dof", naih=True)
+            self.typer.command(self.state._vignette, name="vignette")
+            self.typer.command(self.state._dof, name="dof")
 
     def setup(self):
         if self.image.is_empty():
@@ -148,7 +147,7 @@ class DepthScene(ShaderScene):
         )
 
         # Fixed known rotation
-        # self.camera.rotate2d(1.5*math.sin(self.cycle))
+        self.camera.rotate2d(1.5*math.sin(self.cycle))
 
         # Zoom in on the start
         # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
