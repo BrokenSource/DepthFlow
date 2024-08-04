@@ -89,9 +89,9 @@ class Linear(DepthAnimation):
         Field(default=1.0)
 
     def update(self, scene: DepthScene) -> None:
-        parametric = (self.t0 + (self.t1 - self.t0))
-        parametric = math.pow(parametric, self.exponent)
+        parametric = (scene.tau - self.t0)/(self.t1 - self.t0)
         parametric = (clamp(parametric, 0, 1) if self.clamp else parametric)
+        parametric = math.pow(parametric, self.exponent)
         self.set(scene, value=self.y0 + (self.y1 - self.y0)*parametric)
 
 

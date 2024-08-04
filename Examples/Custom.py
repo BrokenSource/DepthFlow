@@ -29,7 +29,7 @@ def managed():
     scene = YourScene()
     scene.set_upscaler(Realesr())
     scene.input(image="image.png")
-    scene.main(output="./video.mp4", fps=30, duration=5)
+    scene.main(output="./video.mp4", fps=30, time=5)
 
 if __name__ == "__main__":
     # managed()
