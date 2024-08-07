@@ -9,10 +9,11 @@
   <br>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue"></a>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/dw/depthflow?label=Installs&color=blue"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/v/release/BrokenSource/DepthFlow?label=Release&color=green"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=green"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/stargazers"><img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow?label=Stars&color=orange&style=flat"></a>
-  <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&color=orange&style=flat"></a>
+  <a href="https://github.com/BrokenSource/DepthFlow/"><img src="https://img.shields.io/github/v/tag/BrokenSource/BrokenSource?label=GitHub&color=orange"></a>
+  <a href="https://github.com/BrokenSource/DepthFlow/stargazers"><img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow?label=Stars&style=flat&color=orange"></a>
+  <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/v/release/BrokenSource/DepthFlow?label=Release&color=light-green"></a>
+  <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=light-green"></a>
+  <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple"></a>
 </div>
 
 <br>
