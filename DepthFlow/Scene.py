@@ -30,7 +30,7 @@ from DepthFlow.Animation import (
 from DepthFlow.State import DepthState
 
 DEPTHFLOW_ABOUT = """
-🌊 Image to → 2.5D Parallax Effect Video. High quality, user first.\n
+🌊 Image to → 2.5D Parallax Effect Video. A Free and Open Source LeiaPix/ImmersityAI alternative.\n
 
 Usage: Chain commands, at minimum just [green]main[/green] for a realtime window, drag and drop images
 • The --main command is used for exporting videos, setting quality, resolution

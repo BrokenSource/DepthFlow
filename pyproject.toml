@@ -11,7 +11,7 @@ Homepage  = "https://brokensrc.dev"
 name        = "depthflow"
 dynamic     = ["readme"]
 version     = "0.0.0"
-description = "🌊 Image to → 2.5D Parallax Effect Video. Free and Open Source ImmersityAI alternative"
+description = "🌊 Image to → 2.5D Parallax Effect Video. A Free and Open Source LeiaPix/ImmersityAI alternative"
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
 license     = "AGPL-3.0"
 requires-python = ">=3.9"
@@ -25,6 +25,7 @@ managed = true
 
 [project.scripts]
 depthflow = "DepthFlow.__main__:main"
+depthflow-webui = "DepthFlow.__main__:main_webui"
 
 [tool.hatch.build.targets.wheel]
 packages = ["DepthFlow"]

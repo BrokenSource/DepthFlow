@@ -22,7 +22,7 @@ class YourScene(DepthScene):
 
 def manual():
     scene = YourScene()
-    scene.cli(sys.argv[1:])
+    scene.cli()
 
 def managed():
     from Broken.Externals.Upscaler import Realesr

@@ -6,8 +6,11 @@ from DepthFlow import DepthScene
 
 def main():
     with BrokenProfiler("DEPTHFLOW"):
-        depthflow = DepthScene()
-        depthflow.cli(sys.argv[1:])
+        DepthScene().cli()
+
+def main_webui():
+    from DepthFlow.Webui import DepthFlowWebui
+    DepthFlowWebui().launch()
 
 if __name__ == "__main__":
     main()
