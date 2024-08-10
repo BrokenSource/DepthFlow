@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Annotated, Any, Iterable, Tuple
+from typing import Annotated, Iterable, Tuple
 
 from pydantic import BaseModel, Field, PrivateAttr
 from ShaderFlow.Variable import ShaderVariable
@@ -108,13 +106,13 @@ class DepthState(BrokenTyper.BaseModel):
 
     def reset(self) -> None:
         for object in (self, self.vignette, self.dof):
-            for name, field in object.model_fields.items(): # noqa
+            for name, field in object.model_fields.items():
                 setattr(object, name, field.default)
 
     # ---------------------------------------------------------------------------------------------|
 
     class Vignette(BaseModel):
-        """(Post-processing) Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
+        """Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
         enable: Annotated[bool, Option("--enable", "-e",
             help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Vignette effect")] = \
             Field(default=False)
@@ -132,13 +130,17 @@ class DepthState(BrokenTyper.BaseModel):
             yield ShaderVariable("uniform", "float", "iVignetteIntensity", self.intensity)
             yield ShaderVariable("uniform", "float", "iVignetteDecay",     self.decay)
 
-    vignette: str = Field(default_factory=Vignette)
-    """Vignette Post-Processing configuration"""
+    _vignette: Vignette = PrivateAttr(default_factory=Vignette)
+
+    @property
+    def vignette(self) -> Vignette:
+        """Vignette Post-Processing configuration"""
+        return self._vignette
 
     # ---------------------------------------------------------------------------------------------|
 
     class DOF(BaseModel):
-        """(Post-processing) Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
+        """Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
         enable: Annotated[bool, Option("--enable", "-e",
             help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Depth of field effect")] = \
             Field(default=False)
@@ -176,14 +178,19 @@ class DepthState(BrokenTyper.BaseModel):
             yield ShaderVariable("uniform", "int",   "iDofQuality",    self.quality)
             yield ShaderVariable("uniform", "int",   "iDofDirections", self.directions)
 
-    dof: str = Field(default_factory=DOF)
-    """Depth of Field Post-Processing configuration"""
+    _dof: DOF = PrivateAttr(default_factory=DOF)
+
+    @property
+    def dof(self) -> DOF:
+        """Depth of Field Post-Processing configuration"""
+        return self._dof
 
     # ---------------------------------------------------------------------------------------------|
 
     def commands(self, typer: BrokenTyper) -> None:
-        typer.command(self.vignette, name="vignette")
-        typer.command(self.dof, name="dof")
+        with typer.panel("✨ Post processing"):
+            typer.command(self.vignette, name="vignette")
+            typer.command(self.dof, name="dof")
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)

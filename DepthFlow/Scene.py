@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import copy
 import math
 from typing import Annotated, Iterable, List, Union
@@ -88,10 +86,10 @@ class DepthScene(ShaderScene):
 
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
-        self.typer.command(self.input)
 
-        with self.typer.panel("⚙️ Configuration"):
+        with self.typer.panel(self.scene_panel):
             self.typer.command(self.state, name="config")
+            self.typer.command(self.input)
 
         with self.typer.panel("🌊 Depth estimators"):
             self.typer.command(DepthAnythingV1, post=self.set_estimator, name="dav1")
