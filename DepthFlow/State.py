@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from typing import Annotated, Iterable, Tuple
+from typing import Annotated, Any, Iterable, Tuple
 
 from pydantic import BaseModel, Field, PrivateAttr
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
+from Broken import BrokenTyper
 
-class DepthState(BaseModel):
+
+class DepthState(BrokenTyper.BaseModel):
     """Set parallax parameter values on the state [green](See 'config --help' for options)[/green]"""
 
     height: Annotated[float, Option("--height", "-h", min=0, max=1,
@@ -105,14 +107,38 @@ class DepthState(BaseModel):
     # # Special
 
     def reset(self) -> None:
-        for object in (self, self._dof, self._vignette):
+        for object in (self, self.vignette, self.dof):
             for name, field in object.model_fields.items(): # noqa
                 setattr(object, name, field.default)
 
     # ---------------------------------------------------------------------------------------------|
 
-    class _PFX_DOF(BaseModel):
-        """Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
+    class Vignette(BaseModel):
+        """(Post-processing) Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
+        enable: Annotated[bool, Option("--enable", "-e",
+            help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Vignette effect")] = \
+            Field(default=False)
+
+        intensity: Annotated[float, Option("--intensity", "-i", min=0, max=100,
+            help="[green](🟢 Advanced)[/green] Intensity of the Vignette effect")] = \
+            Field(default=30)
+
+        decay: Annotated[float, Option("--decay", "-d", min=0, max=1,
+            help="[green](🟢 Advanced)[/green] Decay of the Vignette effect")] = \
+            Field(default=0.1)
+
+        def pipeline(self) -> Iterable[ShaderVariable]:
+            yield ShaderVariable("uniform", "bool",  "iVignetteEnable",    self.enable)
+            yield ShaderVariable("uniform", "float", "iVignetteIntensity", self.intensity)
+            yield ShaderVariable("uniform", "float", "iVignetteDecay",     self.decay)
+
+    vignette: str = Field(default_factory=Vignette)
+    """Vignette Post-Processing configuration"""
+
+    # ---------------------------------------------------------------------------------------------|
+
+    class DOF(BaseModel):
+        """(Post-processing) Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
         enable: Annotated[bool, Option("--enable", "-e",
             help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Depth of field effect")] = \
             Field(default=False)
@@ -150,42 +176,14 @@ class DepthState(BaseModel):
             yield ShaderVariable("uniform", "int",   "iDofQuality",    self.quality)
             yield ShaderVariable("uniform", "int",   "iDofDirections", self.directions)
 
-    _dof: _PFX_DOF = PrivateAttr(default_factory=_PFX_DOF)
+    dof: str = Field(default_factory=DOF)
     """Depth of Field Post-Processing configuration"""
 
-    @property
-    def dof(self) -> _PFX_DOF:
-        return self._dof
-
     # ---------------------------------------------------------------------------------------------|
 
-    class _PFX_Vignette(BaseModel):
-        """Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
-        enable: Annotated[bool, Option("--enable", "-e",
-            help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Vignette effect")] = \
-            Field(default=False)
-
-        intensity: Annotated[float, Option("--intensity", "-i", min=0, max=100,
-            help="[green](🟢 Advanced)[/green] Intensity of the Vignette effect")] = \
-            Field(default=30)
-
-        decay: Annotated[float, Option("--decay", "-d", min=0, max=1,
-            help="[green](🟢 Advanced)[/green] Decay of the Vignette effect")] = \
-            Field(default=0.1)
-
-        def pipeline(self) -> Iterable[ShaderVariable]:
-            yield ShaderVariable("uniform", "bool",  "iVignetteEnable",    self.enable)
-            yield ShaderVariable("uniform", "float", "iVignetteIntensity", self.intensity)
-            yield ShaderVariable("uniform", "float", "iVignetteDecay",     self.decay)
-
-    _vignette: _PFX_Vignette = PrivateAttr(default_factory=_PFX_Vignette)
-    """Vignette Post-Processing configuration"""
-
-    @property
-    def vignette(self) -> _PFX_Vignette:
-        return self._vignette
-
-    # ---------------------------------------------------------------------------------------------|
+    def commands(self, typer: BrokenTyper) -> None:
+        typer.command(self.vignette, name="vignette")
+        typer.command(self.dof, name="dof")
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)
@@ -199,5 +197,5 @@ class DepthState(BaseModel):
         yield ShaderVariable("uniform", "vec2",  "iDepthOrigin",    self.origin)
         yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
         yield ShaderVariable("uniform", "bool",  "iDepthMirror",    bool(self.mirror))
-        yield from self._dof.pipeline()
-        yield from self._vignette.pipeline()
+        yield from self.vignette.pipeline()
+        yield from self.dof.pipeline()

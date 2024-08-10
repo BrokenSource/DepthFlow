@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Annotated, Tuple
+from typing import TYPE_CHECKING, Annotated, Literal
 
 import typer
 from pydantic import BaseModel, Field
-from typer import Option
 
 from Broken import BrokenEnum, clamp
+from DepthFlow.State import DepthState
 
 
 class Target(BrokenEnum):
@@ -47,7 +47,7 @@ class _DepthAnimation(BaseModel, ABC):
         pass
 
 class DepthAnimation(_DepthAnimation):
-    target: Annotated[Target, Option("-t", "--target",
+    target: Annotated[Target, typer.Option("-t", "--target",
         help="[bold][red](🔴 Common )[/red][/bold] Target animation component to modulate")] = None
 
     def set(self, scene: DepthScene, value: float) -> None:

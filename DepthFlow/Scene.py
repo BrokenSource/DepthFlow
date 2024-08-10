@@ -89,7 +89,9 @@ class DepthScene(ShaderScene):
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
         self.typer.command(self.input)
-        self.typer.command(self.state, name="config")
+
+        with self.typer.panel("⚙️ Configuration"):
+            self.typer.command(self.state, name="config")
 
         with self.typer.panel("🌊 Depth estimators"):
             self.typer.command(DepthAnythingV1, post=self.set_estimator, name="dav1")
@@ -108,10 +110,6 @@ class DepthScene(ShaderScene):
 
         with self.typer.panel("🔮 Animation (Presets)"):
             ...
-
-        with self.typer.panel("✨ Post processing"):
-            self.typer.command(self.state._vignette, name="vignette")
-            self.typer.command(self.state._dof, name="dof")
 
     def setup(self):
         if self.image.is_empty():
