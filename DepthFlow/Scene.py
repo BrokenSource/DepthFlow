@@ -1,5 +1,6 @@
 import copy
 import math
+import os
 from typing import Annotated, Iterable, List, Union
 
 import imgui
@@ -32,19 +33,22 @@ from DepthFlow.State import DepthState
 DEPTHFLOW_ABOUT = """
 🌊 Image to → 2.5D Parallax Effect Video. A Free and Open Source LeiaPix/ImmersityAI alternative.\n
 
-Usage: Chain commands, at minimum just [green]main[/green] for a realtime window, drag and drop images
-• The --main command is used for exporting videos, setting quality, resolution
-• All commands have a --help option with extensible configuration
+Usage: All commands have a --help option with extensible configuration, and are chained together
 
-Examples:
-• Upscaler:    (depthflow realesr --scale 2 input -i ~/image.png main -o ./output.mp4 --ssaa 1.5)
-• Convenience: (depthflow input -i ~/image16x9.png main -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
-• Estimator:   (depthflow dav2 --model large input -i ~/image.png main)
-• Post FX:     (depthflow dof -e vignette -e main)
+[yellow]Examples:[/yellow]
+• Simplest:    [bold blue]depthflow[/bold blue] [blue]main[/blue] [bright_black]# Realtime window, drag and drop images![/bright_black]
+• Your image:  [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image.png [blue]main[/blue]
+• Exporting:   [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image.png [blue]main[/blue] -o ./output.mp4
+• Upscaler:    [bold blue]depthflow[/bold blue] [blue]realesr[/blue] --scale 2 [blue]input[/blue] -i ./image.png [blue]main[/blue] -o ./output.mp4
+• Convenience: [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image16x9.png [blue]main[/blue] -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
+• Estimator:   [bold blue]depthflow[/bold blue] [blue]dav2[/blue] --model large [blue]input[/blue] -i ~/image.png [blue]main[/blue]
+• Post FX:     [bold blue]depthflow[/bold blue] [blue]dof[/blue] -e [blue]vignette[/blue] -e [blue]main[/blue]
 
-Notes:
-• The rendered video loops perfectly, the duration is the main's --time
-• The last two commands must be --input and --main in order to work
+[yellow]Notes:[/yellow]
+• A --ssaa value of 1.5+ is recommended for final exports, real time uses 1.2
+• The [bold blue]main[/bold blue]'s --quality preset gives little improvement for small movements
+• The rendered video loops perfectly, the period is the main's --time
+• The last two commands must be [bold blue]input[/bold blue] and [bold blue]main[/bold blue] (in order) to work
 """
 
 # -------------------------------------------------------------------------------------------------|
@@ -124,29 +128,40 @@ class DepthScene(ShaderScene):
         self.aspect_ratio = (16/9)
 
     def update(self):
-        # self.state.reset()
-        # for item in self.animation:
-        #     item.update(self)
-        # return
+        if (eval(os.getenv("PRESETS", "0"))):
+            self.state.reset()
+            for item in self.animation:
+                item.update(self)
+            return
 
-        # In and out dolly zoom
-        self.state.dolly = (0.5 + 0.5*math.cos(self.cycle))
+        elif (eval(os.getenv("ORBITAL", "1"))):
+            self.state.isometric = 0.5 + 0.5 * math.cos(self.cycle/2)**2
+            self.state.offset_x = 0.5 * math.sin(self.cycle)
+            self.state.height = 0.30
+            self.state.static = 0.50
+            self.state.focus = 0.50
 
-        # Infinite 8 loop shift
-        self.state.offset_x = (0.2 * math.sin(1*self.cycle))
-        self.state.offset_y = (0.2 * math.sin(2*self.cycle))
+        elif (eval(os.getenv("ORGANIC", "0"))):
+            self.state.isometric = 0.5
 
-        # Integral rotation (better for realtime)
-        self.camera.rotate(
-            direction=self.camera.base_z,
-            angle=math.cos(self.cycle)*self.dt*0.4
-        )
+            # In and out dolly zoom
+            self.state.dolly = (0.5 + 0.5*math.cos(self.cycle))
 
-        # Fixed known rotation
-        self.camera.rotate2d(1.5*math.sin(self.cycle))
+            # Infinite 8 loop shift
+            self.state.offset_x = (0.2 * math.sin(1*self.cycle))
+            self.state.offset_y = (0.2 * math.sin(2*self.cycle))
 
-        # Zoom in on the start
-        # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
+            # Integral rotation (better for realtime)
+            self.camera.rotate(
+                direction=self.camera.base_z,
+                angle=math.cos(self.cycle)*self.dt*0.4
+            )
+
+            # Fixed known rotation
+            self.camera.rotate2d(1.5*math.sin(self.cycle))
+
+            # Zoom in on the start
+            # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
 
     def handle(self, message: ShaderMessage):
         ShaderScene.handle(self, message)

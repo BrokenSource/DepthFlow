@@ -1,4 +1,6 @@
+import multiprocessing
 import os
+from pathlib import Path
 
 import gradio
 from attrs import define
@@ -13,28 +15,30 @@ from Broken.Externals.Depthmap import (
 from Broken.Externals.Upscaler import NoUpscaler, Realesr, Waifu2x
 from DepthFlow import DEPTHFLOW, DepthScene
 
-
-class Quality(BrokenEnum):
-    Low    = 0
-    Medium = 25
-    High   = 50
-    Ultra  = 100
+PROCESS_MANAGER = multiprocessing.Manager()
 
 @define(slots=False)
 class DepthFlowWebui:
     interface: gradio.Blocks = None
 
+    qualities = {
+        "Low": 0,
+        "Medium": 25,
+        "High": 50,
+        "Ultra": 100,
+    }
+
     estimators = {
         "DepthAnything V2": DepthAnythingV2,
         "DepthAnything V1": DepthAnythingV1,
         "ZoeDepth": ZoeDepth,
-        "Marigold": Marigold
+        "Marigold": Marigold,
     }
 
     upscalers = {
         "No Upscaler": NoUpscaler,
         "Real-ESRGAN": Realesr,
-        "Waifu2x": Waifu2x
+        "Waifu2x": Waifu2x,
     }
 
     resolutions = {
@@ -60,22 +64,33 @@ class DepthFlowWebui:
         return width, height
 
     def render(self, image, depth, width, height, fps, quality, ssaa, time, repeat, estimator, upscaler):
-        scene = DepthScene(backend="headless")
-        scene.input(image=image, depth=depth)
-        scene.set_estimator(self.estimators[estimator]())
-        scene.set_upscaler(self.upscalers[upscaler]())
-        video = scene.main(
-            width=int(width),
-            height=int(height),
-            fps=int(fps),
-            quality=Quality.get(quality).value,
-            ssaa=float(ssaa),
-            time=float(time),
-            repeat=int(repeat),
-            render=True
-        )[0]
-        # scene.window.destroy()
-        return gradio.Video(video)
+        if (image is None) or (depth is None):
+            raise ValueError("Please provide an image and a depthmap")
+
+        def _process():
+            scene = DepthScene(backend="headless")
+            scene.set_estimator(self.estimators[estimator]())
+            scene.set_upscaler(self.upscalers[upscaler]())
+            scene.input(image=image, depth=depth)
+            shared.value = scene.main(
+                width=int(width),
+                height=int(height),
+                fps=int(fps),
+                quality=int(self.qualities[quality]),
+                ssaa=float(ssaa),
+                time=float(time),
+                repeat=int(repeat),
+                output="WebUI.mp4",
+                render=True
+            )[0]
+
+        # Note: This must be done on a separate process for individual OpenGL contexts per render
+        shared = PROCESS_MANAGER.Value("s", "")
+        process = multiprocessing.Process(target=_process)
+        process.start()
+        process.join()
+
+        return gradio.Video(value=Path(shared.value))
 
     def launch(self):
         with gradio.Blocks(
@@ -125,9 +140,7 @@ class DepthFlowWebui:
                         inputs=[self.resolution_preset],
                         outputs=[self.width, self.height]
                     )
-                    self.quality = gradio.Dropdown(label="Quality",
-                        choices=Quality.values(), value=Quality.High)
-
+                    self.quality = gradio.Dropdown(label="Quality", choices=list(self.qualities), value="High")
                     self.ssaa = gradio.Slider(label="SSAA", minimum=0.1, maximum=2, step=0.1, value=1.0)
                     self.fps = gradio.Slider(label="FPS", minimum=1, maximum=120, step=1, value=60)
 
@@ -141,10 +154,15 @@ class DepthFlowWebui:
                         label="Number of Loops", value=1
                     )
 
-                render_button = gradio.Button("Render", size="lg")
-                self.video = gradio.PlayableVideo(label="Output Video")
+                render = gradio.Button("Render", size="lg")
 
-                render_button.click(
+                self.video = gradio.Video(
+                    label="Output Video",
+                    interactive=False,
+                    autoplay=True
+                )
+
+                render.click(
                     self.render,
                     inputs=[self.image, self.depth, self.width, self.height, self.fps, self.quality, self.ssaa, self.time, self.repeat, self.estimator, self.upscaler],
                     outputs=[self.video]
@@ -152,7 +170,7 @@ class DepthFlowWebui:
 
             gradio.Markdown(''.join((
                 "Made with ❤️ by [**Tremeschin**](https://github.com/Tremeschin) | ",
-                f"**Version** {DEPTHFLOW.VERSION} | ",
+                f"**Version** {DEPTHFLOW.VERSION} | **Alpha** WebUI | ",
                 "[**Website**](https://brokensrc.dev/) | "
                 "[**Discord**](https://discord.com/invite/KjqvcYwRHm/) | ",
                 "[**Telegram**](https://t.me/brokensource/) | ",
@@ -160,6 +178,6 @@ class DepthFlowWebui:
             )))
 
         self.interface.launch(
-            share=bool(eval(os.getenv("SHARE_WEBUI", "0"))),
+            share=bool(eval(os.getenv("SHARE", "0"))),
             allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA]
         )
