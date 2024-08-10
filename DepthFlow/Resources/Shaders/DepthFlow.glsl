@@ -22,13 +22,11 @@ void main() {
         return;
     }
 
-    // // DepthFlow math
-
     // Point where the ray intersects with the fixed image plane
     vec2 lambda = (iCamera.gluv - iCamera.position.xy) + iDepthCenter;
 
     // Same as above but overshoot by depth focal point (fixed offsets point at depth=focus)
-    vec2 sigma = iCamera.gluv - iCamera.position.xy * (1 + iDepthStatic*iDepthHeight/iDepthDistance) + iDepthCenter;
+    vec2 sigma = lambda - iCamera.position.xy * (iDepthStatic*iDepthHeight/iDepthDistance);
 
     // The vector from Lambda to the camera's projection on the XY plane
     vec2 displacement = (iCamera.origin.xy - lambda) + iDepthOrigin;
@@ -55,45 +53,31 @@ void main() {
     /* Main loop */ {
 
         // The quality of the parallax effect is how tiny the steps are
-        // defined in pixels here. '* max_offset' without distortions
-        float max_dimension = max(iResolution.x, iResolution.y);
-        float max_quality = max_dimension * 0.50;
-        float min_quality = max_dimension * 0.05;
-        float quality = mix(min_quality, max_quality, iQuality);
+        float side = max(iResolution.x, iResolution.y);
+        float quality = mix((side*0.05), (side*0.50), iQuality);
 
-        // Optimization: We'll do two swipes, one that is of lower quality (probe) just to find the
-        // nearest intersection with the depth map, and then flip direction, at a finer (quality)
+        // Optimization: Low quality first pass 'overshoot', high quality second pass 'backwards'
         float probe = mix(50, 100, iQuality);
-        bool  swipe = true;
         float i = 1;
 
         for (int stage=0; stage<2; stage++) {
             bool FORWARD  = (stage == 0);
             bool BACKWARD = (stage == 1);
+            float di = (FORWARD ? (-1.0/probe) : (1.0/quality));
 
-            while (swipe) {
-
-                // Touched z=1 plane, no intersection
-                if (FORWARD) {
-                    if (i < 0) {
-                        swipe = false;
-                        break;
-                    }
-
-                // Out of bounds walking up
-                } else if (1 < i) {
+            while (true) {
+                if (FORWARD && i < 0)
                     break;
-                }
+                if (BACKWARD && 1 < i)
+                    break;
+                i += di;
 
-                // Integrate 'i', the ray parametric distance
-                i -= FORWARD ? (1.0/probe) : (-1.0/quality);
+                // The current point 'walks' on the util distance
+                point_gluv   = sigma + (i*beta*walk);
+                point_height = gtexture(depth, point_gluv, iDepthMirror).r;
 
-                // Walk the util distance vector
-                vec2 sample = sigma + (i*beta*walk);
-
-                // Interpolate between (0=max) and (0=min) depending on focus
-                float true_height  = gtexture(depth, sample, iDepthMirror).r;
-                float depth_height = iDepthHeight * mix(true_height, 1-true_height, iDepthInvert);
+                // Scale the values to intensity parameters
+                float depth_height = iDepthHeight * mix(point_height, 1-point_height, iDepthInvert);
                 float walk_height  = (i*beta) / tan_theta;
 
                 // Stop the first moment we're inside the surface
@@ -102,8 +86,6 @@ void main() {
 
                 // Finish when we're outside at smaller steps
                 } else if (BACKWARD) {
-                    point_height = true_height;
-                    point_gluv = sample;
                     break;
                 }
             }
@@ -138,4 +120,3 @@ void main() {
         fragColor.rgb *= clamp(pow(linear, iVignetteDecay), 0, 1);
     }
 }
-
