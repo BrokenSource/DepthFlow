@@ -135,7 +135,7 @@ class DepthScene(ShaderScene):
             return
 
         elif (eval(os.getenv("ORBITAL", "1"))):
-            self.state.isometric = 0.5 + 0.5 * math.cos(self.cycle/2)**2
+            self.state.isometric = 0.51 + 0.5 * math.cos(self.cycle/2)**2
             self.state.offset_x = 0.5 * math.sin(self.cycle)
             self.state.height = 0.30
             self.state.static = 0.50
