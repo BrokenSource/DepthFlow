@@ -5,7 +5,7 @@ from pathlib import Path
 import gradio
 from attrs import define
 
-from Broken import BrokenEnum
+import Broken
 from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -57,6 +57,7 @@ class DepthFlowWebui:
     }
 
     def estimate_depth(self, estimator, image):
+        if (image is None): return None
         return self.estimators[estimator]().estimate(image)
 
     def set_resolution(self, resolution_name):
@@ -179,5 +180,8 @@ class DepthFlowWebui:
 
         self.interface.launch(
             share=bool(eval(os.getenv("SHARE", "0"))),
-            allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA]
+            allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA],
+            favicon_path=DEPTHFLOW.RESOURCES.ICON_PNG,
+            quiet=Broken.RELEASE,
+            inbrowser=True,
         )
