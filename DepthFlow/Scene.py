@@ -40,7 +40,7 @@ Usage: All commands have a --help option with extensible configuration, and are 
 • Your image:  [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image.png [blue]main[/blue]
 • Exporting:   [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image.png [blue]main[/blue] -o ./output.mp4
 • Upscaler:    [bold blue]depthflow[/bold blue] [blue]realesr[/blue] --scale 2 [blue]input[/blue] -i ./image.png [blue]main[/blue] -o ./output.mp4
-• Convenience: [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image16x9.png [blue]main[/blue] -h 1440) [bright_black]# Auto calculates w=2560[/bright_black]
+• Convenience: [bold blue]depthflow[/bold blue] [blue]input[/blue] -i ./image16x9.png [blue]main[/blue] -h 1440 [bright_black]# Auto calculates w=2560[/bright_black]
 • Estimator:   [bold blue]depthflow[/bold blue] [blue]dav2[/blue] --model large [blue]input[/blue] -i ~/image.png [blue]main[/blue]
 • Post FX:     [bold blue]depthflow[/bold blue] [blue]dof[/blue] -e [blue]vignette[/blue] -e [blue]main[/blue]
 
@@ -111,18 +111,12 @@ class DepthScene(ShaderScene):
             self.typer.command(Realesr, post=self.set_upscaler)
             self.typer.command(Waifu2x, post=self.set_upscaler)
 
-        with self.typer.panel("🔮 Animation (Components)"):
-            self.typer.command(Linear,   post=self.add_animation)
-            self.typer.command(Constant, post=self.add_animation)
-            self.typer.command(Sine,     post=self.add_animation)
-
         with self.typer.panel("🔮 Animation (Presets)"):
             ...
 
     def setup(self):
         if self.image.is_empty():
             self.input(image=DepthScene.DEFAULT_IMAGE)
-        self.ssaa = 1.2
         self.time = 0
 
     def build(self):
@@ -132,6 +126,7 @@ class DepthScene(ShaderScene):
         self.normal = ShaderTexture(scene=self, name="normal").repeat(False)
         self.shader.fragment = self.DEPTH_SHADER
         self.aspect_ratio = (16/9)
+        self.ssaa = 1.2
 
     def update(self):
         if (eval(os.getenv("PRESETS", "0"))):
@@ -140,12 +135,17 @@ class DepthScene(ShaderScene):
                 item.update(self)
             return
 
-        elif (eval(os.getenv("ORBITAL", "1"))):
-            self.state.isometric = 0.51 + 0.5 * math.cos(self.cycle/2)**2
-            self.state.offset_x = 0.5 * math.sin(self.cycle)
-            self.state.height = 0.30
+        elif eval(os.getenv("VERTICAL", "0")):
+            self.state.offset_y = (2/math.pi) * math.asin(math.cos(self.cycle)) - 0.5
+            self.state.isometric = 0.8
+            self.state.height = 0.15
             self.state.static = 0.50
-            self.state.focus = 0.50
+
+        elif eval(os.getenv("HORIZONTAL", "0")):
+            self.state.offset_x = (2/math.pi) * math.asin(math.cos(self.cycle)) - 0.5
+            self.state.isometric = 0.8
+            self.state.height = 0.15
+            self.state.static = 0.50
 
         elif (eval(os.getenv("ORGANIC", "0"))):
             self.state.isometric = 0.5
@@ -168,6 +168,14 @@ class DepthScene(ShaderScene):
 
             # Zoom in on the start
             # self.config.zoom = 1.2 - 0.2*(2/math.pi)*math.atan(self.time)
+
+        # "ORBITAL" default
+        else:
+            self.state.isometric = 0.51 + 0.5 * math.cos(self.cycle/2)**2
+            self.state.offset_x = 0.5 * math.sin(self.cycle)
+            self.state.static = 0.50
+            self.state.height = 0.25
+            self.state.focus = 0.50
 
     def handle(self, message: ShaderMessage):
         ShaderScene.handle(self, message)

@@ -25,6 +25,7 @@ managed = true
 
 [project.scripts]
 depthflow = "DepthFlow.__main__:main"
+depth = "DepthFlow.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["DepthFlow"]

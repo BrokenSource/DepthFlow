@@ -1,5 +1,6 @@
 /*
-// (c) 2023-2024 CC BY-SA 4.0, Tremeschin
+// (c) 2023-2024 CC BY-SA 4.0, Tremeschin. Technically also AGPL-3.0
+// but oh well, get in touch if you want to use it privately
 */
 
 void main() {

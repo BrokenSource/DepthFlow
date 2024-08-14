@@ -1,3 +1,6 @@
+"""
+Advanced example of parallel rendering using DepthFlow
+"""
 import math
 import time
 from multiprocessing import Manager, Process

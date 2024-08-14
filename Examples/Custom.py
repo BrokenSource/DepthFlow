@@ -1,5 +1,7 @@
+"""
+Basic example of defining your own class based on DepthScene
+"""
 import math
-import sys
 
 from DepthFlow import DepthScene
 from ShaderFlow.Message import ShaderMessage
@@ -7,10 +9,10 @@ from ShaderFlow.Message import ShaderMessage
 # Note: DepthScene.method(self) is preferred over super().method(self) for clarity
 
 class YourScene(DepthScene):
-    """Example of defining your own class based on DepthScene"""
 
     def update(self):
         self.state.offset_x = math.sin(2*self.cycle)
+        ...
 
     def pipeline(self):
         yield from DepthScene.pipeline(self)
@@ -26,7 +28,8 @@ def manual():
 
 def managed():
     from Broken.Externals.Upscaler import Realesr
-    scene = YourScene()
+    # Note: For headless rendering / server, use backend='headless'
+    scene = YourScene(backend="glfw")
     scene.set_upscaler(Realesr())
     scene.input(image="image.png")
     scene.main(output="./video.mp4", fps=30, time=5)

@@ -20,7 +20,7 @@ class DepthState(BrokenTyper.BaseModel):
 
     focus: Annotated[float, Option("--focus", "-f", min=0, max=1,
         help="[bold][red](🔴 Basic   )[/red][/bold] Focal depth plane of [bold][cyan]perspective[/cyan][/bold] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/medium_purple3]")] = \
-        Field(default=0.5)
+        Field(default=0.0)
 
     zoom: Annotated[float, Option("--zoom", "-z", min=0,
         help="[bold][red](🔴 Basic   )[/red][/bold] Camera [bold][cyan]zoom factor[/cyan][/bold] [medium_purple3](2 means a quarter of the image is visible)[/medium_purple3]")] = \

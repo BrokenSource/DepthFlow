@@ -80,7 +80,7 @@ class DepthFlowWebui:
                 quality=int(self.qualities[quality]),
                 ssaa=float(ssaa),
                 time=float(time),
-                repeat=int(repeat),
+                loop=int(repeat),
                 output="WebUI.mp4",
                 render=True
             )[0]
