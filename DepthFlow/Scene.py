@@ -76,6 +76,9 @@ class DepthScene(ShaderScene):
     def set_estimator(self, estimator: DepthEstimator) -> None:
         self.estimator = estimator
 
+    def load_model(self) -> None:
+        self.estimator.load_model()
+
     def input(self,
         image: Annotated[str, Option("--image", "-i", help="Background Image [green](Path, URL, NumPy, PIL)[/green]")],
         depth: Annotated[str, Option("--depth", "-d", help="Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
@@ -95,6 +98,7 @@ class DepthScene(ShaderScene):
 
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
+        self.typer.command(self.load_model, hidden=True)
 
         with self.typer.panel(self.scene_panel):
             self.typer.command(self.state, name="config")
