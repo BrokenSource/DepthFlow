@@ -56,16 +56,13 @@ class DepthScene(ShaderScene):
     DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
 
     # DepthFlow objects
-    animation: List[Animation] = field(factory=list)
+    animation: List[Union[Animation, Preset]] = field(factory=list)
     estimator: DepthEstimator = field(factory=DepthAnythingV2)
     upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthState = field(factory=DepthState)
 
     def add_animation(self, animation: Union[Animation, Preset]) -> None:
-        if issubclass(type(animation), Preset):
-            self.animation.extend(animation.animation())
-            return
-        self.animation.append(copy.deepcopy(animation))
+        self.animation.append(animation)
 
     def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
         self.upscaler = upscaler
@@ -112,11 +109,11 @@ class DepthScene(ShaderScene):
             self.typer.command(Realesr, post=self.set_upscaler)
             self.typer.command(Waifu2x, post=self.set_upscaler)
 
-        with self.typer.panel("🔮 Animation (Components)"):
+        with self.typer.panel("🚀 Animation (Components, advanced)"):
             for animation in Components.members():
                 self.typer.command(animation, post=self.add_animation)
 
-        with self.typer.panel("🔮 Animation (Presets)"):
+        with self.typer.panel("🔮 Animation (Presets, recommended)"):
             for preset in Presets.members():
                 self.typer.command(preset, post=self.add_animation)
 
@@ -140,7 +137,11 @@ class DepthScene(ShaderScene):
         self.state.reset()
 
         for item in self.animation:
-            item.update(self)
+            if issubclass(type(item), Preset):
+                for animation in item.animation():
+                    animation(self)
+            else:
+                item(self)
 
     def handle(self, message: ShaderMessage):
         ShaderScene.handle(self, message)
