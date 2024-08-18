@@ -8,48 +8,48 @@ from Broken import BrokenTyper
 
 
 class DepthState(BrokenTyper.BaseModel):
-    """Set parallax parameter values on the state [green](See 'config --help' for options)[/green]"""
+    """Set parallax parameter values on the state [bold green](See 'config --help' for options)[/bold green]"""
 
     height: Annotated[float, Option("--height", "-h", min=0, max=1,
-        help="[bold][red](🔴 Basic   )[/red][/bold] Depthmap's peak value, the effect [bold][cyan]intensity[/cyan][/bold] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[/medium_purple3]")] = \
-        Field(default=0.35)
+        help="[bold red](🔴 Basic   )[/red bold] Depthmap's peak value, the effect [bold cyan]intensity[/cyan bold] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[/medium_purple3]")] = \
+        Field(default=0.25)
 
     static: Annotated[float, Option("--static", "-s", min=0, max=1,
-        help="[bold][red](🔴 Basic   )[/red][/bold] Focal depth plane of [bold][cyan]offsets[/cyan][/bold] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/medium_purple3]")] = \
+        help="[bold red](🔴 Basic   )[/red bold] Focal depth plane of [bold cyan]offsets[/cyan bold] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/medium_purple3]")] = \
         Field(default=0.0)
 
     focus: Annotated[float, Option("--focus", "-f", min=0, max=1,
-        help="[bold][red](🔴 Basic   )[/red][/bold] Focal depth plane of [bold][cyan]perspective[/cyan][/bold] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/medium_purple3]")] = \
+        help="[bold red](🔴 Basic   )[/red bold] Focal depth plane of [bold cyan]perspective[/cyan bold] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/medium_purple3]")] = \
         Field(default=0.0)
 
     zoom: Annotated[float, Option("--zoom", "-z", min=0,
-        help="[bold][red](🔴 Basic   )[/red][/bold] Camera [bold][cyan]zoom factor[/cyan][/bold] [medium_purple3](2 means a quarter of the image is visible)[/medium_purple3]")] = \
+        help="[bold red](🔴 Basic   )[/red bold] Camera [bold cyan]zoom factor[/cyan bold] [medium_purple3](2 means a quarter of the image is visible)[/medium_purple3]")] = \
         Field(default=1.0)
 
     isometric: Annotated[float, Option("--isometric", "-iso", min=0, max=1,
-        help="[bold][yellow](🟡 Medium  )[/yellow][/bold] Isometric factor of [bold][cyan]camera projections[/cyan][/bold] [medium_purple3](Zero is fully perspective, 1 is orthographic)[/medium_purple3]")] = \
+        help="[bold yellow](🟡 Medium  )[/yellow bold] Isometric factor of [bold cyan]camera projections[/cyan bold] [medium_purple3](Zero is fully perspective, 1 is orthographic)[/medium_purple3]")] = \
         Field(default=0.0)
 
     dolly: Annotated[float, Option("--dolly", "-d", min=0, max=1,
-        help="[bold][yellow](🟡 Medium  )[/yellow][/bold] Same effect as --isometric, dolly zoom [medium_purple3](Move back ray projection origins by this amount)[/medium_purple3]")] = \
+        help="[bold yellow](🟡 Medium  )[/yellow bold] Same effect as --isometric, dolly zoom [medium_purple3](Move back ray projection origins by this amount)[/medium_purple3]")] = \
         Field(default=0.0)
 
     invert: Annotated[float, Option("--invert", "-inv", min=0, max=1,
-        help="[bold][yellow](🟡 Medium  )[/yellow][/bold] Interpolate depth values between (0=far, 1=near) and vice-versa, as in [bold][cyan]mix(height, 1-height, invert)[/bold][/cyan]")] = \
+        help="[bold yellow](🟡 Medium  )[/yellow bold] Interpolate depth values between (0=far, 1=near) and vice-versa, as in [bold cyan]mix(height, 1-height, invert)[/bold cyan]")] = \
         Field(default=0.0)
 
     mirror: Annotated[bool, Option("--mirror", "-m", " /-n",
-        help="[bold][yellow](🟡 Medium  )[/yellow][/bold] Apply [bold][cyan]GL_MIRRORED_REPEAT[/cyan][/bold] to the image [medium_purple3](The image is mirrored out of bounds on the respective edge)[/medium_purple3]")] = \
+        help="[bold yellow](🟡 Medium  )[/yellow bold] Apply [bold cyan]GL_MIRRORED_REPEAT[/cyan bold] to the image [medium_purple3](The image is mirrored out of bounds on the respective edge)[/medium_purple3]")] = \
         Field(default=True)
 
     # # Center
 
     center_x: Annotated[float, Option("--center-x", "-cex", min=0, max=1,
-        help="[green](🟢 Advanced)[/green] Horizontal 'true' offset of the camera [medium_purple3](The camera *is* above this point)[/medium_purple3]")] = \
+        help="[bold green](🟢 Advanced)[/bold green] Horizontal 'true' offset of the camera [medium_purple3](The camera *is* above this point)[/medium_purple3]")] = \
         Field(default=0)
 
     center_y: Annotated[float, Option("--center-y", "-cey", min=0, max=1,
-        help="[green](🟢 Advanced)[/green] Vertical   'true' offset of the camera [medium_purple3](The camera *is* above this point)[/medium_purple3]")] = \
+        help="[bold green](🟢 Advanced)[/bold green] Vertical   'true' offset of the camera [medium_purple3](The camera *is* above this point)[/medium_purple3]")] = \
         Field(default=0)
 
     @property
@@ -67,11 +67,11 @@ class DepthState(BrokenTyper.BaseModel):
     """Hozirontal focal point of the offsets, *as if* the camera was above this point"""
 
     origin_x: Annotated[float, Option("--origin-x", "-orx",
-        help="[green](🟢 Advanced)[/green] Horizontal focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/medium_purple3]")] = \
+        help="[bold green](🟢 Advanced)[/bold green] Horizontal focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/medium_purple3]")] = \
         Field(default=0)
 
     origin_y: Annotated[float, Option("--origin-y", "-ory", min=0, max=1,
-        help="[green](🟢 Advanced)[/green] Vertical   focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/medium_purple3]")] = \
+        help="[bold green](🟢 Advanced)[/bold green] Vertical   focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/medium_purple3]")] = \
         Field(default=0)
 
     @property
@@ -86,11 +86,11 @@ class DepthState(BrokenTyper.BaseModel):
     # # Parallax
 
     offset_x: Annotated[float, Option("--offset-x", "-ofx",
-        help="[green](🟢 Advanced)[/green] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
+        help="[bold green](🟢 Advanced)[/bold green] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
         Field(default=0)
 
     offset_y: Annotated[float, Option("--offset-y", "-ofy",
-        help="[green](🟢 Advanced)[/green] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
+        help="[bold green](🟢 Advanced)[/bold green] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
         Field(default=0)
 
     @property
@@ -112,17 +112,17 @@ class DepthState(BrokenTyper.BaseModel):
     # ---------------------------------------------------------------------------------------------|
 
     class Vignette(BaseModel):
-        """Set vignette parameters [green](See 'vignette --help' for options)[/green]"""
+        """Set vignette parameters [bold green](See 'vignette --help' for options)[/bold green]"""
         enable: Annotated[bool, Option("--enable", "-e",
-            help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Vignette effect")] = \
+            help="[bold blue](🔵 Special )[/blue bold] Enable the Vignette effect")] = \
             Field(default=False)
 
         intensity: Annotated[float, Option("--intensity", "-i", min=0, max=100,
-            help="[green](🟢 Advanced)[/green] Intensity of the Vignette effect")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Intensity of the Vignette effect")] = \
             Field(default=30)
 
         decay: Annotated[float, Option("--decay", "-d", min=0, max=1,
-            help="[green](🟢 Advanced)[/green] Decay of the Vignette effect")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Decay of the Vignette effect")] = \
             Field(default=0.1)
 
         def pipeline(self) -> Iterable[ShaderVariable]:
@@ -140,33 +140,33 @@ class DepthState(BrokenTyper.BaseModel):
     # ---------------------------------------------------------------------------------------------|
 
     class DOF(BaseModel):
-        """Set depth of field parameters [green](See 'dof --help' for options)[/green]"""
+        """Set depth of field parameters [bold green](See 'dof --help' for options)[/bold green]"""
         enable: Annotated[bool, Option("--enable", "-e",
-            help="[bold][blue](🔵 Special )[/blue][/bold] Enable the Depth of field effect")] = \
+            help="[bold blue](🔵 Special )[/blue bold] Enable the Depth of field effect")] = \
             Field(default=False)
 
         start: Annotated[float, Option("--start", "-a",
-            help="[green](🟢 Advanced)[/green] Effect starts at this depth distance")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Effect starts at this depth distance")] = \
             Field(default=0.6)
 
         end: Annotated[float, Option("--end", "-b",
-            help="[green](🟢 Advanced)[/green] Effect ends at this depth distance")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Effect ends at this depth distance")] = \
             Field(default=1.0)
 
         exponent: Annotated[float, Option("--exponent", "-t", min=0, max=10,
-            help="[green](🟢 Advanced)[/green] Effect depth exponent")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Effect depth exponent")] = \
             Field(default=2.0)
 
         intensity: Annotated[float, Option("--intensity", "-i", min=0, max=2,
-            help="[green](🟢 Advanced)[/green] Effect blur intensity")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Effect blur intensity")] = \
             Field(default=1.0)
 
         quality: Annotated[int, Option("--quality", "-q", min=1, max=16,
-            help="[green](🟢 Advanced)[/green] Effect blur quality (radial steps)")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Effect blur quality (radial steps)")] = \
             Field(default=4)
 
         directions: Annotated[int, Option("--directions", "-d",
-            help="[green](🟢 Advanced)[/green] Effect blur quality (directions)")] = \
+            help="[bold green](🟢 Advanced)[/bold green] Effect blur quality (directions)")] = \
             Field(default=16)
 
         def pipeline(self) -> Iterable[ShaderVariable]:

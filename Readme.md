@@ -20,7 +20,7 @@
 
 # 🔥 Description
 
-> **DepthFlow** is a heavily customizable **steep parallax shader** for adding soul to your images.
+> **DepthFlow** is a heavily customizable **parallax shader** for adding soul to your images.
 
 - **🛡️ Open Source**, trust and transparency, cross platform, configurable
 - **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060
