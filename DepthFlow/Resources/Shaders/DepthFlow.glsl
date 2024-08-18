@@ -4,7 +4,7 @@
 */
 
 void main() {
-    Camera iCamera = iInitCamera(gluv);
+    iCameraInit();
 
     // The distance the maximum depth projection plane is from the camera.
     float iDepthDistance = 1 + mix(0, iDepthHeight, iDepthFocus);
@@ -15,7 +15,7 @@ void main() {
     iCamera.dolly       += iDepthDolly;
     iCamera.zoom        += (iDepthZoom - 1) + (iDepthDistance - 1);
     iCamera.plane_point  = vec3(0, 0, iDepthDistance);
-    iCamera              = iProjectCamera(iCamera);
+    iCamera = iProjectCamera(iCamera);
 
     // Doesn't intersect with the XY plane
     if (iCamera.out_of_bounds) {
