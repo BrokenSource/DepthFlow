@@ -57,7 +57,7 @@ class Animation(BaseModel, ABC):
         Field(default=Target.Nothing)
 
     reverse: Annotated[bool, typer.Option("-r", "--reverse",
-        help="[yellow](🟡 Advanced)[/yellow] Reverse the animation")] = \
+        help="[bold red](🔴 Common )[/red bold] Reverse the animation")] = \
         Field(default=False)
 
     bias: Annotated[float, typer.Option("-b", "--bias",
@@ -256,7 +256,7 @@ class Preset(BaseModel, ABC):
         Field(default=1.0)
 
     reverse: Annotated[bool, typer.Option("-r", "--reverse",
-        help="[yellow](🟡 Advanced)[/yellow] Reverse the animation")] = \
+        help="[bold red](🔴 Common )[/red bold] Reverse the animation")] = \
         Field(default=False)
 
     @abstractmethod
@@ -293,7 +293,7 @@ class Presets(GetMembers):
                 reverse=self.reverse,
             )
 
-    class Circular(Preset, _Reverse, _Loop, _Phase, _AmplitudeXYZ):
+    class Circular(Preset, _Reverse, _Phase, _AmplitudeXYZ):
         """Add a Circular motion to the camera [green](See 'circle --help' for options)[/green]"""
         def animation(self):
             yield Components.Cosine(
