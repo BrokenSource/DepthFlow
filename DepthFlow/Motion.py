@@ -233,8 +233,8 @@ class Components(GetMembers):
     class Triangle(_WaveBase):
         """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[/green]"""
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            t = (tau + self.phase + 0.25) % (1 / self.cycles)
-            return self.amplitude * (1 - 4 * abs((t * self.cycles) - 0.5))
+            tau = (tau * self.cycles + self.phase + 0.25) % 1
+            return self.amplitude * (1 - 4 * abs(tau - 0.5))
 
 # -------------------------------------------------------------------------------------------------|
 # Full presets
@@ -267,10 +267,10 @@ class Presets(GetMembers):
             yield Components.Add(target=Target.Static, value=self.static)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetY,
-                amplitude = self.intensity,
-                cycles    = (1 if self.loop else 0.25),
                 reverse   = self.reverse,
-                phase     = self.phase,
+                amplitude = self.intensity,
+                cycles    = (1 if self.loop else 0.50),
+                phase     = self.phase - (0 if self.loop else 0.25),
             )
 
     class Horizontal(Preset):
@@ -285,10 +285,10 @@ class Presets(GetMembers):
             yield Components.Add(target=Target.Static, value=self.static)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetX,
-                amplitude = self.intensity,
-                cycles    = (1 if self.loop else 0.25),
                 reverse   = self.reverse,
-                phase     = self.phase,
+                amplitude = self.intensity,
+                cycles    = (1 if self.loop else 0.50),
+                phase     = self.phase - (0 if self.loop else 0.25),
             )
 
     class Circular(Preset):
@@ -302,22 +302,22 @@ class Presets(GetMembers):
         def animation(self):
             yield Components.Add(target=Target.Static, value=self.static)
             yield (Components.Sine if self.smooth else Components.Triangle)(
-                amplitude = (self.intensity*self.amplitude[0]),
                 target    = Target.OffsetX,
+                reverse   = self.reverse,
+                amplitude = (self.intensity*self.amplitude[0]),
                 phase     = self.phase[0] + 0.25,
-                reverse   = self.reverse,
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
-                amplitude = (self.intensity*self.amplitude[1]),
                 target    = Target.OffsetY,
-                phase     = self.phase[1],
                 reverse   = self.reverse,
+                amplitude = (self.intensity*self.amplitude[1]),
+                phase     = self.phase[1],
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
-                amplitude = (self.intensity*self.amplitude[2]*0.2),
                 target    = Target.Isometric,
-                phase     = self.phase[2],
                 reverse   = self.reverse,
+                amplitude = (self.intensity*self.amplitude[2]*0.2),
+                phase     = self.phase[2],
             )
 
     class Dolly(Preset):
@@ -346,14 +346,14 @@ class Presets(GetMembers):
         def animation(self):
             yield Components.Cosine(
                 target    = Target.Isometric,
+                reverse   = self.reverse,
                 amplitude = self.intensity/2,
                 bias      = self.intensity/2,
-                reverse   = self.reverse,
             )
             yield Components.Sine(
                 target    = Target.OffsetX,
-                amplitude = self.intensity/2,
                 reverse   = self.reverse,
+                amplitude = self.intensity/2,
             )
             yield Components.Add(target=Target.Static, compute=self.depth)
             yield Components.Add(target=Target.Focus, compute=self.depth)
