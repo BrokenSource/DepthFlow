@@ -48,20 +48,23 @@ class GetMembers:
                 continue
             yield getattr(cls, name)
 
+# Todo: Make a Broken class for this
+hint: str = "[bold blue](🔵 Option)[/bold blue]"
+
 # -------------------------------------------------------------------------------------------------|
 # Base classes
 
 class Animation(BaseModel, ABC):
     target: Annotated[Target, typer.Option("-t", "--target",
-        help="[bold red](🔴 Common )[/red bold] Target animation component to modulate")] = \
+        help=f"{hint} Target animation component to modulate")] = \
         Field(default=Target.Nothing)
 
     reverse: Annotated[bool, typer.Option("-r", "--reverse",
-        help="[bold red](🔴 Common )[/red bold] Reverse the animation")] = \
+        help=f"{hint} Reverse the animation")] = \
         Field(default=False)
 
     bias: Annotated[float, typer.Option("-b", "--bias",
-        help="[bold red](🔴 Common )[/red bold] Constant offset added to the animation")] = \
+        help=f"{hint} Constant offset added to the animation")] = \
         Field(default=0.0)
 
     def get_time(self, scene: DepthScene) -> Tuple[float, float]:
@@ -97,7 +100,7 @@ class Components(GetMembers):
 
     class Custom(Animation):
         code: Annotated[str, typer.Option("-c", "--code",
-            help="[bold red](🔴 Common )[/red bold] Custom code to run for the animation [yellow](be sure to trust it)[/yellow]")] = \
+            help=f"{hint} Custom code to run for the animation [yellow](be sure to trust it)[/yellow]")] = \
             Field(default="")
 
         def compute(self, scene: DepthScene) -> None:
@@ -119,23 +122,23 @@ class Components(GetMembers):
     class Linear(Animation):
         """Add a Linear interpolation to some component's animation [green](See 'linear --help' for options)[/green]"""
         start: Annotated[float, typer.Option("--start", "-t0",
-            help="[green](🟢 Basic  )[/green] Normalized start time")] = \
+            help=f"{hint} Normalized start time")] = \
             Field(default=0.0, ge=0, le=1)
 
         end: Annotated[float, typer.Option("--end", "-t1",
-            help="[green](🟢 Basic  )[/green] Normalized end time")] = \
+            help=f"{hint} Normalized end time")] = \
             Field(default=1.0, ge=0, le=1)
 
         low: Annotated[float, typer.Option("--low", "-v0",
-            help="[green](🟢 Basic  )[/green] Start value")] = \
+            help=f"{hint} Start value")] = \
             Field(default=0.0)
 
         hight: Annotated[float, typer.Option("--hight", "-v1",
-            help="[green](🟢 Basic  )[/green] End value")] = \
+            help=f"{hint} End value")] = \
             Field(default=1.0)
 
         exponent: Annotated[float, typer.Option("-e", "--exponent",
-            help="[yellow](🟡 Advanced)[/yellow] Exponent for shaping the interpolation")] = \
+            help=f"{hint} Exponent for shaping the interpolation")] = \
             Field(default=1.0)
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
@@ -146,11 +149,11 @@ class Components(GetMembers):
     class Exponential(Animation):
         """Add an Exponential curve to some component's animation [green](See 'exponential --help' for options)[/green]"""
         base: Annotated[float, typer.Option("-b", "--base",
-            help="[green](🟢 Basic  )[/green] Base of the exponential function")] = \
+            help=f"{hint} Base of the exponential function")] = \
             Field(default=2.0)
 
         scale: Annotated[float, typer.Option("-s", "--scale",
-            help="[yellow](🟡 Advanced)[/yellow] Scale factor for the exponent")] = \
+            help=f"{hint} Scale factor for the exponent")] = \
             Field(default=1.0)
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
@@ -159,15 +162,15 @@ class Components(GetMembers):
     class Arc(Animation):
         """Add a Quadratic Bezier curve to some component's animation [green](See 'bezier2 --help' for options)[/green]"""
         start: Annotated[float, typer.Option("--start", "-a",
-            help="[green](🟢 Basic  )[/green] Start value")] = \
+            help=f"{hint} Start value")] = \
             Field(default=0.0)
 
         middle: Annotated[float, typer.Option("--middle", "-b",
-            help="[green](🟢 Basic  )[/green] Middle value")] = \
+            help=f"{hint} Middle value")] = \
             Field(default=0.5)
 
         end: Annotated[float, typer.Option("--end", "-c",
-            help="[green](🟢 Basic  )[/green] End value")] = \
+            help=f"{hint} End value")] = \
             Field(default=1.0)
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
@@ -178,15 +181,15 @@ class Components(GetMembers):
 
     class _WaveBase(Animation):
         amplitude: Annotated[float, typer.Option("-a", "--amplitude",
-            help="[green](🟢 Basic  )[/green] Amplitude of the wave")] = \
+            help=f"{hint} Amplitude of the wave")] = \
             Field(default=1.0)
 
         cycles: Annotated[float, typer.Option("-c", "--cycles",
-            help="[green](🟢 Basic  )[/green] Number of cycles of the wave")] = \
+            help=f"{hint} Number of cycles of the wave")] = \
             Field(default=1.0)
 
         phase: Annotated[float, typer.Option("-p", "--phase",
-            help="[yellow](🟡 Advanced)[/yellow] Phase shift of the wave")] = \
+            help=f"{hint} Phase shift of the wave")] = \
             Field(default=0.0)
 
     class Sine(_WaveBase):
@@ -208,36 +211,36 @@ class Components(GetMembers):
 # -------------------------------------------------------------------------------------------------|
 
 Reverse: TypeAlias = Annotated[bool, typer.Option("--reverse", "-r", " /--forward", " /-fw",
-    help="[bold green](🟢 Basic  )[/bold green] Play this animation in reverse")]
+    help=f"{hint} Play this animation in reverse")]
 
 Smooth: TypeAlias = Annotated[bool, typer.Option("--smooth", "-s", " /--linear", " /-ns",
-    help="[bold green](🟢 Basic  )[/bold green] Use the smooth variant of the animation (often a Sine wave)")]
+    help=f"{hint} Use the smooth variant of the animation (often a Sine wave)")]
 
 Loop: TypeAlias = Annotated[bool, typer.Option("--loop", "-l", " /--no-loop", " /-nl",
-    help="[bold green](🟢 Basic  )[/bold green] Loop the animation indefinitely (often 4x apparent frequency)")]
+    help=f"{hint} Loop the animation indefinitely (often 4x apparent frequency)")]
 
 Static: TypeAlias = Annotated[float, typer.Option("--static", "-S",
-    help="[bold green](🟢 Basic  )[/bold green] Depth value of no displacements on camera movements")]
+    help=f"{hint} Depth value of no displacements on camera movements")]
 
 Phase: TypeAlias = Annotated[float, typer.Option("--phase", "-p",
-    help="[bold green](🟢 Basic  )[/bold green] Phase shift of the main animation's wave")]
+    help=f"{hint} Phase shift of the main animation's wave")]
 
 PhaseXYZ: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--phase", "-p",
-    help="[bold green](🟢 Basic  )[/bold green] Phase shift of the horizontal, vertical and depth waves")]
+    help=f"{hint} Phase shift of the horizontal, vertical and depth waves")]
 
-AmplitudeXYZ: TypeAlias = Annotated[Tuple[float, float, float], typer.Option(
-    help="[bold green](🟢 Basic  )[/bold green] Amplitude of the horizontal, vertical and depth waves")]
+AmplitudeXYZ: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--amplitude", "-a",
+    help=f"{hint} Amplitude of the horizontal, vertical and depth waves")]
 
 # -------------------------------------------------------------------------------------------------|
 # Full presets
 
 class Preset(BaseModel, ABC):
     intensity: Annotated[float, typer.Option("-i", "--intensity",
-        help="[bold red](🔴 Common )[/red bold] Intensity of the preset")] = \
+        help=f"{hint} Intensity of the preset")] = \
         Field(default=1.0)
 
     reverse: Annotated[bool, typer.Option("-r", "--reverse",
-        help="[bold red](🔴 Common )[/red bold] Reverse the animation")] = \
+        help=f"{hint} Reverse the animation")] = \
         Field(default=False)
 
     @abstractmethod
@@ -340,7 +343,7 @@ class Presets(GetMembers):
     class Orbital(Preset):
         """Orbit the camera around a fixed point at a certain depth [green](See 'orbital --help' for options)[/green]"""
         depth: Annotated[float, typer.Option("-d", "--depth",
-            help="[bold green](🟢 Basic  )[/bold green] Depth value the camera orbits")] = \
+            help=f"{hint} Depth value the camera orbits")] = \
             Field(default=0.5)
 
         def animation(self):
