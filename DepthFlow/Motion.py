@@ -106,7 +106,7 @@ class Components(GetMembers):
     # ----------------------------------------------|
     # Constant functions
 
-    class Set(Animation):
+    class Add(Animation):
         """Add a Constant value to some component's animation [green](See 'constant --help' for options)[/green]"""
         value: Annotated[float, typer.Option("-v", "--value")] = Field(default=0.0)
 
@@ -156,7 +156,7 @@ class Components(GetMembers):
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return math.pow(self.base, self.scale * tau)
 
-    class Bezier2(Animation):
+    class Arc(Animation):
         """Add a Quadratic Bezier curve to some component's animation [green](See 'bezier2 --help' for options)[/green]"""
         start: Annotated[float, typer.Option("--start", "-a",
             help="[green](🟢 Basic  )[/green] Start value")] = \
@@ -202,57 +202,38 @@ class Components(GetMembers):
     class Triangle(_WaveBase):
         """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[/green]"""
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            t = (tau + 0.25) % (1 / self.cycles)
+            t = (tau + self.phase) % (1 / self.cycles)
             return self.amplitude * (1 - 4 * abs((t * self.cycles) - 0.5))
 
 # -------------------------------------------------------------------------------------------------|
 
-Smooth: TypeAlias = Annotated[bool, typer.Option("-s", "--smooth",
-    help="[bold green](🟢 Basic  )[/bold green] Use the smooth variant of the animation (often a Sine)")]
-
-Loop: TypeAlias = Annotated[bool, typer.Option("-l", "--loop",
-    help="[bold green](🟢 Basic  )[/bold green] Loop the animation indefinitely (4x apparent frequency)")]
-
-Phase: TypeAlias = Annotated[float, typer.Option("-p", "--phase",
-    help="[bold green](🟢 Basic  )[/bold green] Phase shift of the animation")]
-
-Reverse: TypeAlias = Annotated[bool, typer.Option("-r", "--reverse",
+Reverse: TypeAlias = Annotated[bool, typer.Option("--reverse", "-r", " /--forward", " /-fw",
     help="[bold green](🟢 Basic  )[/bold green] Play this animation in reverse")]
 
-AmplitudeX: TypeAlias = Annotated[float, typer.Option("-ax", "--amplitude-x",
-    help="[bold green](🟢 Basic  )[/bold green] Amplitude of the horizontal wave")]
+Smooth: TypeAlias = Annotated[bool, typer.Option("--smooth", "-s", " /--linear", " /-ns",
+    help="[bold green](🟢 Basic  )[/bold green] Use the smooth variant of the animation (often a Sine wave)")]
 
-AmplitudeY: TypeAlias = Annotated[float, typer.Option("-ay", "--amplitude-y",
-    help="[bold green](🟢 Basic  )[/bold green] Amplitude of the vertical wave")]
+Loop: TypeAlias = Annotated[bool, typer.Option("--loop", "-l", " /--no-loop", " /-nl",
+    help="[bold green](🟢 Basic  )[/bold green] Loop the animation indefinitely (often 4x apparent frequency)")]
 
-AmplitudeZ: TypeAlias = Annotated[float, typer.Option("-az", "--amplitude-z",
-    help="[bold green](🟢 Basic  )[/bold green] Amplitude of the depth wave")]
+Static: TypeAlias = Annotated[float, typer.Option("--static", "-S",
+    help="[bold green](🟢 Basic  )[/bold green] Depth value of no displacements on camera movements")]
 
-# -------------------------------------------------------------------------------------------------|
+Phase: TypeAlias = Annotated[float, typer.Option("--phase", "-p",
+    help="[bold green](🟢 Basic  )[/bold green] Phase shift of the main animation's wave")]
 
-class _Reverse(BaseModel):
-    reverse: Reverse = Field(default=False)
+PhaseXYZ: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--phase", "-p",
+    help="[bold green](🟢 Basic  )[/bold green] Phase shift of the horizontal, vertical and depth waves")]
 
-class _Smooth(BaseModel):
-    smooth: Smooth = Field(default=False)
-
-class _Phase(BaseModel):
-    phase: Phase = Field(default=0.0)
-
-class _Loop(BaseModel):
-    loop: Loop = Field(default=False)
-
-class _AmplitudeXYZ(BaseModel):
-    amplitude_x: AmplitudeX = Field(default=1.0)
-    amplitude_y: AmplitudeY = Field(default=1.0)
-    amplitude_z: AmplitudeZ = Field(default=1.0)
+AmplitudeXYZ: TypeAlias = Annotated[Tuple[float, float, float], typer.Option(
+    help="[bold green](🟢 Basic  )[/bold green] Amplitude of the horizontal, vertical and depth waves")]
 
 # -------------------------------------------------------------------------------------------------|
 # Full presets
 
 class Preset(BaseModel, ABC):
     intensity: Annotated[float, typer.Option("-i", "--intensity",
-        help="[green](🟢 Basic  )[/green] Intensity of the preset")] = \
+        help="[bold red](🔴 Common )[/red bold] Intensity of the preset")] = \
         Field(default=1.0)
 
     reverse: Annotated[bool, typer.Option("-r", "--reverse",
@@ -273,60 +254,85 @@ class Presets(GetMembers):
 
     # # Offsets
 
-    class Vertical(Preset, _Reverse, _Smooth, _Loop):
+    class Vertical(Preset):
         """Add a Vertical motion to the camera [green](See 'vertical --help' for options)[/green]"""
+        reverse: Reverse = Field(default=False)
+        smooth:  Smooth  = Field(default=True)
+        loop:    Loop    = Field(default=True)
+        phase:   Phase   = Field(default=0.0)
+        static:  Static  = Field(default=0.5)
+
         def animation(self):
+            yield Components.Add(target=Target.Static, value=self.static)
             yield (Components.Sine if self.smooth else Components.Triangle)(
-                target=Target.OffsetY,
-                amplitude=self.intensity,
-                cycles=(1 if self.loop else 0.25),
-                reverse=self.reverse,
+                target    = Target.OffsetY,
+                amplitude = self.intensity,
+                cycles    = (1 if self.loop else 0.25),
+                reverse   = self.reverse,
+                phase     = self.phase,
             )
 
-    class Horizontal(Preset, _Reverse, _Smooth, _Loop):
+    class Horizontal(Preset):
         """Add a Horizontal motion to the camera [green](See 'horizontal --help' for options)[/green]"""
+        reverse: Reverse = Field(default=False)
+        smooth:  Smooth  = Field(default=True)
+        loop:    Loop    = Field(default=True)
+        phase:   Phase   = Field(default=0.0)
+        static:  Static  = Field(default=0.5)
+
         def animation(self):
+            yield Components.Add(target=Target.Static, value=self.static)
             yield (Components.Sine if self.smooth else Components.Triangle)(
-                target=Target.OffsetX,
-                amplitude=self.intensity,
-                cycles=(1 if self.loop else 0.25),
-                reverse=self.reverse,
+                target    = Target.OffsetX,
+                amplitude = self.intensity,
+                cycles    = (1 if self.loop else 0.25),
+                reverse   = self.reverse,
+                phase     = self.phase,
             )
 
-    class Circular(Preset, _Reverse, _Phase, _AmplitudeXYZ):
+    class Circular(Preset):
         """Add a Circular motion to the camera [green](See 'circle --help' for options)[/green]"""
+        reverse:   Reverse      = Field(default=False)
+        smooth:    Smooth       = Field(default=True)
+        phase:     PhaseXYZ     = Field(default=(0.0, 0.0, 0.0))
+        amplitude: AmplitudeXYZ = Field(default=(1.0, 1.0, 0.0))
+
         def animation(self):
-            yield Components.Cosine(
-                amplitude=(self.intensity*self.amplitude_x),
-                target=Target.OffsetX,
-                phase=self.phase,
-                reverse=self.reverse,
+            yield (Components.Sine if self.smooth else Components.Triangle)(
+                amplitude = (self.intensity*self.amplitude[0]),
+                target    = Target.OffsetX,
+                phase     = self.phase[0],
+                reverse   = self.reverse,
             )
-            yield Components.Sine(
-                amplitude=(self.intensity*self.amplitude_y),
-                target=Target.OffsetY,
-                phase=self.phase,
-                reverse=self.reverse,
+            yield (Components.Sine if self.smooth else Components.Triangle)(
+                amplitude = (self.intensity*self.amplitude[1]),
+                target    = Target.OffsetY,
+                phase     = self.phase[1] + 0.25,
+                reverse   = self.reverse,
             )
-            yield Components.Sine(
-                amplitude=(self.intensity*self.amplitude_z*0.2),
-                target=Target.Isometric,
-                phase=self.phase,
-                reverse=self.reverse,
+            yield (Components.Sine if self.smooth else Components.Triangle)(
+                amplitude = (self.intensity*self.amplitude[2]*0.2),
+                target    = Target.Isometric,
+                phase     = self.phase[2],
+                reverse   = self.reverse,
             )
 
     # # Zooms
 
-    class Dolly(Preset, _Reverse, _Smooth, _Loop):
+    class Dolly(Preset):
         """Add a Dolly zoom to the camera [green](See 'dolly --help' for options)[/green]"""
+        reverse: Reverse = Field(default=False)
+        smooth:  Smooth  = Field(default=True)
+        loop:    Loop    = Field(default=True)
+
         def animation(self):
-            yield Components.Set(target=Target.Focus, compute=0.5)
+            yield Components.Add(target=Target.Focus, compute=0.5)
             yield (Components.Sine if self.smooth else Components.Triangle)(
-                target=Target.Isometric,
-                reverse=self.reverse,
-                amplitude=self.intensity,
-                cycles=(1 if self.loop else 0.25),
-                bias=0.5,
+                target    = Target.Isometric,
+                reverse   = self.reverse,
+                amplitude = self.intensity,
+                cycles    = (1 if self.loop else 0.25),
+                bias      = 0.5,
             )
 
     # # Organics
@@ -334,23 +340,23 @@ class Presets(GetMembers):
     class Orbital(Preset):
         """Orbit the camera around a fixed point at a certain depth [green](See 'orbital --help' for options)[/green]"""
         depth: Annotated[float, typer.Option("-d", "--depth",
-            help="[green](🟢 Basic  )[/green] Depth value the camera orbits")] = \
+            help="[bold green](🟢 Basic  )[/bold green] Depth value the camera orbits")] = \
             Field(default=0.5)
 
         def animation(self):
             yield Components.Cosine(
-                target=Target.Isometric,
-                amplitude=self.intensity/2,
-                bias=self.intensity/2,
-                reverse=self.reverse,
+                target    = Target.Isometric,
+                amplitude = self.intensity/2,
+                bias      = self.intensity/2,
+                reverse   = self.reverse,
             )
             yield Components.Sine(
-                target=Target.OffsetX,
-                amplitude=self.intensity/2,
-                reverse=self.reverse,
+                target    = Target.OffsetX,
+                amplitude = self.intensity/2,
+                reverse   = self.reverse,
             )
-            yield Components.Set(target=Target.Static, compute=self.depth)
-            yield Components.Set(target=Target.Focus, compute=self.depth)
+            yield Components.Add(target=Target.Static, compute=self.depth)
+            yield Components.Add(target=Target.Focus, compute=self.depth)
 
 # -------------------------------------------------------------------------------------------------|
 

@@ -1,5 +1,3 @@
-import copy
-import math
 import os
 from typing import Annotated, Iterable, List, Union
 
@@ -74,8 +72,8 @@ class DepthScene(ShaderScene):
         self.estimator.load_model()
 
     def input(self,
-        image: Annotated[str, Option("--image", "-i", help="Background Image [green](Path, URL, NumPy, PIL)[/green]")],
-        depth: Annotated[str, Option("--depth", "-d", help="Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
+        image: Annotated[str, Option("--image", "-i", help="[bold green](🟢 Basic)[/bold green] Background Image [green](Path, URL, NumPy, PIL)[/green]")],
+        depth: Annotated[str, Option("--depth", "-d", help="[bold green](🟢 Basic)[/bold green] Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
     ) -> None:
         """Load an Image from Path, URL and its estimated Depthmap [green](See 'input --help' for options)[/green]"""
         image = self.upscaler.upscale(LoaderImage(image))
@@ -110,8 +108,9 @@ class DepthScene(ShaderScene):
             self.typer.command(Waifu2x, post=self.set_upscaler)
 
         with self.typer.panel("🚀 Animation (Components, advanced)"):
+            hidden = (not eval(os.getenv("ADVANCED", "0")))
             for animation in Components.members():
-                self.typer.command(animation, post=self.add_animation)
+                self.typer.command(animation, post=self.add_animation, hidden=hidden)
 
         with self.typer.panel("🔮 Animation (Presets, recommended)"):
             for preset in Presets.members():
