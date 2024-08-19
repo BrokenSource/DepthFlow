@@ -53,10 +53,10 @@ hint: str = "[bold blue](🔵 Option)[/bold blue]"
 
 # -------------------------------------------------------------------------------------------------|
 
-TargetType: TypeAlias = Annotated[Target, typer.Option("-t", "--target",
+TargetType: TypeAlias = Annotated[Target, typer.Option("--target", "-t",
     help=f"{hint} Target animation state variable to modulate")]
 
-IntensityType: TypeAlias = Annotated[float, typer.Option("-i", "--intensity",
+IntensityType: TypeAlias = Annotated[float, typer.Option("--intensity", "-i",
     help=f"{hint} Global intensity of the animation (scales all amplitudes)")]
 
 ReverseType: TypeAlias = Annotated[bool, typer.Option("--reverse", "-r", " /--forward", " /-fw",
@@ -118,7 +118,8 @@ class Animation(BaseModel, ABC):
         return self.apply(scene)
 
     def set(self, scene: DepthScene, value: float) -> None:
-        exec(f"scene.state.{self.target.value} += {self.bias} + {value}")
+        if (self.target != Target.Nothing):
+            exec(f"scene.state.{self.target.value} += {self.bias} + {value}")
 
 # -------------------------------------------------------------------------------------------------|
 # Shaping functions
@@ -254,8 +255,6 @@ class Presets(GetMembers):
         def animation(self):
             yield lambda scene: None
 
-    # # Offsets
-
     class Vertical(Preset):
         """Add a Vertical motion to the camera [green](See 'vertical --help' for options)[/green]"""
         reverse: ReverseType = Field(default=False)
@@ -321,8 +320,6 @@ class Presets(GetMembers):
                 reverse   = self.reverse,
             )
 
-    # # Zooms
-
     class Dolly(Preset):
         """Add a Dolly zoom to the camera [green](See 'dolly --help' for options)[/green]"""
         reverse: ReverseType = Field(default=False)
@@ -341,8 +338,6 @@ class Presets(GetMembers):
                 cycles    = (1 if self.loop else 0.25),
                 bias      = 1,
             )
-
-    # # Organics
 
     class Orbital(Preset):
         """Orbit the camera around a fixed point at a certain depth [green](See 'orbital --help' for options)[/green]"""
