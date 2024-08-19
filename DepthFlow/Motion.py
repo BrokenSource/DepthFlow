@@ -205,7 +205,7 @@ class Components(GetMembers):
     class Triangle(_WaveBase):
         """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[/green]"""
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            t = (tau + self.phase) % (1 / self.cycles)
+            t = (tau + self.phase + 0.25) % (1 / self.cycles)
             return self.amplitude * (1 - 4 * abs((t * self.cycles) - 0.5))
 
 # -------------------------------------------------------------------------------------------------|
@@ -304,13 +304,13 @@ class Presets(GetMembers):
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 amplitude = (self.intensity*self.amplitude[0]),
                 target    = Target.OffsetX,
-                phase     = self.phase[0],
+                phase     = self.phase[0] + 0.25,
                 reverse   = self.reverse,
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 amplitude = (self.intensity*self.amplitude[1]),
                 target    = Target.OffsetY,
-                phase     = self.phase[1] + 0.25,
+                phase     = self.phase[1],
                 reverse   = self.reverse,
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
