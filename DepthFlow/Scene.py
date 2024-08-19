@@ -37,7 +37,7 @@ Usage: All commands have a --help option with extensible configuration, and are 
 • Post FX:     [bold blue]depthflow[/bold blue] [blue]dof[/blue] -e [blue]vignette[/blue] -e [blue]main[/blue]
 
 [yellow]Notes:[/yellow]
-• A --ssaa value of 1.5+ is recommended for final exports, real time uses 1.2
+• A value of --ssaa 1.5+ is recommended for final exports, real time uses 1.2
 • The [bold blue]main[/bold blue]'s --quality preset gives little improvement for small movements
 • The rendered video loops perfectly, the period is the main's --time
 • The last two commands must be [bold blue]input[/bold blue] and [bold blue]main[/bold blue] (in order) to work
