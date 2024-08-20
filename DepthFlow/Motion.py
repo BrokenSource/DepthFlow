@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Annotated, Generator, Tuple, Type, TypeAlias
+from typing import TYPE_CHECKING, Annotated, Dict, Generator, Tuple, Type, TypeAlias
 
 import typer
 from pydantic import BaseModel, Field
@@ -86,13 +86,17 @@ AmplitudeXYZType: TypeAlias = Annotated[Tuple[float, float, float], typer.Option
 DepthType = Annotated[float, typer.Option("--depth", "-d",
     help=f"{hint} Focal depth of this animation (orbit point, dolly zoom, etc.)")]
 
+CumulativeType = Annotated[bool, typer.Option("--cumulative", "-c", " /--force", " /-f",
+    help=f"{hint} Cumulative animation, adds to the previous frame's target value")]
+
 # -------------------------------------------------------------------------------------------------|
 # Base classes
 
 class Animation(BaseModel, ABC):
-    target: TargetType = Field(default=Target.Nothing)
-    reverse: ReverseType = Field(default=False)
-    bias: BiasType = Field(default=0.0)
+    target:     TargetType     = Field(default=Target.Nothing)
+    reverse:    ReverseType    = Field(default=False)
+    bias:       BiasType       = Field(default=0.0)
+    cumulative: CumulativeType = Field(default=False)
 
     def get_time(self, scene: DepthScene) -> Tuple[float, float]:
 
@@ -119,7 +123,8 @@ class Animation(BaseModel, ABC):
 
     def set(self, scene: DepthScene, value: float) -> None:
         if (self.target != Target.Nothing):
-            exec(f"scene.state.{self.target.value} += {self.bias} + {value}")
+            operator = ("+=" if self.cumulative else "=")
+            exec(f"scene.state.{self.target.value} {operator} {value} + {self.bias}")
 
 # -------------------------------------------------------------------------------------------------|
 # Shaping functions
@@ -137,7 +142,7 @@ class Components(GetMembers):
     # ----------------------------------------------|
     # Constant functions
 
-    class Add(Animation):
+    class Set(Animation):
         """Add a Constant value to some component's animation [green](See 'constant --help' for options)[/green]"""
         value: Annotated[float, typer.Option("-v", "--value")] = Field(default=0.0)
 
@@ -161,7 +166,7 @@ class Components(GetMembers):
             help=f"{hint} Start value")] = \
             Field(default=0.0)
 
-        hight: Annotated[float, typer.Option("--hight", "-v1",
+        hight: Annotated[float, typer.Option("--high", "-v1",
             help=f"{hint} End value")] = \
             Field(default=1.0)
 
@@ -189,20 +194,13 @@ class Components(GetMembers):
 
     class Arc(Animation):
         """Add a Quadratic Bezier curve to some component's animation [green](See 'bezier2 --help' for options)[/green]"""
-        start: Annotated[float, typer.Option("--start", "-a",
-            help=f"{hint} Start value")] = \
-            Field(default=0.0)
-
-        middle: Annotated[float, typer.Option("--middle", "-b",
-            help=f"{hint} Middle value")] = \
-            Field(default=0.5)
-
-        end: Annotated[float, typer.Option("--end", "-c",
-            help=f"{hint} End value")] = \
-            Field(default=1.0)
+        points: Annotated[Tuple[float, float, float], typer.Option("--points", "-p",
+            help=f"{hint} Control points of the quadratic Bezier curve")] = \
+            Field(default=(0.0, 0.0, 0.0))
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            return (1 - tau)**2 * self.start + 2 * (1 - tau) * tau * self.middle + tau**2 * self.end
+            start, middle, end = self.points
+            return (1 - tau)**2 * start + 2 * (1 - tau) * tau * middle + tau**2 * end
 
     # ----------------------------------------------|
     # Wave functions
@@ -240,8 +238,16 @@ class Components(GetMembers):
 # Full presets
 
 class Preset(BaseModel, ABC):
-    intensity: IntensityType = Field(default=1.0)
-    reverse: ReverseType = Field(default=False)
+    intensity:  IntensityType  = Field(default=1.0)
+    reverse:    ReverseType    = Field(default=False)
+    cumulative: CumulativeType = Field(default=False)
+
+    def common(self) -> Dict[str, float]:
+        """Common passthrough options to the Animations"""
+        return dict(
+            reverse    = self.reverse,
+            cumulative = self.cumulative,
+        )
 
     @abstractmethod
     def animation(self) -> Generator[Animation, None, None]:
@@ -264,14 +270,23 @@ class Presets(GetMembers):
         static:  StaticType  = Field(default=0.3)
 
         def animation(self):
-            yield Components.Add(target=Target.Static, value=self.static)
-            yield (Components.Sine if self.smooth else Components.Triangle)(
-                target    = Target.OffsetY,
-                reverse   = self.reverse,
-                amplitude = self.intensity,
-                cycles    = (1 if self.loop else 0.50),
-                phase     = self.phase - (0 if self.loop else 0.25),
-            )
+            yield Components.Set(target=Target.Static, value=self.static)
+            if self.loop:
+                yield (Components.Sine if self.smooth else Components.Triangle)(
+                    target    = Target.OffsetY,
+                    amplitude = self.intensity,
+                    phase     = 0.00,
+                    cycles    = 1.00,
+                    **self.common()
+                )
+            else:
+                yield (Components.Sine if self.smooth else Components.Triangle)(
+                    target    = Target.OffsetY,
+                    amplitude = self.intensity,
+                    phase     = self.phase,
+                    cycles    = 0.50,
+                    **self.common()
+                )
 
     class Horizontal(Preset):
         """Add a Horizontal motion to the camera [green](See 'horizontal --help' for options)[/green]"""
@@ -282,16 +297,51 @@ class Presets(GetMembers):
         static:  StaticType  = Field(default=0.3)
 
         def animation(self):
-            yield Components.Add(target=Target.Static, value=self.static)
-            yield (Components.Sine if self.smooth else Components.Triangle)(
-                target    = Target.OffsetX,
-                reverse   = self.reverse,
-                amplitude = self.intensity,
-                cycles    = (1 if self.loop else 0.50),
-                phase     = self.phase - (0 if self.loop else 0.25),
-            )
+            yield Components.Set(target=Target.Static, value=self.static)
+            if self.loop:
+                yield (Components.Sine if self.smooth else Components.Triangle)(
+                    target    = Target.OffsetX,
+                    amplitude = self.intensity,
+                    phase     = 0.00,
+                    cycles    = 1.00,
+                    **self.common()
+                )
+            else:
+                yield (Components.Sine if self.smooth else Components.Triangle)(
+                    target    = Target.OffsetX,
+                    amplitude = self.intensity,
+                    phase     = self.phase - 0.25,
+                    cycles    = 0.50,
+                    **self.common()
+                )
 
-    class Circular(Preset):
+    class Zoom(Preset):
+        """Add a Zoom motion to the camera [green](See 'zoom --help' for options)[/green]"""
+        reverse: ReverseType = Field(default=False)
+        smooth:  SmoothType  = Field(default=True)
+        loop:    LoopType    = Field(default=False)
+        phase:   PhaseType   = Field(default=0.0)
+
+        def animation(self):
+            if self.loop:
+                yield (Components.Sine if self.smooth else Components.Triangle)(
+                    target    = Target.Height,
+                    amplitude = 0.50 * (self.intensity/2),
+                    bias      = 0.50 * (self.intensity/2),
+                    phase     = self.phase,
+                    cycles    = 1.00,
+                    **self.common()
+                )
+            else:
+                yield (Components.Sine if self.smooth else Components.Triangle)(
+                    target    = Target.Height,
+                    amplitude = 0.75 * self.intensity,
+                    phase     = 0.00,
+                    cycles    = 0.25,
+                    **self.common()
+                )
+
+    class Circle(Preset):
         """Add a Circular motion to the camera [green](See 'circle --help' for options)[/green]"""
         reverse:   ReverseType      = Field(default=False)
         smooth:    SmoothType       = Field(default=True)
@@ -300,24 +350,24 @@ class Presets(GetMembers):
         static:    StaticType       = Field(default=0.3)
 
         def animation(self):
-            yield Components.Add(target=Target.Static, value=self.static)
+            yield Components.Set(target=Target.Static, value=self.static)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetX,
-                reverse   = self.reverse,
                 amplitude = (self.intensity*self.amplitude[0]),
                 phase     = self.phase[0] + 0.25,
+                **self.common()
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetY,
-                reverse   = self.reverse,
                 amplitude = (self.intensity*self.amplitude[1]),
                 phase     = self.phase[1],
+                **self.common()
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.Isometric,
-                reverse   = self.reverse,
                 amplitude = (self.intensity*self.amplitude[2]*0.2),
                 phase     = self.phase[2],
+                **self.common()
             )
 
     class Dolly(Preset):
@@ -328,15 +378,15 @@ class Presets(GetMembers):
         depth:   DepthType   = Field(default=0.5)
 
         def animation(self):
-            yield Components.Add(target=Target.Focus, value=self.depth)
-            yield Components.Add(target=Target.Static, value=self.depth)
+            yield Components.Set(target=Target.Focus, value=self.depth)
+            yield Components.Set(target=Target.Static, value=self.depth)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.Isometric,
-                reverse   = self.reverse,
                 amplitude = self.intensity,
                 phase     = (-0.25 if self.loop else 0),
                 cycles    = (1 if self.loop else 0.25),
                 bias      = 1,
+                **self.common()
             )
 
     class Orbital(Preset):
@@ -344,18 +394,18 @@ class Presets(GetMembers):
         depth: DepthType = Field(default=0.5)
 
         def animation(self):
-            yield Components.Add(target=Target.Static, value=self.depth)
-            yield Components.Add(target=Target.Focus, value=self.depth)
+            yield Components.Set(target=Target.Static, value=self.depth)
+            yield Components.Set(target=Target.Focus, value=self.depth)
             yield Components.Cosine(
                 target    = Target.Isometric,
-                reverse   = self.reverse,
                 amplitude = self.intensity/2,
                 bias      = self.intensity/2,
+                **self.common()
             )
             yield Components.Sine(
                 target    = Target.OffsetX,
-                reverse   = self.reverse,
                 amplitude = self.intensity/2,
+                **self.common()
             )
 
 # -------------------------------------------------------------------------------------------------|

@@ -1,3 +1,4 @@
+import copy
 import os
 from typing import Annotated, Iterable, List, Union
 
@@ -23,7 +24,7 @@ from DepthFlow.Motion import Animation, Components, Preset, Presets
 from DepthFlow.State import DepthState
 
 DEPTHFLOW_ABOUT = """
-🌊 Image to → 2.5D Parallax Effect Video. A Free and Open Source LeiaPix/ImmersityAI alternative.\n
+🌊 Image to → 2.5D Parallax Effect Video. A Free and Open Source ImmersityAI alternative.\n
 
 Usage: All commands have a --help option with extensible configuration, and are chained together
 
@@ -54,13 +55,14 @@ class DepthScene(ShaderScene):
     DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
 
     # DepthFlow objects
-    animation: List[Union[Animation, Preset]] = field(factory=list)
+    animation: List[Union[Animation, Preset, DepthState]] = field(factory=list)
     estimator: DepthEstimator = field(factory=DepthAnythingV2)
     upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthState = field(factory=DepthState)
 
-    def add_animation(self, animation: Union[Animation, Preset]) -> None:
-        self.animation.append(animation)
+    def add_animation(self, animation: Union[Animation, Preset]) -> object:
+        self.animation.append(animation := copy.deepcopy(animation))
+        return animation
 
     def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
         self.upscaler = upscaler
@@ -93,7 +95,6 @@ class DepthScene(ShaderScene):
         self.typer.command(self.load_model, hidden=True)
 
         with self.typer.panel(self.scene_panel):
-            self.typer.command(self.state, name="config")
             self.typer.command(self.webui)
             self.typer.command(self.input)
 
@@ -113,6 +114,8 @@ class DepthScene(ShaderScene):
                 self.typer.command(animation, post=self.add_animation, hidden=hidden)
 
         with self.typer.panel("🔮 Animation (Presets, recommended)"):
+            self.typer.command(DepthState, name="config", post=self.add_animation)
+
             for preset in Presets.members():
                 self.typer.command(preset, post=self.add_animation)
 
@@ -132,15 +135,22 @@ class DepthScene(ShaderScene):
         self.aspect_ratio = (16/9)
         self.ssaa = 1.2
 
-    def update(self):
+    def animate(self):
         self.state.reset()
 
         for item in self.animation:
-            if issubclass(type(item), Preset):
+            if issubclass(type(item), DepthState):
+                self.state = copy.deepcopy(item)
+
+            elif issubclass(type(item), Preset):
                 for animation in item.animation():
                     animation(self)
+
             else:
                 item(self)
+
+    def update(self):
+        self.animate()
 
     def handle(self, message: ShaderMessage):
         ShaderScene.handle(self, message)

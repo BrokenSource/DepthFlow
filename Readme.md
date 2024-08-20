@@ -4,7 +4,7 @@
 <div align="center">
   <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="200"></a>
   <h1>DepthFlow</h1>
-  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>LeiaPix/ImmersityAI</b></a> Alternative
+  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>ImmersityAI</b></a> Alternative
   <br>
   <br>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue"></a>
