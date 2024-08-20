@@ -256,11 +256,6 @@ class Preset(BaseModel, ABC):
 # --------------------------------------------------|
 
 class Presets(GetMembers):
-    class Nothing(Preset):
-        """Do nothing, bypasses the default injected animation"""
-        def animation(self):
-            yield lambda scene: None
-
     class Vertical(Preset):
         """Add a Vertical motion to the camera [green](See 'vertical --help' for options)[/green]"""
         reverse: ReverseType = Field(default=False)
@@ -275,7 +270,7 @@ class Presets(GetMembers):
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetY,
                     amplitude = self.intensity,
-                    phase     = 0.00,
+                    phase     = self.phase,
                     cycles    = 1.00,
                     **self.common()
                 )
@@ -283,7 +278,7 @@ class Presets(GetMembers):
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetY,
                     amplitude = self.intensity,
-                    phase     = self.phase,
+                    phase     = -0.25,
                     cycles    = 0.50,
                     **self.common()
                 )
@@ -302,7 +297,7 @@ class Presets(GetMembers):
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetX,
                     amplitude = self.intensity,
-                    phase     = 0.00,
+                    phase     = self.phase,
                     cycles    = 1.00,
                     **self.common()
                 )
@@ -310,7 +305,7 @@ class Presets(GetMembers):
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetX,
                     amplitude = self.intensity,
-                    phase     = self.phase - 0.25,
+                    phase     = -0.25,
                     cycles    = 0.50,
                     **self.common()
                 )

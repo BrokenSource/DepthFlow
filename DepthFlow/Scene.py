@@ -136,6 +136,9 @@ class DepthScene(ShaderScene):
         self.ssaa = 1.2
 
     def animate(self):
+        if not self.animation:
+            return
+
         self.state.reset()
 
         for item in self.animation:
