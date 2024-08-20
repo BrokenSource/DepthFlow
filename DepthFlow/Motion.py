@@ -97,7 +97,7 @@ class Animation(BaseModel, ABC):
     def get_time(self, scene: DepthScene) -> Tuple[float, float]:
 
         # Loop them for realtime window accurate preview
-        tau, cycle = (scene.tau % 1, scene.cycle % (2*math.pi))
+        tau, cycle = (scene.tau % 1), (scene.cycle % (math.tau))
 
         # Fixme: Is setting phase and reversing non intuitive?
         if self.reverse:
@@ -344,6 +344,8 @@ class Presets(GetMembers):
         depth: DepthType = Field(default=0.5)
 
         def animation(self):
+            yield Components.Add(target=Target.Static, value=self.depth)
+            yield Components.Add(target=Target.Focus, value=self.depth)
             yield Components.Cosine(
                 target    = Target.Isometric,
                 reverse   = self.reverse,
@@ -355,8 +357,6 @@ class Presets(GetMembers):
                 reverse   = self.reverse,
                 amplitude = self.intensity/2,
             )
-            yield Components.Add(target=Target.Static, compute=self.depth)
-            yield Components.Add(target=Target.Focus, compute=self.depth)
 
 # -------------------------------------------------------------------------------------------------|
 

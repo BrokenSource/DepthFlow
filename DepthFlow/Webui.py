@@ -69,7 +69,7 @@ class DepthFlowWebui:
             raise ValueError("Please provide an image and a depthmap")
 
         def _process():
-            scene = DepthScene(backend="headless")
+            scene = DepthScene()
             scene.set_estimator(self.estimators[estimator]())
             scene.set_upscaler(self.upscalers[upscaler]())
             scene.input(image=image, depth=depth)
