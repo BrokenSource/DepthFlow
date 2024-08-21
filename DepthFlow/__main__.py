@@ -3,14 +3,15 @@ from DepthFlow import DepthScene
 
 
 def main_webui():
-    from DepthFlow.Webui import DepthFlowWebui
+    from DepthFlow.Webui import DepthWebui
 
     with BrokenProfiler("DEPTHFLOW"):
-        DepthFlowWebui().launch()
+        DepthWebui().launch()
 
 def main():
     def run():
-        DepthScene().cli()
+        with BrokenProfiler("DEPTHFLOW"):
+            DepthScene().cli()
     app = BrokenTyper()
     app.release_repl()
     app.command(run)

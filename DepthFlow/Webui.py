@@ -16,7 +16,7 @@ from DepthFlow import DEPTHFLOW, DepthScene
 
 
 @define(slots=False)
-class DepthFlowWebui:
+class DepthWebui:
     interface: gradio.Blocks = None
 
     qualities = {
