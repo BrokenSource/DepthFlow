@@ -1,6 +1,5 @@
-import multiprocessing
 import os
-from pathlib import Path
+import threading
 
 import gradio
 from attrs import define
@@ -15,7 +14,6 @@ from Broken.Externals.Depthmap import (
 from Broken.Externals.Upscaler import NoUpscaler, Realesr, Waifu2x
 from DepthFlow import DEPTHFLOW, DepthScene
 
-PROCESS_MANAGER = multiprocessing.Manager()
 
 @define(slots=False)
 class DepthFlowWebui:
@@ -68,12 +66,13 @@ class DepthFlowWebui:
         if (image is None) or (depth is None):
             raise ValueError("Please provide an image and a depthmap")
 
-        def _process():
-            scene = DepthScene()
+        def _render():
+            nonlocal output
+            scene = DepthScene(backend="headless")
             scene.set_estimator(self.estimators[estimator]())
             scene.set_upscaler(self.upscalers[upscaler]())
             scene.input(image=image, depth=depth)
-            shared.value = scene.main(
+            output = scene.main(
                 width=int(width),
                 height=int(height),
                 fps=int(fps),
@@ -85,13 +84,11 @@ class DepthFlowWebui:
                 render=True
             )[0]
 
-        # Note: This must be done on a separate process for individual OpenGL contexts per render
-        shared = PROCESS_MANAGER.Value("s", "")
-        process = multiprocessing.Process(target=_process)
-        process.start()
-        process.join()
-
-        return gradio.Video(value=Path(shared.value))
+        output = None
+        thread = threading.Thread(target=_render)
+        thread.start()
+        thread.join()
+        return gradio.Video(value=output)
 
     def launch(self):
         with gradio.Blocks(
