@@ -39,8 +39,9 @@ void main() {
         abs(iDepthDistance - iCamera.origin.z)
     );
 
-    // Cache tan(theta), we'll use it a lot
+    // Cache tan(theta) and its inverse, we'll use it a lot
     float tan_theta = tan(theta);
+    float tan_theta_inv = 1.0 / tan_theta;
 
     // The distance Beta we care for the depth map
     float delta = tan_theta * (iDepthDistance - iCamera.origin.z - iDepthHeight);
@@ -79,7 +80,7 @@ void main() {
 
                 // Scale the values to intensity parameters
                 float depth_height = iDepthHeight * mix(point_height, 1-point_height, iDepthInvert);
-                float walk_height  = (i*beta) / tan_theta;
+                float walk_height  = (i*beta) * tan_theta_inv;
 
                 // Stop the first moment we're inside the surface
                 if (depth_height >= walk_height) {
