@@ -116,9 +116,16 @@ void main() {
     // --------------------------------------------------------------------------------------------|
     // Vignette post processing
 
-    if (iVignetteEnable) {
+    if (iVigEnable) {
         vec2 away = astuv * (1 - astuv.yx);
-        float linear = iVignetteIntensity * (away.x*away.y);
-        fragColor.rgb *= clamp(pow(linear, iVignetteDecay), 0, 1);
+        float linear = iVigIntensity * (away.x*away.y);
+        fragColor.rgb *= clamp(pow(linear, iVigDecay), 0, 1);
     }
+
+    // --------------------------------------------------------------------------------------------|
+    // Colors post processing
+
+    // Saturation
+    float luminance = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+    fragColor.rgb = mix(vec3(luminance), fragColor.rgb, iSaturation);
 }

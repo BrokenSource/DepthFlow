@@ -4,11 +4,9 @@ from pydantic import BaseModel, Field, PrivateAttr
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken import BrokenTyper
 
-
-class DepthState(BrokenTyper.BaseModel):
-    """Set parallax parameter values on the state [bold green](See 'config --help' for options)[/bold green]"""
+class DepthState(BaseModel):
+    """Set effect parameters, animations might override them!"""
 
     height: Annotated[float, Option("--height", "-h", min=0, max=1,
         help="[bold red](🔴 Basic   )[/red bold] Depthmap's peak value, the effect [bold cyan]intensity[/cyan bold] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[/medium_purple3]")] = \
@@ -105,92 +103,60 @@ class DepthState(BrokenTyper.BaseModel):
     # # Special
 
     def reset(self) -> None:
-        for object in (self, self.vignette, self.dof):
-            for name, field in object.model_fields.items():
-                setattr(object, name, field.default)
+        for name, field in self.model_fields.items():
+            setattr(self, name, field.default)
 
     # ---------------------------------------------------------------------------------------------|
 
-    class Vignette(BaseModel):
-        """Set vignette parameters [bold green](See 'vignette --help' for options)[/bold green]"""
-        enable: Annotated[bool, Option("--enable", "-e",
-            help="[bold blue](🔵 Special )[/blue bold] Enable the Vignette effect")] = \
-            Field(default=False)
+    vignette_enable: Annotated[bool, Option("--vig-enable", "-ve",
+        help="[bold blue](🔵 Vignette)[/blue bold] Enable a Vignette effect [green](Darken the corners of the image)[/green]")] = \
+        Field(default=False)
 
-        intensity: Annotated[float, Option("--intensity", "-i", min=0, max=100,
-            help="[bold green](🟢 Advanced)[/bold green] Intensity of the Vignette effect")] = \
-            Field(default=30)
+    vignette_intensity: Annotated[float, Option("--vig-intensity", "-vi", min=0, max=100,
+        help="[bold blue](🔵 Vignette)[/blue bold] • Intensity of the Vignette effect")] = \
+        Field(default=30)
 
-        decay: Annotated[float, Option("--decay", "-d", min=0, max=1,
-            help="[bold green](🟢 Advanced)[/bold green] Decay of the Vignette effect")] = \
-            Field(default=0.1)
-
-        def pipeline(self) -> Iterable[ShaderVariable]:
-            yield ShaderVariable("uniform", "bool",  "iVignetteEnable",    self.enable)
-            yield ShaderVariable("uniform", "float", "iVignetteIntensity", self.intensity)
-            yield ShaderVariable("uniform", "float", "iVignetteDecay",     self.decay)
-
-    _vignette: Vignette = PrivateAttr(default_factory=Vignette)
-
-    @property
-    def vignette(self) -> Vignette:
-        """Vignette Post-Processing configuration"""
-        return self._vignette
+    vignette_decay: Annotated[float, Option("--vig-decay", "-vd", min=0, max=1,
+        help="[bold blue](🔵 Vignette)[/blue bold] • Decay of the Vignette effect")] = \
+        Field(default=0.1)
 
     # ---------------------------------------------------------------------------------------------|
 
-    class DOF(BaseModel):
-        """Set depth of field parameters [bold green](See 'dof --help' for options)[/bold green]"""
-        enable: Annotated[bool, Option("--enable", "-e",
-            help="[bold blue](🔵 Special )[/blue bold] Enable the Depth of field effect")] = \
-            Field(default=False)
+    dof_enable: Annotated[bool, Option("--dof-enable", "-de",
+        help="[bold blue](🔵 DoField )[/blue bold] Enable a Depth of field effect [green](Blur the image based on depth)[/green]")] = \
+        Field(default=False)
 
-        start: Annotated[float, Option("--start", "-a",
-            help="[bold green](🟢 Advanced)[/bold green] Effect starts at this depth distance")] = \
-            Field(default=0.6)
+    dof_start: Annotated[float, Option("--dof-start", "-da",
+        help="[bold blue](🔵 DoField )[/blue bold] • Blur starts at this depth value")] = \
+        Field(default=0.6)
 
-        end: Annotated[float, Option("--end", "-b",
-            help="[bold green](🟢 Advanced)[/bold green] Effect ends at this depth distance")] = \
-            Field(default=1.0)
+    dof_end: Annotated[float, Option("--dof-end", "-db",
+        help="[bold blue](🔵 DoField )[/blue bold] • Blur ends at this depth value")] = \
+        Field(default=1.0)
 
-        exponent: Annotated[float, Option("--exponent", "-t", min=0, max=10,
-            help="[bold green](🟢 Advanced)[/bold green] Effect depth exponent")] = \
-            Field(default=2.0)
+    dof_exponent: Annotated[float, Option("--dof-exponent", "-dx", min=-10, max=10,
+        help="[bold blue](🔵 DoField )[/blue bold] • Shaping exponent")] = \
+        Field(default=2.0)
 
-        intensity: Annotated[float, Option("--intensity", "-i", min=0, max=2,
-            help="[bold green](🟢 Advanced)[/bold green] Effect blur intensity")] = \
-            Field(default=1.0)
+    dof_intensity: Annotated[float, Option("--dof-intensity", "-di", min=0, max=2,
+        help="[bold blue](🔵 DoField )[/blue bold] • Blur intensity (radius)")] = \
+        Field(default=1.0)
 
-        quality: Annotated[int, Option("--quality", "-q", min=1, max=16,
-            help="[bold green](🟢 Advanced)[/bold green] Effect blur quality (radial steps)")] = \
-            Field(default=4)
+    dof_quality: Annotated[int, Option("--dof-quality", "-dq", min=1, max=16,
+        help="[bold blue](🔵 DoField )[/blue bold] • Blur quality (radial steps)")] = \
+        Field(default=4)
 
-        directions: Annotated[int, Option("--directions", "-d",
-            help="[bold green](🟢 Advanced)[/bold green] Effect blur quality (directions)")] = \
-            Field(default=16)
-
-        def pipeline(self) -> Iterable[ShaderVariable]:
-            yield ShaderVariable("uniform", "bool",  "iDofEnable",     bool(self.enable))
-            yield ShaderVariable("uniform", "float", "iDofStart",      self.start)
-            yield ShaderVariable("uniform", "float", "iDofEnd",        self.end)
-            yield ShaderVariable("uniform", "float", "iDofExponent",   self.exponent)
-            yield ShaderVariable("uniform", "float", "iDofIntensity",  self.intensity/100)
-            yield ShaderVariable("uniform", "int",   "iDofQuality",    self.quality)
-            yield ShaderVariable("uniform", "int",   "iDofDirections", self.directions)
-
-    _dof: DOF = PrivateAttr(default_factory=DOF)
-
-    @property
-    def dof(self) -> DOF:
-        """Depth of Field Post-Processing configuration"""
-        return self._dof
+    dof_directions: Annotated[int, Option("--dof-directions", "-dd", min=1, max=32,
+        help="[bold blue](🔵 DoField )[/blue bold] • Blur quality (directions)")] = \
+        Field(default=16)
 
     # ---------------------------------------------------------------------------------------------|
 
-    def commands(self, typer: BrokenTyper) -> None:
-        with typer.panel("✨ Post processing"):
-            typer.command(self.vignette, name="vignette")
-            typer.command(self.dof, name="dof")
+    saturation: Annotated[float, Option("--saturation", "-sat", min=0, max=400,
+        help="[bold blue](🔵 Saturate)[/bold blue] Saturation of the image [medium_purple3](0 is grayscale, 100 is full color)[/medium_purple3]")] = \
+        Field(default=100)
+
+    # ---------------------------------------------------------------------------------------------|
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)
@@ -204,5 +170,17 @@ class DepthState(BrokenTyper.BaseModel):
         yield ShaderVariable("uniform", "vec2",  "iDepthOrigin",    self.origin)
         yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
         yield ShaderVariable("uniform", "bool",  "iDepthMirror",    bool(self.mirror))
-        yield from self.vignette.pipeline()
-        yield from self.dof.pipeline()
+        # # Vignette
+        yield ShaderVariable("uniform", "bool",  "iVigEnable",    self.vignette_enable)
+        yield ShaderVariable("uniform", "float", "iVigIntensity", self.vignette_intensity)
+        yield ShaderVariable("uniform", "float", "iVigDecay",     self.vignette_decay)
+        # # Depth of Field
+        yield ShaderVariable("uniform", "bool",  "iDofEnable",     bool(self.dof_enable))
+        yield ShaderVariable("uniform", "float", "iDofStart",      self.dof_start)
+        yield ShaderVariable("uniform", "float", "iDofEnd",        self.dof_end)
+        yield ShaderVariable("uniform", "float", "iDofExponent",   self.dof_exponent)
+        yield ShaderVariable("uniform", "float", "iDofIntensity",  self.dof_intensity/100)
+        yield ShaderVariable("uniform", "int",   "iDofQuality",    self.dof_quality)
+        yield ShaderVariable("uniform", "int",   "iDofDirections", self.dof_directions)
+        # # Color effects
+        yield ShaderVariable("uniform", "float", "iSaturation", self.saturation/100)

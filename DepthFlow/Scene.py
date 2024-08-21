@@ -38,10 +38,12 @@ Usage: All commands have a --help option with extensible configuration, and are 
 • Post FX:     [bold blue]depthflow[/bold blue] [blue]dof[/blue] -e [blue]vignette[/blue] -e [blue]main[/blue]
 
 [yellow]Notes:[/yellow]
-• A value of --ssaa 1.5+ is recommended for final exports, real time uses 1.2
-• The [bold blue]main[/bold blue]'s --quality preset gives little improvement for small movements
+• A value of --ssaa between 1.5, 2.0 is recommended for final exports, real time uses 1.2
+• The [bold blue]main[/bold blue]'s --quality preset gives little to no improvement for small movements
 • The rendered video loops perfectly, the period is the main's --time
-• The last two commands must be [bold blue]input[/bold blue] and [bold blue]main[/bold blue] (in order) to work
+• The [bold blue]config[/bold blue] command [bold red]must[/bold red] come before any other presets commands
+• The [bold blue]input[/bold blue] command [bold red]must[/bold red] come after [bold blue]upscalers[/bold blue] and [bold blue]estimators[/bold blue]
+• The last command [bold red]must[/bold red] be [bold blue]main[/bold blue] for running the scene
 """
 
 # -------------------------------------------------------------------------------------------------|
@@ -77,7 +79,7 @@ class DepthScene(ShaderScene):
         image: Annotated[str, Option("--image", "-i", help="[bold green](🟢 Basic)[/bold green] Background Image [green](Path, URL, NumPy, PIL)[/green]")],
         depth: Annotated[str, Option("--depth", "-d", help="[bold green](🟢 Basic)[/bold green] Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
     ) -> None:
-        """Load an Image from Path, URL and its estimated Depthmap [green](See 'input --help' for options)[/green]"""
+        """Load an Image from Path, URL and its estimated Depthmap"""
         image = self.upscaler.upscale(LoaderImage(image))
         depth = LoaderImage(depth) or self.estimator.estimate(image)
         self.aspect_ratio = (image.width/image.height)
@@ -92,13 +94,13 @@ class DepthScene(ShaderScene):
         with self.typer.panel(self.scene_panel):
             self.typer.command(self.input)
 
-        with self.typer.panel("🌊 Depth estimators"):
+        with self.typer.panel("🌊 Depth estimator"):
             self.typer.command(DepthAnythingV1, post=self.set_estimator, name="dav1")
             self.typer.command(DepthAnythingV2, post=self.set_estimator, name="dav2")
             self.typer.command(ZoeDepth, post=self.set_estimator)
             self.typer.command(Marigold, post=self.set_estimator)
 
-        with self.typer.panel("⭐️ Upscalers"):
+        with self.typer.panel("⭐️ Upscaler"):
             self.typer.command(Realesr, post=self.set_upscaler)
             self.typer.command(Waifu2x, post=self.set_upscaler)
 
@@ -107,7 +109,7 @@ class DepthScene(ShaderScene):
             for animation in Components.members():
                 self.typer.command(animation, post=self.add_animation, hidden=hidden)
 
-        with self.typer.panel("🔮 Animation (Presets, recommended)"):
+        with self.typer.panel("🔮 Animation presets"):
             self.typer.command(DepthState, name="config", post=self.add_animation)
 
             for preset in Presets.members():

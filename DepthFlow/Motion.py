@@ -26,16 +26,16 @@ class Target(BrokenEnum):
     OriginY            = "origin_y"
     OffsetX            = "offset_x"
     OffsetY            = "offset_y"
-    Dof_Enable         = "dof.enable"
-    Dof_Start          = "dof.start"
-    Dof_End            = "dof.end"
-    Dof_Exponent       = "dof.exponent"
-    Dof_Intensity      = "dof.intensity"
-    Dof_Quality        = "dof.quality"
-    Dof_Directions     = "dof.directions"
-    Vignette_Enable    = "vignette.enable"
-    Vignette_Intensity = "vignette.intensity"
-    Vignette_Decay     = "vignette.decay"
+    Dof_Enable         = "dof-enable"
+    Dof_Start          = "dof-start"
+    Dof_End            = "dof-end"
+    Dof_Exponent       = "dof-exponent"
+    Dof_Intensity      = "dof-intensity"
+    Dof_Quality        = "dof-quality"
+    Dof_Directions     = "dof-directions"
+    Vignette_Enable    = "vignette-enable"
+    Vignette_Intensity = "vignette-intensity"
+    Vignette_Decay     = "vignette-decay"
 
 class GetMembers:
 
@@ -124,7 +124,8 @@ class Animation(BaseModel, ABC):
     def set(self, scene: DepthScene, value: float) -> None:
         if (self.target != Target.Nothing):
             operator = ("+=" if self.cumulative else "=")
-            exec(f"scene.state.{self.target.value} {operator} {value} + {self.bias}")
+            modulate = self.target.value.replace("-", "_")
+            exec(f"scene.state.{modulate} {operator} {value} + {self.bias}")
 
 # -------------------------------------------------------------------------------------------------|
 # Shaping functions
@@ -143,7 +144,7 @@ class Components(GetMembers):
     # Constant functions
 
     class Set(Animation):
-        """Add a Constant value to some component's animation [green](See 'constant --help' for options)[/green]"""
+        """Add a Constant value to some component's animation"""
         value: Annotated[float, typer.Option("-v", "--value")] = Field(default=0.0)
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
@@ -153,7 +154,7 @@ class Components(GetMembers):
     # Basic functions
 
     class Linear(Animation):
-        """Add a Linear interpolation to some component's animation [green](See 'linear --help' for options)[/green]"""
+        """Add a Linear interpolation to some component's animation"""
         start: Annotated[float, typer.Option("--start", "-t0",
             help=f"{hint} Normalized start time")] = \
             Field(default=0.0, ge=0, le=1)
@@ -180,7 +181,7 @@ class Components(GetMembers):
             return self.low + (self.hight - self.low) * shaped
 
     class Exponential(Animation):
-        """Add an Exponential curve to some component's animation [green](See 'exponential --help' for options)[/green]"""
+        """Add an Exponential curve to some component's animation"""
         base: Annotated[float, typer.Option("-b", "--base",
             help=f"{hint} Base of the exponential function")] = \
             Field(default=2.0)
@@ -193,7 +194,7 @@ class Components(GetMembers):
             return math.pow(self.base, self.scale * tau)
 
     class Arc(Animation):
-        """Add a Quadratic Bezier curve to some component's animation [green](See 'bezier2 --help' for options)[/green]"""
+        """Add a Quadratic Bezier curve to some component's animation"""
         points: Annotated[Tuple[float, float, float], typer.Option("--points", "-p",
             help=f"{hint} Control points of the quadratic Bezier curve")] = \
             Field(default=(0.0, 0.0, 0.0))
@@ -257,7 +258,7 @@ class Preset(BaseModel, ABC):
 
 class Presets(GetMembers):
     class Vertical(Preset):
-        """Add a Vertical motion to the camera [green](See 'vertical --help' for options)[/green]"""
+        """Add a Vertical motion to the camera"""
         reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
@@ -284,7 +285,7 @@ class Presets(GetMembers):
                 )
 
     class Horizontal(Preset):
-        """Add a Horizontal motion to the camera [green](See 'horizontal --help' for options)[/green]"""
+        """Add a Horizontal motion to the camera"""
         reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
@@ -311,7 +312,7 @@ class Presets(GetMembers):
                 )
 
     class Zoom(Preset):
-        """Add a Zoom motion to the camera [green](See 'zoom --help' for options)[/green]"""
+        """Add a Zoom motion to the camera"""
         reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=False)
@@ -337,7 +338,7 @@ class Presets(GetMembers):
                 )
 
     class Circle(Preset):
-        """Add a Circular motion to the camera [green](See 'circle --help' for options)[/green]"""
+        """Add a Circular motion to the camera"""
         reverse:   ReverseType      = Field(default=False)
         smooth:    SmoothType       = Field(default=True)
         phase:     PhaseXYZType     = Field(default=(0.0, 0.0, 0.0))
@@ -366,7 +367,7 @@ class Presets(GetMembers):
             )
 
     class Dolly(Preset):
-        """Add a Dolly zoom to the camera [green](See 'dolly --help' for options)[/green]"""
+        """Add a Dolly zoom to the camera"""
         reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
@@ -385,7 +386,7 @@ class Presets(GetMembers):
             )
 
     class Orbital(Preset):
-        """Orbit the camera around a fixed point at a certain depth [green](See 'orbital --help' for options)[/green]"""
+        """Orbit the camera around a fixed point"""
         depth: DepthType = Field(default=0.5)
 
         def animation(self):
