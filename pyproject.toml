@@ -24,7 +24,9 @@ dependencies = [
 managed = true
 
 [project.scripts]
+depthflow-webui = "DepthFlow.__main__:main_webui"
 depthflow = "DepthFlow.__main__:main"
+depth-webui = "DepthFlow.__main__:main_webui"
 depth = "DepthFlow.__main__:main"
 
 [tool.hatch.build.targets.wheel]

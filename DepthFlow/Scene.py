@@ -85,17 +85,11 @@ class DepthScene(ShaderScene):
         self.image.from_image(image)
         self.depth.from_image(depth)
 
-    def webui(self):
-        """Launch a Gradio WebUI for DepthFlow in the browser"""
-        from DepthFlow.Webui import DepthFlowWebui
-        DepthFlowWebui().launch()
-
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
         self.typer.command(self.load_model, hidden=True)
 
         with self.typer.panel(self.scene_panel):
-            self.typer.command(self.webui)
             self.typer.command(self.input)
 
         with self.typer.panel("🌊 Depth estimators"):
