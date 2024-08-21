@@ -8,14 +8,12 @@ def main_webui():
     with BrokenProfiler("DEPTHFLOW"):
         DepthWebui().launch()
 
+def main_cli():
+    with BrokenProfiler("DEPTHFLOW"):
+        DepthScene().cli()
+
 def main():
-    def run():
-        with BrokenProfiler("DEPTHFLOW"):
-            DepthScene().cli()
-    app = BrokenTyper()
-    app.release_repl()
-    app.command(run)
-    app()
+    BrokenTyper.release(main_cli)
 
 if __name__ == "__main__":
     main()
