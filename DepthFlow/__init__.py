@@ -1,5 +1,5 @@
 import DepthFlow.Resources as DepthFlowResources
-from Broken import BrokenProject, BrokenTorch
+from Broken import BrokenProject
 
 DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
@@ -7,7 +7,5 @@ DEPTHFLOW = BrokenProject(
     APP_AUTHOR="BrokenSource",
     RESOURCES=DepthFlowResources,
 )
-
-BrokenTorch.install()
 
 from DepthFlow.Scene import DepthScene
