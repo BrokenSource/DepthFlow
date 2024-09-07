@@ -1,0 +1,127 @@
+name: 🐞 Create a new bug report ticket
+description: Facing some unexpected behavior or error? Let me help you! •
+title: Describe what went wrong, to your best guess • don't worry, we can edit the title later
+labels:
+  - bug
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      > [!IMPORTANT]
+      > - Only the [**latest versions**](https://brokensrc.dev/get/) of the Projects are **supported**<sup>*1</sup>
+      > - **Consider** getting in touch on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first
+      <sub><i>*1: I can still help you, please try the latest first, or say what version you're on</i></sub>
+
+- type: markdown
+  attributes:
+    value: <div align="center"><h2>📦 Basic Information 📦</h2></div>
+
+- type: dropdown
+  id: operating-system
+  attributes:
+    label: 🔘 Operating system
+    description: |
+      - Where are you experiencing the problem?
+    options:
+      - Windows 11
+      - Windows 10
+      - macOS (Apple Silicon)
+      - macOS (Intel)
+      - Linux (Ubuntu-like)
+      - Linux (Fedora-like)
+      - Linux (Arch-like)
+      - Linux (Specify)
+      - BSD (Specify)
+      - N/A
+    multiple: true
+    default: 0
+  validations:
+    required: true
+
+- type: dropdown
+  id: runtime
+  attributes:
+    label: 🔘 Runtime enviroment
+    description: |
+      - Where are you running the projects from?
+    options:
+      - PyPI Wheels (pip, poetry, pdm, rye, etc)
+      - Source Code (Install scripts or manual)
+      - PyAPP Executables (experimental)
+      - N/A
+    default: 0
+  validations:
+    required: true
+
+- type: dropdown
+  id: python-version
+  attributes:
+    label: 🔘 Python version
+    description: |
+      - **If running from Source Code**: Rye will use the `.python-version` (default below)
+      - **If running from PyPI Wheels**: Check the Python version with `python --version`
+    options:
+      - Python 3.10
+      - Python 3.11
+      - Python 3.12
+      - Python 3.13
+      - N/A
+    default: 1
+  validations:
+    required: true
+
+- type: dropdown
+  id: gpu-vendor
+  attributes:
+    label: 🔘 GPU Vendor
+    description: |
+      - **⚠️ Select all that apply**; Feel free to leave it blank if the issue/project isn't GPU related
+      - **Hybrid systems:** See in logs the GPU being used, switch on your OS if wrong one
+    options:
+      - N/A
+      - Apple Silicon
+      - NVIDIA Desktop
+      - NVIDIA Laptop
+      - AMD Integrated
+      - AMD Desktop
+      - AMD Laptop
+      - Intel HD Graphics/Iris
+      - Intel Desktop Arc
+      - Intel Laptop Arc
+    multiple: true
+    default: 0
+  validations:
+    required: false
+
+- type: markdown
+  attributes:
+    value: <div align="center"><h2>🔥 Ticket details 🔥</h2></div>
+
+- type: textarea
+  id: description
+  attributes:
+    label: 🔘 Description
+    description: |
+      - ✅ Report what (and how) a certain code or feature is failing, should be enough to get started
+      - ✅ Any guess on what went wrong? You can provide a solution, workaround or the idea of one
+      - **Tip:** You can provide a Python script, commands, links, steps to reproduce the issue
+      - **Tip:** You can <kbd>CTRL+V</kbd> screenshots, videos, to help explain the issue
+  validations:
+    required: true
+
+- type: textarea
+  id: traceback
+  attributes:
+    label: 🔘 Traceback
+    description: |
+      - **If relevant**, paste the full traceback, error message, or log file here
+      - **Tip:** You can use [**GitHub Gists**](https://gist.github.com/) to share multiple files
+    render: shell
+  validations:
+    required: false
+
+- type: markdown
+  attributes:
+    value: |
+      ###### © CC-BY-4.0, Issue Template by [**Tremeschin**](https://github.com/Tremeschin) 🇧🇷

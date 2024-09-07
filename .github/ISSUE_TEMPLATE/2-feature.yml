@@ -1,0 +1,55 @@
+name: 💡 Create a new general feedback ticket
+description: Have an idea or feedback to improve the project? Let me hear it! •
+title: Describe the main point of your idea or feedback • don't worry, we can edit the title later
+labels:
+  - enhancement
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      > [!IMPORTANT]
+      > - Not all ideas aligns with the project's goals, but all feedback is valuable and appreciated
+      > - **Consider** discussing your idea on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first
+
+- type: markdown
+  attributes:
+    value: <div align="center"><h2>📦 Basic Information 📦</h2></div>
+
+- type: dropdown
+  id: type
+  attributes:
+    label: 🔘 Request type
+    description: |
+      - What kind of report are you proposing?
+    options:
+      - General feedback
+      - New functionality
+      - User experience
+      - Documentation
+      - Enhancement
+      - Integration
+      - Others (specify)
+    default: 0
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: <div align="center"><h2>🔥 Ticket details 🔥</h2></div>
+
+- type: textarea
+  id: description
+  attributes:
+    label: 🔘 Description
+    description: |
+      - ✅ Describe the feature you'd like to see implemented or feedback to be heard
+      - **Tip:** You can provide a Python script, commands, of how the feature would work
+      - **Tip:** You can <kbd>CTRL+V</kbd> Screenshots, Videos, to provide examples or mockups
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: |
+      ###### © CC-BY-4.0, Issue Template by [**Tremeschin**](https://github.com/Tremeschin) 🇧🇷
