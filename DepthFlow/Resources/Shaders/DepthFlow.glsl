@@ -52,7 +52,9 @@ void main() {
     vec2 point_gluv = sigma;
     float point_height = 0;
 
-    /* Main loop */ {
+    /* Main loop: Find the intersection with the scene */
+    // Note: Edge case on isometric = 1, the rays are parallel
+    if (abs(tan_theta) > 1e-8) {
 
         // The quality of the parallax effect is how tiny the steps are
         float side = max(iResolution.x, iResolution.y);
