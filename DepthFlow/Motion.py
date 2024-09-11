@@ -379,7 +379,7 @@ class Presets(GetMembers):
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.Isometric,
                 amplitude = self.intensity,
-                phase     = (-0.25 if self.loop else 0),
+                phase     = 0.5,
                 cycles    = (1 if self.loop else 0.25),
                 bias      = 1,
                 **self.common()
