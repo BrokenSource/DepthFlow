@@ -22,17 +22,17 @@
 
 > **DepthFlow** is a heavily customizable **parallax shader** for adding soul to your images.
 
-- **🛡️ Open Source**, trust and transparency, cross platform, configurable
+- **🛡️ Open source:** trust and transparency, cross platform, configurable
 - **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060
-- **🎨 Post Processing**: easy vignette, depth of field, lens distortion
-- **⚙️ Flexible**: multiple parameters to tweak and create movement
-- **🎥 Presets**: quality built-in extensively configurable animations `(soon)`
-- **📈 Upscaler** pipeline built-in, powered by [**RealESR**](https://github.com/xinntao/Real-ESRGAN) `(optional)`
-- **♻️ Seamless loops**: perfect for backgrounds, wallpapers, fillers
-- **📔 Video Codecs**: easily export to H264, HEVC, AV1, (+NVENC)
-- **🔱 High Quality**, any resolution, framerate, bitrate, SSAA
-- **⭐️ Smooth borders**: no artifacts, _petite_ step size
-- **🎨 No Watermarks**, user first experience
+- **🎨 Post processing:** easy vignette, depth of field, lens distortion
+- **⚙️ Flexible:** multiple parameters to tweak and create movement
+- **🎥 Presets:** quality built-in extensively configurable animations
+- **📈 Upscaler:** built-in pipeline, powered by [**RealESR**](https://github.com/xinntao/Real-ESRGAN) `(optional)`
+- **♻️ Seamless loops:** perfect for backgrounds, wallpapers, fillers
+- **📔 Video codecs:** easily export to H264, HEVC, AV1, (+NVENC)
+- **🔱 High quality:** any resolution, framerate, bitrate, SSAA
+- **⭐️ Smooth borders:** no artifacts, _petite_ step size
+- **🎨 No watermarks:** user first experience
 - **🌵 Fastest** rendering times in the west
 
 <br>
