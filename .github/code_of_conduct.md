@@ -1,5 +1,5 @@
-## 🛠️ Help wanted: You!
+## 📜 Community Guidelines
 
-> ##### ✨ Hey friend, thanks for your interest in contributing to the Projects ✨
+> ##### 🤝 Clear guidelines help us work together, effectively and respectfully 🤝
 
 Please go to [**https://brokensrc.dev/about/contributing**](https://brokensrc.dev/about/contributing) for more information!
