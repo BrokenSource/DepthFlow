@@ -118,6 +118,7 @@ class DepthManager:
             render=combinations(
                 height=(1080, 1440),
                 time=(5, 10),
+                fps=(60,),
             )
         )
 
