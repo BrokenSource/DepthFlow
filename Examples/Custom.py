@@ -1,6 +1,12 @@
 """
-Basic example of defining your own class based on DepthScene
+(c) CC BY-SA 4.0, Tremeschin
+
+Basic example of defining your own class based on DepthScene, running
+it via CLI or a code managing it for automation
+
+• For more information, visit https://brokensrc.dev/depthflow (WIP)
 """
+
 import math
 
 from DepthFlow import DepthScene
@@ -9,7 +15,6 @@ from ShaderFlow.Message import ShaderMessage
 # Note: DepthScene.method(self) is preferred over super().method(self) for clarity
 
 class YourScene(DepthScene):
-
     def update(self):
         self.state.offset_x = math.sin(2*self.cycle)
         ...

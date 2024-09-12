@@ -66,8 +66,14 @@ class DepthScene(ShaderScene):
         self.animation.append(animation := copy.deepcopy(animation))
         return animation
 
+    def clear_animations(self) -> None:
+        self.animation.clear()
+
     def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
         self.upscaler = upscaler
+
+    def clear_upscaler(self) -> None:
+        self.upscaler = NoUpscaler()
 
     def set_estimator(self, estimator: DepthEstimator) -> None:
         self.estimator = estimator
