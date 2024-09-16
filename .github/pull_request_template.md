@@ -23,5 +23,3 @@ _No description provided._
 
 ## 🔘 Checklist
 - [ ] I have read the website page about [**Contributing (WIP)**](https://brokensrc.dev/about/contributing) to BrokenSource as of this date
-- [ ] I acknowledge that my contributions are licensed under the Project's license
-- [ ] I have contacted the Developers to discuss this contribution beforehand
