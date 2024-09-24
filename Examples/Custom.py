@@ -8,6 +8,7 @@ it via CLI or a code managing it for automation
 """
 
 import math
+import sys
 
 from DepthFlow import DepthScene
 from ShaderFlow.Message import ShaderMessage
@@ -29,7 +30,7 @@ class YourScene(DepthScene):
 
 def manual():
     scene = YourScene()
-    scene.cli()
+    scene.cli(sys.argv[1:])
 
 def managed():
     from Broken.Externals.Upscaler import Realesr

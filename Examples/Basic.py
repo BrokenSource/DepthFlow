@@ -8,9 +8,10 @@ Note: This file is the same as running `python -m DepthFlow` or just `depthflow`
 
 • For more information, visit https://brokensrc.dev/depthflow (WIP)
 """
+import sys
 
 from DepthFlow import DepthScene
 
 if __name__ == "__main__":
     scene = DepthScene()
-    scene.cli()
+    scene.cli(sys.argv[1:])

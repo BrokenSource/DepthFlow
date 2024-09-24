@@ -41,7 +41,7 @@ void main() {
 
     // Cache tan(theta) and its inverse, we'll use it a lot
     float tan_theta = tan(theta);
-    float tan_theta_inv = 1.0 / tan_theta;
+    float cot_theta = (1.0/tan_theta);
 
     // The distance Beta we care for the depth map
     float delta = tan_theta * (iDepthDistance - iCamera.origin.z - iDepthHeight);
@@ -54,7 +54,7 @@ void main() {
 
     /* Main loop: Find the intersection with the scene */
     // Note: Edge case on isometric = 1, the rays are parallel
-    if (abs(tan_theta) > 1e-8) {
+    if (abs(theta) > 1e-6) {
 
         // The quality of the parallax effect is how tiny the steps are
         float side = max(iResolution.x, iResolution.y);
@@ -67,14 +67,16 @@ void main() {
         for (int stage=0; stage<2; stage++) {
             bool FORWARD  = (stage == 0);
             bool BACKWARD = (stage == 1);
-            float di = (FORWARD ? (-1.0/probe) : (1.0/quality));
+            float delta = (FORWARD ? (-1.0/probe) : (1.0/quality));
 
             while (true) {
+                // Out of bounds checks
                 if (FORWARD && i < 0)
                     break;
                 if (BACKWARD && 1 < i)
                     break;
-                i += di;
+
+                i += delta;
 
                 // The current point 'walks' on the util distance
                 point_gluv   = sigma + (i*beta*walk);
@@ -82,7 +84,7 @@ void main() {
 
                 // Scale the values to intensity parameters
                 float depth_height = iDepthHeight * mix(point_height, 1-point_height, iDepthInvert);
-                float walk_height  = (i*beta) * tan_theta_inv;
+                float walk_height  = (i*beta) * cot_theta;
 
                 // Stop the first moment we're inside the surface
                 if (depth_height >= walk_height) {

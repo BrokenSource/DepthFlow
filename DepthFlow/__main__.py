@@ -1,3 +1,5 @@
+import sys
+
 from Broken import BrokenProfiler, BrokenTyper
 from DepthFlow import DepthScene
 
@@ -10,7 +12,7 @@ def main_webui():
 
 def main_cli():
     with BrokenProfiler("DEPTHFLOW"):
-        DepthScene().cli()
+        DepthScene().cli(sys.argv[1:])
 
 def main():
     BrokenTyper.release(main_cli)
