@@ -1,5 +1,3 @@
-# 🌊 DepthFlow
-
 !!! warning "🚧 Better Documentation is Work in Progress 🚧"
 
 {% include-markdown "include/install.md" %}

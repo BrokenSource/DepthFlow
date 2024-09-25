@@ -3,7 +3,7 @@
 <!-- PyPI -->
 <div align="center">
   <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="200"></a>
-  <h1>DepthFlow</h1>
+  <h1 style="margin-top: 0">DepthFlow</h1>
   <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>ImmersityAI</b></a> Alternative
   <br>
   <br>
@@ -18,9 +18,9 @@
 
 <br>
 
-# 🔥 Description
+## 🔥 Description
 
-> **DepthFlow** is a heavily customizable **parallax shader** for adding soul to your images.
+> **DepthFlow** is a heavily customizable **parallax shader** for animating your images.
 
 - **🛡️ Open source:** trust and transparency, cross platform, configurable
 - **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060
@@ -37,7 +37,7 @@
 
 <br>
 
-# 📸 Showcase
+## 📸 Showcase
 
 👇 Right click and **loop me**!
 
