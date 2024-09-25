@@ -42,7 +42,7 @@ class YourScene(DepthScene):
         self.state.offset_x = 0.3 * math.sin(self.cycle)
         self.state.isometric = 1
 
-# -------------------------------------------------------------------------------------------------|
+# ------------------------------------------------------------------------------------------------ #
 
 @define
 class DepthManager:
@@ -155,7 +155,7 @@ class DepthManager:
         for thread in self.threads:
             thread.join()
 
-# -------------------------------------------------------------------------------------------------|
+# ------------------------------------------------------------------------------------------------ #
 
 # Nice: You can subclass the manager itself 🤯
 class YourManager(DepthManager):
@@ -177,7 +177,7 @@ class YourManager(DepthManager):
             data.scene.add_animation(Components.Set(target=Target.Isometric, value=0.4))
             data.scene.add_animation(Presets.Circle(intensity=0.3))
 
-# -------------------------------------------------------------------------------------------------|
+# ------------------------------------------------------------------------------------------------ #
 
 if (__name__ == "__main__"):
     images = Path(os.getenv("IMAGES", "/home/tremeschin/Public/Images"))
