@@ -49,7 +49,7 @@ class GetMembers:
             yield getattr(cls, name)
 
 # Todo: Make a Broken class for this
-hint: str = "[bold blue](🔵 Option)[/bold blue]"
+hint: str = "[bold blue](🔵 Option)[reset]"
 
 # -------------------------------------------------------------------------------------------------|
 
@@ -134,7 +134,7 @@ class Components(GetMembers):
 
     class Custom(Animation):
         code: Annotated[str, typer.Option("-c", "--code",
-            help=f"{hint} Custom code to run for the animation [yellow](be sure to trust it)[/yellow]")] = \
+            help=f"{hint} Custom code to run for the animation [yellow](be sure to trust it)[reset]")] = \
             Field(default="")
 
         def compute(self, scene: DepthScene) -> None:
@@ -220,17 +220,17 @@ class Components(GetMembers):
             Field(default=0.0)
 
     class Sine(_WaveBase):
-        """Add a Sine wave to some component's animation [green](See 'sine --help' for options)[/green]"""
+        """Add a Sine wave to some component's animation [green](See 'sine --help' for options)[reset]"""
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return self.amplitude * math.sin((cycle * self.cycles) + (self.phase * math.tau))
 
     class Cosine(_WaveBase):
-        """Add a Cosine wave to some component's animation [green](See 'cosine --help' for options)[/green]"""
+        """Add a Cosine wave to some component's animation [green](See 'cosine --help' for options)[reset]"""
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return self.amplitude * math.cos((cycle * self.cycles) + (self.phase * math.tau))
 
     class Triangle(_WaveBase):
-        """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[/green]"""
+        """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[reset]"""
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             tau = (tau * self.cycles + self.phase + 0.25) % 1
             return self.amplitude * (1 - 4 * abs(tau - 0.5))

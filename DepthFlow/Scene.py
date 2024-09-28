@@ -59,8 +59,8 @@ class DepthScene(ShaderScene):
         self.estimator.load_model()
 
     def input(self,
-        image: Annotated[str, Option("--image", "-i", help="[bold green](🟢 Basic)[/bold green] Background Image [green](Path, URL, NumPy, PIL)[/green]")],
-        depth: Annotated[str, Option("--depth", "-d", help="[bold green](🟢 Basic)[/bold green] Depthmap of the Image [medium_purple3](None to estimate)[/medium_purple3]")]=None,
+        image: Annotated[str, Option("--image", "-i", help="[bold green](🟢 Basic)[reset] Background Image [green](Path, URL, NumPy, PIL)[reset]")],
+        depth: Annotated[str, Option("--depth", "-d", help="[bold green](🟢 Basic)[reset] Depthmap of the Image [medium_purple3](None to estimate)[reset]")]=None,
     ) -> None:
         """Load an Image from Path, URL and its estimated Depthmap"""
         image = self.upscaler.upscale(LoaderImage(image))
