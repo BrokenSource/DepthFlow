@@ -21,10 +21,11 @@ dependencies = [
 ]
 
 [project.scripts]
-depthflow-webui = "DepthFlow.__main__:main_webui"
-depthflow = "DepthFlow.__main__:main"
-depth-webui = "DepthFlow.__main__:main_webui"
-depth = "DepthFlow.__main__:main"
+depthflow-webui  = "DepthFlow.__main__:main_webui"
+depthflow        = "DepthFlow.__main__:main"
+depth-webui      = "DepthFlow.__main__:main_webui"
+depth            = "DepthFlow.__main__:main"
+mkdocs-depthflow = "Website.docs:main"
 
 [tool.rye]
 managed = true
@@ -40,5 +41,5 @@ build-backend = "hatchling.build"
 content-type = "text/markdown"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-start-after = "<!-- PyPI -->"
+start-after = "<!-- PyPI Start -->"
 path = "Readme.md"

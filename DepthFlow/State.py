@@ -40,6 +40,25 @@ class DepthState(BaseModel):
         help="[bold yellow](🟡 Medium  )[/yellow bold] Apply [bold cyan]GL_MIRRORED_REPEAT[/cyan bold] to the image [medium_purple3](The image is mirrored out of bounds on the respective edge)[/medium_purple3]")] = \
         Field(default=True)
 
+    # # Offset
+
+    offset_x: Annotated[float, typer.Option("--offset-x", "--ofx",
+        help="[bold green](🟢 Advanced)[/bold green] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
+        Field(default=0)
+
+    offset_y: Annotated[float, typer.Option("--offset-y", "--ofy",
+        help="[bold green](🟢 Advanced)[/bold green] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
+        Field(default=0)
+
+    @property
+    def offset(self) -> Tuple[float, float]:
+        """Parallax displacement, change this over time for the 3D effect"""
+        return (self.offset_x, self.offset_y)
+
+    @offset.setter
+    def offset(self, value: Tuple[float, float]):
+        self.offset_x, self.offset_y = value
+
     # # Center
 
     center_x: Annotated[float, typer.Option("--center-x", "--cex",
@@ -80,25 +99,6 @@ class DepthState(BaseModel):
     @origin.setter
     def origin(self, value: Tuple[float, float]):
         self.origin_x, self.origin_y = value
-
-    # # Parallax
-
-    offset_x: Annotated[float, typer.Option("--offset-x", "--ofx",
-        help="[bold green](🟢 Advanced)[/bold green] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
-        Field(default=0)
-
-    offset_y: Annotated[float, typer.Option("--offset-y", "--ofy",
-        help="[bold green](🟢 Advanced)[/bold green] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[/medium_purple3]")] = \
-        Field(default=0)
-
-    @property
-    def offset(self) -> Tuple[float, float]:
-        """Parallax displacement, change this over time for the 3D effect"""
-        return (self.offset_x, self.offset_y)
-
-    @offset.setter
-    def offset(self, value: Tuple[float, float]):
-        self.offset_x, self.offset_y = value
 
     # # Special
 
@@ -166,9 +166,9 @@ class DepthState(BaseModel):
         yield ShaderVariable("uniform", "float", "iDepthZoom",      self.zoom)
         yield ShaderVariable("uniform", "float", "iDepthIsometric", self.isometric)
         yield ShaderVariable("uniform", "float", "iDepthDolly",     self.dolly)
+        yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
         yield ShaderVariable("uniform", "vec2",  "iDepthCenter",    self.center)
         yield ShaderVariable("uniform", "vec2",  "iDepthOrigin",    self.origin)
-        yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
         yield ShaderVariable("uniform", "bool",  "iDepthMirror",    self.mirror)
         yield ShaderVariable("uniform", "bool",  "iVigEnable",      self.vignette_enable)
         yield ShaderVariable("uniform", "float", "iVigIntensity",   self.vignette_intensity)
