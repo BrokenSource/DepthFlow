@@ -210,7 +210,7 @@ class DocsParameters:
 
         self.render(
             scene=Example(),
-            name="learn/parameters/height-varying.mp4"
+            name="learn/parameters/height-varying.mp4",
         )
 
     def make_offset(self):
@@ -221,7 +221,7 @@ class DocsParameters:
         self.render(
             scene=Example(),
             name="learn/parameters/offset-x-varying.mp4",
-            time=5
+            time=5,
         )
 
         class Example(DocScene):
@@ -232,7 +232,7 @@ class DocsParameters:
         self.render(
             scene=Example(),
             name="learn/parameters/offset-xy-varying.mp4",
-            time=5
+            time=5,
         )
 
     def make_static(self):
@@ -244,7 +244,7 @@ class DocsParameters:
         self.render(
             scene=Example(static_plane=True),
             name="learn/parameters/static-varying.mp4",
-            time=5
+            time=5,
         )
 
     def make_isometric(self):
@@ -252,12 +252,12 @@ class DocsParameters:
             def update(self):
                 self.state.height = 0.80
                 self.state.isometric = (1 - math.cos(self.cycle))/2
-                self.state.offset_x = 0.3*math.cos(self.cycle)
-                self.state.offset_y = 0.3*math.sin(self.cycle)
+                self.state.offset_x = 0.3*math.cos(3*self.cycle)
+                self.state.offset_y = 0.3*math.sin(3*self.cycle)
 
         self.render(
             scene=Example(),
-            name="learn/parameters/isometric-varying.mp4"
+            name="learn/parameters/isometric-varying.mp4",
         )
 
         class Example(DocScene):
@@ -269,18 +269,32 @@ class DocsParameters:
 
         self.render(
             scene=Example(),
-            name="learn/parameters/isometric-flat.mp4"
+            name="learn/parameters/isometric-flat.mp4",
+            time=5,
         )
 
     def make_dolly(self):
         class Example(DocScene):
             def update(self):
                 self.state.height = 1
-                self.state.dolly = 2.5*(1 - math.cos(self.cycle))
+                self.state.dolly = 1.5*(1 - math.cos(self.cycle))
 
         self.render(
             scene=Example(),
-            name="learn/parameters/dolly-varying.mp4"
+            name="learn/parameters/dolly-varying.mp4",
+            time=5,
+        )
+
+        class Example(DocScene):
+            def update(self):
+                self.state.height = 1
+                self.state.focus = 0.32
+                self.state.dolly = 1.5*(1 - math.cos(self.cycle))
+
+        self.render(
+            scene=Example(focus_plane=True),
+            name="learn/parameters/dolly-focus-varying.mp4",
+            time=5,
         )
 
     def make_focus(self):
@@ -293,7 +307,7 @@ class DocsParameters:
         self.render(
             scene=Example(focus_plane=True),
             name="learn/parameters/focus-varying.mp4",
-            time=5
+            time=5,
         )
 
     def make_zoom(self):
@@ -303,7 +317,7 @@ class DocsParameters:
 
         self.render(
             scene=Example(),
-            name="learn/parameters/zoom-varying.mp4"
+            name="learn/parameters/zoom-varying.mp4",
         )
 
     def make_invert(self):

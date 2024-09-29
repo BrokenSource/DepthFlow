@@ -2,11 +2,10 @@
 title: DepthFlow/Parameters
 ---
 
-<b><span class="the">T</span>his page</b> focus on all shader-related parameters, and how they affect the final image (in practical terms). The main goal is for aiding you to create your own animations. Nevertheless, it's useful to understand them for the animation system as well.
+<b><span class="the">T</span>his page</b> focus on all shader-related parameters, and how they affect the final image (in practical terms). The main goal is for helping you to understand how to work with the software and parametrize it to your needs, create your own animations, and more.
 
-- For rendering and exporting parameters, see the [**ShaderFlow**](site:shaderflow) documentation.
-
-- For understanding the math, see the [**Foundations**](site:depthflow/learn/foundations) page!
+- For rendering and exporting parameters, see the [**ShaderFlow**](site:/shaderflow) page ✨
+- For understanding the math, see the [**Foundations**](site:/depthflow/learn/foundations) page 📜
 
 <hr>
 
@@ -24,7 +23,7 @@ Or settable by the command line as a animation component:
 
 ```python title="Terminal"
 # Note: This will only create a static image
-depthflow config --height 0.3 --offset_x 1 (...)
+depthflow config --height 0.3 --offset-x 1 main
 ```
 
 However, they are best used within the `.update()` method for creating animations:
@@ -42,7 +41,7 @@ Internally, they are used and sent when the render method is called for the shad
 Directly controlling those makes more sense when managing the code within Python (and bypassing the animation system, which essentially does the same thing) for writing custom animations and more advanced interactions or behaviors.
 
 
-## 🔴 Main parameters
+## Parallax
 
 This section is about the **core parameters** of DepthFlow.
 
@@ -54,15 +53,13 @@ This section is about the **core parameters** of DepthFlow.
 
 <!-- ------------------------------------------------------------------------------------------- -->
 
-<hr class="thick-hr"/>
-
 ### Height
 
 > **Type:** `float`, **Range:** `[0, 1]`
 
-<b><span class="the">T</span>he</b> `height` parameter defines the **peak height of the projected surface** at `depth=1`. It can be thought as the{== **effect's global intensity** ==}parameter.
+<b><span class="the">T</span>he</b> `height` parameter defines the **peak height of the projected surface** at `depth=1`. It can be thought as the {==**effect's global intensity**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/height-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/height-varying.mp4"></video>
 
 !!! quote "It's arguably the **most important parameter**, virtually nothing happens without it"
 
@@ -78,23 +75,21 @@ This section is about the **core parameters** of DepthFlow.
 
 > **Type:** `Tuple[float, float]`, **Alias:** `offset_x`, `offset_y`, **Range:** `[-2, 2]`
 
-<b><span class="the">T</span>he</b> `offset` parameter defines the **parallax displacement** of the projected surface. It can be thought as the{== **camera's position** ==}parameter.
+<b><span class="the">T</span>he</b> `offset` parameter defines the **parallax displacement** of the projected surface. It can be thought as the {==**camera's position**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/offset-x-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/offset-x-varying.mp4"></video>
 
 !!! quote "This is the easiest way to add **'natural' movement** to the scene"
 
 - A value of 0 in a component means the surface and camera are centered, other values meaning depends on other parameters and the aspect ratio, _it's a bit experimental._
 
 - This parameter isn't a _"camera displacement"_ you might expect:
-    1. That would simply move the image around without changing the perspective, which is what the `center` parameter does.
+    1. That would simply move the image around without changing the perspective, which is what the [**`center`**](#center) parameter does.
     2. The camera always _"looks"_ to the image (`origin` parameter) by adding an opposite bias to the ray's projection on how much the image is displaced.
-
-<hr>
 
 As you might expect, setting $x=cos(t)$ and $y=cos(t)$ parameter to follow a circular motion, will create a _"orbiting"_ effect around the center of the image.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/offset-xy-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/offset-xy-varying.mp4"></video>
 
 <!-- ------------------------------------------------------------------------------------------- -->
 
@@ -104,9 +99,9 @@ As you might expect, setting $x=cos(t)$ and $y=cos(t)$ parameter to follow a cir
 
 > **Type:** `float`, **Range:** `[-1, 1]`
 
-<b><span class="the">T</span>he</b> `static` parameter defines the **depth at which no offsets happen**. It can be thought as the{== **offsets focal depth** ==}parameter.
+<b><span class="the">T</span>he</b> `static` parameter defines the **depth at which no offsets happen**. It can be thought as the {==**offsets focal depth**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/static-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/static-varying.mp4"></video>
 
 !!! quote "It's a great way of adding **subtle background movement** or **orbiting around a point**"
 
@@ -122,9 +117,9 @@ As you might expect, setting $x=cos(t)$ and $y=cos(t)$ parameter to follow a cir
 
 > **Type:** `float`, **Range:** `[0, 1]`
 
-<b><span class="the">T</span>he</b> `isometric` parameter defines **how much perspective is applied**. It can be thought as the{== **planification effect** ==}parameter.
+<b><span class="the">T</span>he</b> `isometric` parameter defines **how much perspective is applied**. It can be thought as the {==**planification effect**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/isometric-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/isometric-varying.mp4"></video>
 
 !!! quote "It's the best way to **mitigate edge or stretching distortions**, at the cost of the 3D-ness of the video"
 
@@ -137,7 +132,7 @@ As you might expect, setting $x=cos(t)$ and $y=cos(t)$ parameter to follow a cir
 
 Notice how in the video below the offsets are _"flattened"_, as if there was one layer per depth value and it was simply displaced in the $xy$ plane. Consequently, more of the image is visible, as the peak values don't race towards the camera as much, at the cost of being _flat_.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/isometric-flat.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/isometric-flat.mp4"></video>
 
 <!-- ------------------------------------------------------------------------------------------- -->
 
@@ -147,10 +142,9 @@ Notice how in the video below the offsets are _"flattened"_, as if there was one
 
 > **Type:** `float`, **Range:** `[0, 10]`
 
-<b><span class="the">T</span>he</b> `dolly` parameter defines the **camera's distance from the image**. It's basically the same as the{== **isometric effect** ==}parameter, but with different units.
+<b><span class="the">T</span>he</b> `dolly` parameter defines the **camera's distance from the image**. It's basically the same as the {==**isometric effect**==} parameter, but with different _(natural)_ units.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/dolly-varying.mp4"/>
-
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/dolly-varying.mp4"></video>
 
 !!! quote "It's a great way for a **more natural isometric** effect control"
 
@@ -161,8 +155,13 @@ Notice how in the video below the offsets are _"flattened"_, as if there was one
 As far as I know, the convertion factor between the two is given by:
 
 $$
-\text{isometric} = \left(\frac{2}{\pi}\right) \cdot \tan^{-1}\left(\text{dolly}\right)
+\text{isometric} = 1 - \frac{1}{1 + \text{dolly}}
 $$
+
+For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focus) parameter.
+
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/dolly-focus-varying.mp4"></video>
+
 
 <!-- ------------------------------------------------------------------------------------------- -->
 
@@ -172,9 +171,9 @@ $$
 
 > **Type:** `float`, **Range:** `[-1, 1]`
 
-<b><span class="the">T</span>he</b> `focus` parameter defines the **static depth on isometric changes**. It can be thought as the{== **isometric focal depth** ==}parameter.
+<b><span class="the">T</span>he</b> `focus` parameter defines the **static depth on isometric changes**. It can be thought as the {==**isometric focal depth**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/focus-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/focus-varying.mp4"></video>
 
 !!! quote "It's a great way to **add drama** to the scene, or **give attention** to an object"
 
@@ -190,9 +189,9 @@ $$
 
 > **Type:** `float`, **Range:** `(0, 1]`
 
-<b><span class="the">T</span>he</b> `zoom` parameter defines the **camera's field of view**. It can be thought as the{== **you-know-it** ==}parameter.
+<b><span class="the">T</span>he</b> `zoom` parameter defines the **camera's field of view**. It can be thought as the {==**you-know-it**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/zoom-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/zoom-varying.mp4"></video>
 
 !!! quote "It's a great way to **crop** the image"
 
@@ -208,16 +207,15 @@ $$
 
 > **Type:** `float`, **Range:** `[0, 1]`
 
-<b><span class="the">T</span>he</b> `invert` parameter **interpolates between 0=far and 1=near and the opposite**. It can be thought as the{== **depth inversion** ==}parameter.
+<b><span class="the">T</span>he</b> `invert` parameter **interpolates between 0=far and 1=near and the opposite**. It can be thought as the {==**depth inversion**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/invert-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/invert-varying.mp4"></video>
 
 !!! quote "This parameter is mostly useful when the input depth map is inverted"
 
 - A value of 0.5 flattens the depth map and nothing happens, while a value of 1 inverts the depth map. Middle values _can be thought as softening_ the depthmap.
 
 - It wraps the surface inside-out when the value is above 0.5, and a lot of encroaching will happen, as the background is now the foreground.
-
 
 <!-- ------------------------------------------------------------------------------------------- -->
 
@@ -227,9 +225,9 @@ $$
 
 > **Type:** `Tuple[float, float]`, **Range:** `([-ar, ar], [-1, 1])`
 
-<b><span class="the">T</span>he</b> `center` parameter defines the **center of the image**. It can be thought as the{== **raw offset** ==}parameter.
+<b><span class="the">T</span>he</b> `center` parameter defines the **center of the image**. It can be thought as the {==**raw offset**==} parameter.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/center-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/center-varying.mp4"></video>
 
 !!! quote "This is the easiest way to **move the image around**"
 
@@ -246,9 +244,9 @@ $$
 
 > **Type:** `Tuple[float, float]`, **Range:** `([-ar, ar], [-1, 1])`
 
-<b><span class="the">T</span>he</b> `origin` parameter defines the **center point of offsets**. It can be thought {== **as if the camera was above this point** ==}, without moving it.
+<b><span class="the">T</span>he</b> `origin` parameter defines the **center point of offsets**. It can be thought  {==**as if the camera was above this point**==} , without moving it.
 
-<video src="https://assets.brokensrc.dev/depthflow/learn/parameters/origin-varying.mp4" loop></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/origin-varying.mp4"></video>
 
 !!! quote "This is a good way to focus on a specific part of the image while feeling off-center"
 
@@ -260,11 +258,10 @@ $$
 
 <hr class="thick-hr"/>
 
-## 🟡 Vignette parameters
+## Depth of Field
 
 !!! warning "🚧 Work in Progress 🚧"
 
-## 🟢 Depth of Field parameters
+## Vignette
 
 !!! warning "🚧 Work in Progress 🚧"
-
