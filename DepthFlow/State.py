@@ -12,7 +12,7 @@ class DepthState(BaseModel):
         help="[bold red](🔴 Basic   )[reset] Depthmap's peak value, the effect [bold cyan]intensity[reset] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[reset]")] = \
         Field(default=0.25)
 
-    static: Annotated[float, typer.Option("--static", "-s",
+    steady: Annotated[float, typer.Option("--steady", "-s",
         help="[bold red](🔴 Basic   )[reset] Focal depth plane of [bold cyan]offsets[reset] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[reset]")] = \
         Field(default=0.0)
 
@@ -160,7 +160,7 @@ class DepthState(BaseModel):
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)
-        yield ShaderVariable("uniform", "float", "iDepthStatic",    self.static)
+        yield ShaderVariable("uniform", "float", "iDepthSteady",    self.steady)
         yield ShaderVariable("uniform", "float", "iDepthFocus",     self.focus)
         yield ShaderVariable("uniform", "float", "iDepthInvert",    self.invert)
         yield ShaderVariable("uniform", "float", "iDepthZoom",      self.zoom)

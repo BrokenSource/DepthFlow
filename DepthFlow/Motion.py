@@ -13,7 +13,7 @@ from Broken import BrokenEnum
 class Target(BrokenEnum):
     Nothing            = "nothing"
     Height             = "height"
-    Static             = "static"
+    Steady             = "steady"
     Focus              = "focus"
     Zoom               = "zoom"
     Isometric          = "isometric"
@@ -71,7 +71,7 @@ SmoothType: TypeAlias = Annotated[bool, typer.Option("--smooth", "-s", " /--line
 LoopType: TypeAlias = Annotated[bool, typer.Option("--loop", "-l", " /--no-loop", " /-nl",
     help=f"{hint} Loop the animation indefinitely (often 4x apparent frequency)")]
 
-StaticType: TypeAlias = Annotated[float, typer.Option("--static", "-S",
+SteadyType: TypeAlias = Annotated[float, typer.Option("--steady", "-S",
     help=f"{hint} Depth value of no displacements on camera movements")]
 
 PhaseType: TypeAlias = Annotated[float, typer.Option("--phase", "-p",
@@ -263,10 +263,10 @@ class Presets(GetMembers):
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
         phase:   PhaseType   = Field(default=0.0)
-        static:  StaticType  = Field(default=0.3)
+        steady:  SteadyType  = Field(default=0.3)
 
         def animation(self):
-            yield Components.Set(target=Target.Static, value=self.static)
+            yield Components.Set(target=Target.Steady, value=self.steady)
             if self.loop:
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetY,
@@ -290,10 +290,10 @@ class Presets(GetMembers):
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
         phase:   PhaseType   = Field(default=0.0)
-        static:  StaticType  = Field(default=0.3)
+        steady:  SteadyType  = Field(default=0.3)
 
         def animation(self):
-            yield Components.Set(target=Target.Static, value=self.static)
+            yield Components.Set(target=Target.Steady, value=self.steady)
             if self.loop:
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetX,
@@ -343,10 +343,10 @@ class Presets(GetMembers):
         smooth:    SmoothType       = Field(default=True)
         phase:     PhaseXYZType     = Field(default=(0.0, 0.0, 0.0))
         amplitude: AmplitudeXYZType = Field(default=(1.0, 1.0, 0.0))
-        static:    StaticType       = Field(default=0.3)
+        steady:    SteadyType       = Field(default=0.3)
 
         def animation(self):
-            yield Components.Set(target=Target.Static, value=self.static)
+            yield Components.Set(target=Target.Steady, value=self.steady)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetX,
                 amplitude = (self.intensity*self.amplitude[0]),
@@ -375,7 +375,7 @@ class Presets(GetMembers):
 
         def animation(self):
             yield Components.Set(target=Target.Focus, value=self.depth)
-            yield Components.Set(target=Target.Static, value=self.depth)
+            yield Components.Set(target=Target.Steady, value=self.depth)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.Isometric,
                 amplitude = self.intensity,
@@ -390,7 +390,7 @@ class Presets(GetMembers):
         depth: DepthType = Field(default=0.5)
 
         def animation(self):
-            yield Components.Set(target=Target.Static, value=self.depth)
+            yield Components.Set(target=Target.Steady, value=self.depth)
             yield Components.Set(target=Target.Focus, value=self.depth)
             yield Components.Cosine(
                 target    = Target.Isometric,

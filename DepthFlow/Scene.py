@@ -148,8 +148,8 @@ class DepthScene(ShaderScene):
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:
             self.state.height = max(0, state[1])
-        if (state := imgui.slider_float("Static", self.state.static, 0, 1, "%.2f"))[0]:
-            self.state.static = max(0, state[1])
+        if (state := imgui.slider_float("Steady", self.state.steady, 0, 1, "%.2f"))[0]:
+            self.state.steady = max(0, state[1])
         if (state := imgui.slider_float("Focus", self.state.focus, 0, 1, "%.2f"))[0]:
             self.state.focus = max(0, state[1])
         if (state := imgui.slider_float("Invert", self.state.invert, 0, 1, "%.2f"))[0]:

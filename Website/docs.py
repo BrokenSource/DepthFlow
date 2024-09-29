@@ -95,20 +95,20 @@ class BrokenMinio:
 # ------------------------------------------------------------------------------------------------ #
 
 SHADER_PATCH = """
-if (iStaticPlane && abs(point_height - iDepthStatic) < 0.002) {
+if (iSteadyPlane && abs(depth.value - iDepthSteady) < 0.002) {
     fragColor = vec4(255.0, 79.0, 0, 255.0)/255.0;
-    return;
+    return depth;
 }
-if (iFocusPlane && abs(point_height - iDepthFocus) < 0.002) {
+if (iFocusPlane && abs(depth.value - iDepthFocus) < 0.002) {
     fragColor = vec4(255.0, 79.0, 0, 255.0)/255.0;
-    return;
+    return depth;
 }"""
 
 @define
 class DocScene(DepthScene):
     other: OnceTracker = Factory(OnceTracker)
 
-    static_plane: bool = False
+    steady_plane: bool = False
     focus_plane: bool = False
 
     def build(self):
@@ -120,7 +120,7 @@ class DocScene(DepthScene):
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from DepthScene.pipeline(self)
-        yield ShaderVariable("uniform", "bool", "iStaticPlane", self.static_plane)
+        yield ShaderVariable("uniform", "bool", "iSteadyPlane", self.steady_plane)
         yield ShaderVariable("uniform", "bool", "iFocusPlane", self.focus_plane)
 
     def _render_ui(self):
@@ -134,7 +134,7 @@ class DocScene(DepthScene):
         imgui.set_next_window_bg_alpha(0.6)
         imgui.begin("Parameters", False, imgui.WINDOW_ALWAYS_AUTO_RESIZE)
         imgui.slider_float("Height",    self.state.height,    0, 1, "%.2f")
-        imgui.slider_float("Static",    self.state.static,    0, 1, "%.2f")
+        imgui.slider_float("Steady",    self.state.steady,    0, 1, "%.2f")
         imgui.slider_float("Focus",     self.state.focus,     0, 1, "%.2f")
         imgui.slider_float("Invert",    self.state.invert,    0, 1, "%.2f")
         imgui.slider_float("Zoom",      self.state.zoom,      0, 2, "%.2f")
@@ -197,8 +197,16 @@ class DocsParameters:
 
         # Render variations, upload
         for _ in range(1):
-            video = scene.main(output=output, quality=100, ssaa=2, time=time)[0]
-            self.minio.upload(video, Path("depthflow")/output.relative_to(base))
+            video = scene.main(
+                output=output,
+                quality=100,
+                time=time,
+                ssaa=2,
+            )[0]
+            self.minio.upload(
+                remote=Path("depthflow")/output.relative_to(base),
+                local=video,
+            )
 
         # Cleanup
         scene.window.destroy()
@@ -235,15 +243,15 @@ class DocsParameters:
             time=5,
         )
 
-    def make_static(self):
+    def make_steady(self):
         class Example(DocScene):
             def update(self):
                 self.state.offset_x = 1.5*math.sin(self.cycle)
-                self.state.static = 0.32
+                self.state.steady = 0.32
 
         self.render(
-            scene=Example(static_plane=True),
-            name="learn/parameters/static-varying.mp4",
+            scene=Example(steady_plane=True),
+            name="learn/parameters/steady-varying.mp4",
             time=5,
         )
 
@@ -313,7 +321,7 @@ class DocsParameters:
     def make_zoom(self):
         class Example(DocScene):
             def update(self):
-                self.state.zoom = 1 + 0.5*(1 - math.cos(self.cycle))
+                self.state.zoom = 1 - 0.5*(1 - math.cos(self.cycle))/2
 
         self.render(
             scene=Example(),
@@ -325,7 +333,7 @@ class DocsParameters:
             def update(self):
                 self.state.height = 0.40
                 self.state.invert = (1 - math.cos(self.cycle))/2
-                self.state.offset_x = 0.5*math.sin(self.cycle)
+                self.state.offset_x = 1.5*math.sin(self.cycle)
 
         self.render(
             scene=Example(),
@@ -366,7 +374,7 @@ def main():
     fabric = DocsParameters()
     fabric.make_height()
     fabric.make_offset()
-    fabric.make_static()
+    fabric.make_steady()
     fabric.make_isometric()
     fabric.make_dolly()
     fabric.make_focus()

@@ -45,7 +45,7 @@ Directly controlling those makes more sense when managing the code within Python
 
 This section is about the **core parameters** of DepthFlow.
 
-- **Important**: When parameters refers to depth values, the value is _normalized_. A `static` value of $0.5$, with a `height` of $0.3$ means the perceptual `static` values is at $0.15$, (e.g.).
+- **Important**: When parameters refers to depth values, the value is _normalized_. A `steady` value of $0.5$, with a `height` of $0.3$ means the perceptual `steady` values is at $0.15$, (e.g.).
 
 - **Important**: Depth values of zero are the _farthest_ point, and values of one the _closest_.
 
@@ -95,13 +95,13 @@ As you might expect, setting $x=cos(t)$ and $y=cos(t)$ parameter to follow a cir
 
 <hr class="thick-hr"/>
 
-### Static
+### Steady
 
 > **Type:** `float`, **Range:** `[-1, 1]`
 
-<b><span class="the">T</span>he</b> `static` parameter defines the **depth at which no offsets happen**. It can be thought as the {==**offsets focal depth**==} parameter.
+<b><span class="the">T</span>he</b> `steady` parameter defines the **depth at which no offsets happen**. It can be thought as the {==**offsets focal depth**==} parameter.
 
-<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/static-varying.mp4"></video>
+<video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/steady-varying.mp4"></video>
 
 !!! quote "It's a great way of adding **subtle background movement** or **orbiting around a point**"
 
@@ -171,7 +171,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 > **Type:** `float`, **Range:** `[-1, 1]`
 
-<b><span class="the">T</span>he</b> `focus` parameter defines the **static depth on isometric changes**. It can be thought as the {==**isometric focal depth**==} parameter.
+<b><span class="the">T</span>he</b> `focus` parameter defines the **steady depth on isometric changes**. It can be thought as the {==**isometric focal depth**==} parameter.
 
 <video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/focus-varying.mp4"></video>
 
@@ -195,7 +195,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 !!! quote "It's a great way to **crop** the image"
 
-- A value of 1 means the image is fully visible, while a value of 2 means a quarter of the image is visible.
+- A value of 1 means the image is fully visible, while a value of 0.5 means a quarter of the image is visible.
 
 - This is a _"digital zoom"_, it simply stretches the coordinates internally.
 
