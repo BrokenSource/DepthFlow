@@ -6,11 +6,10 @@ from typing import TYPE_CHECKING, Callable, Iterable, Type
 import imgui
 from attr import Factory, define
 from DepthFlow import DepthScene
-from ShaderFlow.Variable import ShaderVariable
+from ShaderFlow.Variable import ShaderVariable, Uniform
 
 from Broken import BROKEN, OnceTracker, install, log
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
-from Broken.Externals.FFmpeg import FFmpegAudioCodecNone
 
 install("manim", "minio")
 
@@ -120,8 +119,8 @@ class DocScene(DepthScene):
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from DepthScene.pipeline(self)
-        yield ShaderVariable("uniform", "bool", "iSteadyPlane", self.steady_plane)
-        yield ShaderVariable("uniform", "bool", "iFocusPlane", self.focus_plane)
+        yield Uniform("bool", "iSteadyPlane", self.steady_plane)
+        yield Uniform("bool", "iFocusPlane", self.focus_plane)
 
     def _render_ui(self):
         imgui.push_style_var(imgui.STYLE_WINDOW_BORDERSIZE, 2.0)

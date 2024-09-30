@@ -2,7 +2,7 @@ from typing import Annotated, Iterable, Tuple
 
 import typer
 from pydantic import BaseModel, Field, PrivateAttr
-from ShaderFlow.Variable import ShaderVariable
+from ShaderFlow.Variable import ShaderVariable, Uniform
 
 
 class DepthState(BaseModel):
@@ -159,25 +159,25 @@ class DepthState(BaseModel):
     # ---------------------------------------------------------------------------------------------|
 
     def pipeline(self) -> Iterable[ShaderVariable]:
-        yield ShaderVariable("uniform", "float", "iDepthHeight",    self.height)
-        yield ShaderVariable("uniform", "float", "iDepthSteady",    self.steady)
-        yield ShaderVariable("uniform", "float", "iDepthFocus",     self.focus)
-        yield ShaderVariable("uniform", "float", "iDepthInvert",    self.invert)
-        yield ShaderVariable("uniform", "float", "iDepthZoom",      self.zoom)
-        yield ShaderVariable("uniform", "float", "iDepthIsometric", self.isometric)
-        yield ShaderVariable("uniform", "float", "iDepthDolly",     self.dolly)
-        yield ShaderVariable("uniform", "vec2",  "iDepthOffset",    self.offset)
-        yield ShaderVariable("uniform", "vec2",  "iDepthCenter",    self.center)
-        yield ShaderVariable("uniform", "vec2",  "iDepthOrigin",    self.origin)
-        yield ShaderVariable("uniform", "bool",  "iDepthMirror",    self.mirror)
-        yield ShaderVariable("uniform", "bool",  "iVigEnable",      self.vignette_enable)
-        yield ShaderVariable("uniform", "float", "iVigIntensity",   self.vignette_intensity)
-        yield ShaderVariable("uniform", "float", "iVigDecay",       self.vignette_decay)
-        yield ShaderVariable("uniform", "bool",  "iDofEnable",      self.dof_enable)
-        yield ShaderVariable("uniform", "float", "iDofStart",       self.dof_start)
-        yield ShaderVariable("uniform", "float", "iDofEnd",         self.dof_end)
-        yield ShaderVariable("uniform", "float", "iDofExponent",    self.dof_exponent)
-        yield ShaderVariable("uniform", "float", "iDofIntensity",   self.dof_intensity/100)
-        yield ShaderVariable("uniform", "int",   "iDofQuality",     self.dof_quality)
-        yield ShaderVariable("uniform", "int",   "iDofDirections",  self.dof_directions)
-        yield ShaderVariable("uniform", "float", "iSaturation",     self.saturation/100)
+        yield Uniform("float", "iDepthHeight",    self.height)
+        yield Uniform("float", "iDepthSteady",    self.steady)
+        yield Uniform("float", "iDepthFocus",     self.focus)
+        yield Uniform("float", "iDepthInvert",    self.invert)
+        yield Uniform("float", "iDepthZoom",      self.zoom)
+        yield Uniform("float", "iDepthIsometric", self.isometric)
+        yield Uniform("float", "iDepthDolly",     self.dolly)
+        yield Uniform("vec2",  "iDepthOffset",    self.offset)
+        yield Uniform("vec2",  "iDepthCenter",    self.center)
+        yield Uniform("vec2",  "iDepthOrigin",    self.origin)
+        yield Uniform("bool",  "iDepthMirror",    self.mirror)
+        yield Uniform("bool",  "iVigEnable",      self.vignette_enable)
+        yield Uniform("float", "iVigIntensity",   self.vignette_intensity)
+        yield Uniform("float", "iVigDecay",       self.vignette_decay)
+        yield Uniform("bool",  "iDofEnable",      self.dof_enable)
+        yield Uniform("float", "iDofStart",       self.dof_start)
+        yield Uniform("float", "iDofEnd",         self.dof_end)
+        yield Uniform("float", "iDofExponent",    self.dof_exponent)
+        yield Uniform("float", "iDofIntensity",   self.dof_intensity/100)
+        yield Uniform("int",   "iDofQuality",     self.dof_quality)
+        yield Uniform("int",   "iDofDirections",  self.dof_directions)
+        yield Uniform("float", "iSaturation",     self.saturation/100)
