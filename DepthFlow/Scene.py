@@ -106,7 +106,6 @@ class DepthScene(ShaderScene):
         self.time = 0
 
     def build(self):
-        ShaderScene.build(self)
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
         self.normal = ShaderTexture(scene=self, name="normal").repeat(False)
