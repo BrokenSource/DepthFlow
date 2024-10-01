@@ -21,10 +21,10 @@ dependencies = [
 ]
 
 [project.scripts]
-depthflow-webui  = "DepthFlow.__main__:main_webui"
-depthflow        = "DepthFlow.__main__:main"
-depth-webui      = "DepthFlow.__main__:main_webui"
-depth            = "DepthFlow.__main__:main"
+depthflow-gradio = "DepthFlow.__main__:gradio"
+depthflow        = "DepthFlow.__main__:depthflow"
+depth-gradio     = "DepthFlow.__main__:gradio"
+depth            = "DepthFlow.__main__:depthflow"
 mkdocs-depthflow = "Website.docs:main"
 
 [tool.rye]
