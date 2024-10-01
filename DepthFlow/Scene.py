@@ -106,9 +106,9 @@ class DepthScene(ShaderScene):
         self.time = 0
 
     def build(self):
-        self.image = ShaderTexture(scene=self, name="image").repeat(False)
-        self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
-        self.normal = ShaderTexture(scene=self, name="normal").repeat(False)
+        self.image = ShaderTexture(scene=self, name="image")
+        self.depth = ShaderTexture(scene=self, name="depth")
+        self.normal = ShaderTexture(scene=self, name="normal")
         self.shader.fragment = self.DEPTH_SHADER
         self.aspect_ratio = (16/9)
         self.ssaa = 1.2
