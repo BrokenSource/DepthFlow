@@ -120,6 +120,10 @@ class DepthGradio:
             os.remove(task.result())
 
     def launch(self,
+        port: Annotated[int, typer.Option("--port", "-p",
+            help="Port to run the WebUI on")]=8080,
+        server: Annotated[str, typer.Option("--server",
+            help="Server to run the WebUI on")]="0.0.0.0",
         share: Annotated[bool, typer.Option("--share", "-s",
             help="Share the WebUI on the network")]=False,
         threads: Annotated[int,  typer.Option("--threads", "-t",
@@ -257,6 +261,8 @@ class DepthGradio:
             inbrowser=browser, show_api=False,
             quiet=Broken.RELEASE,
             max_threads=threads,
+            server_name=server,
+            server_port=port,
             share=share,
         )
 
