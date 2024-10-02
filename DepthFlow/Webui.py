@@ -1,10 +1,18 @@
 import os
-import threading
+import uuid
+from concurrent.futures import ThreadPoolExecutor as ThreadPool
+from pathlib import Path
+from typing import Annotated, Callable, Dict, Tuple
 
 import gradio
+import typer
+from attr import Factory
 from attrs import define
+from dotmap import DotMap
+from gradio.themes.utils import colors, fonts, sizes
 
 import Broken
+from Broken import BrokenPath, BrokenResolution, iter_dict
 from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -12,19 +20,18 @@ from Broken.Externals.Depthmap import (
     ZoeDepth,
 )
 from Broken.Externals.Upscaler import NoUpscaler, Realesr, Waifu2x
-from DepthFlow import DEPTHFLOW, DepthScene
+from DepthFlow import DEPTHFLOW
+from DepthFlow.Motion import Presets
 
+WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"DepthFlow"/"WebUI")
+"""The temporary output for the WebUI, cleaned at the start and after any render"""
+
+# ------------------------------------------------------------------------------------------------ #
 
 @define(slots=False)
-class DepthWebui:
+class DepthGradio:
     interface: gradio.Blocks = None
-
-    qualities = {
-        "Low": 0,
-        "Medium": 25,
-        "High": 50,
-        "Ultra": 100,
-    }
+    fields: DotMap = Factory(DotMap)
 
     estimators = {
         "DepthAnything V2": DepthAnythingV2,
@@ -34,151 +41,223 @@ class DepthWebui:
     }
 
     upscalers = {
-        "No Upscaler": NoUpscaler,
+        "No upscaler": NoUpscaler,
         "Real-ESRGAN": Realesr,
         "Waifu2x": Waifu2x,
     }
 
-    resolutions = {
-        "720p (16:9)": (1280, 720),
-        "1080p (16:9)": (1920, 1080),
-        "1440p (16:9)": (2560, 1440),
-        "2160p (16:9)": (3840, 2160),
-        "720p (9:16)": (720, 1280),
-        "1080p (9:16)": (1080, 1920),
-        "1440p (9:16)": (1440, 2560),
-        "2160p (9:16)": (2160, 3840),
-        "720p (4:3)": (960, 720),
-        "1080p (4:3)": (1440, 1080),
-        "1440p (4:3)": (1920, 1440),
-        "2160p (4:3)": (2880, 2160),
-    }
+    def simple(self, method: Callable, **options: Dict) -> Dict:
+        show_progress = bool(options.get("outputs"))
+        outputs = options.pop("outputs", set(iter_dict(self.fields)))
+        inputs = options.pop("inputs", set(iter_dict(self.fields)))
+        return dict(
+            fn=method, inputs=inputs, outputs=outputs,
+            show_progress=show_progress,
+            **options,
+        )
 
-    def estimate_depth(self, estimator, image):
-        if (image is None): return None
-        return self.estimators[estimator]().estimate(image)
+    def estimate(self, user: Dict):
+        if (user[self.fields.image] is None):
+            return gradio.Warning("The input image is empty")
+        estimator = self.estimators[user[self.fields.estimator]]()
+        image = user[self.fields.image]
+        yield {self.fields.width:  image.size[0]}
+        yield {self.fields.height: image.size[1]}
+        yield {self.fields.depth:  estimator.estimate(image)}
 
-    def set_resolution(self, resolution_name):
-        width, height = self.resolutions[resolution_name]
-        return width, height
+    def _fit_resolution(self, live: Dict, target: Tuple[int, int]) -> Tuple[int, int]:
+        if (live[self.fields.image] is None):
+            raise GeneratorExit()
+        width, height = live[self.fields.image].size
+        return BrokenResolution().fit(
+            old=(1920, 1080), new=target,
+            ar=(width/height), multiple=1,
+        )
 
-    def render(self, image, depth, width, height, fps, quality, ssaa, time, repeat, estimator, upscaler):
-        if (image is None) or (depth is None):
-            raise ValueError("Please provide an image and a depthmap")
+    def fit_width(self, user: Dict):
+        yield {self.fields.height: self._fit_resolution(user, (user[self.fields.width], None))[1]}
 
-        def _render():
-            nonlocal output
+    def fit_height(self, user: Dict):
+        yield {self.fields.width: self._fit_resolution(user, (None, user[self.fields.height]))[0]}
+
+    def render(self, user: Dict):
+        if (user[self.fields.image] is None):
+            return gradio.Warning("The input image is empty")
+        if (user[self.fields.depth] is None):
+            return gradio.Warning("The input depthmap is empty")
+
+        def _thread():
+            from DepthFlow import DepthScene
             scene = DepthScene(backend="headless")
-            scene.set_estimator(self.estimators[estimator]())
-            scene.set_upscaler(self.upscalers[upscaler]())
-            scene.input(image=image, depth=depth)
-            output = scene.main(
-                width=int(width),
-                height=int(height),
-                fps=int(fps),
-                quality=int(self.qualities[quality]),
-                ssaa=float(ssaa),
-                time=float(time),
-                loop=int(repeat),
-                output="WebUI.mp4",
-                render=True
+            scene.set_estimator(self.estimators[user[self.fields.estimator]]())
+            scene.set_upscaler(self.upscalers[user[self.fields.upscaler]]())
+            scene.input(image=user[self.fields.image], depth=user[self.fields.depth])
+
+            # Build and add any enabled preset class
+            for preset in Presets.members():
+                preset_name = preset.__name__
+                preset_dict = self.fields.animation[preset_name]
+                if (not user[preset_dict.enabled]):
+                    continue
+                scene.add_animation(preset(**{
+                    key: user[item] for (key, item) in preset_dict.options.items()
+                }))
+
+            return scene.main(
+                width=user[self.fields.width],
+                height=user[self.fields.height],
+                fps=user[self.fields.fps],
+                time=user[self.fields.time],
+                loop=user[self.fields.repeat],
+                output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
+                noturbo=(os.getenv("NOTURBO","0")=="1"),
+                ssaa=1.5,
             )[0]
 
-        output = None
-        thread = threading.Thread(target=_render)
-        thread.start()
-        thread.join()
-        return gradio.Video(value=output)
+        with ThreadPool() as pool:
+            task = pool.submit(_thread)
+            yield {self.fields.video: task.result()}
+            os.remove(task.result())
 
-    def launch(self):
+    def launch(self,
+        share: Annotated[bool, typer.Option("--share", "-s",
+            help="Share the WebUI on the network")]=False,
+        threads: Annotated[int,  typer.Option("--threads", "-t",
+            help="Number of maximum concurrent renders")]=4,
+        browser: Annotated[bool, typer.Option("--open", " /--quiet", "-q",
+            help="Open the WebUI in the browser")]=True,
+    ) -> gradio.Blocks:
         with gradio.Blocks(
-            css="footer{display:none !important}",
-            theme=gradio.themes.Soft(),
-            analytics_enabled=False
+            theme=gradio.themes.Default(
+                font=(fonts.GoogleFont("Roboto Slab"),),
+                font_mono=(fonts.GoogleFont("Fira Code"),),
+                primary_hue=colors.emerald,
+                spacing_size=sizes.spacing_sm,
+                radius_size=sizes.radius_sm,
+                text_size=sizes.text_sm,
+            ),
+            analytics_enabled=False,
+            title="DepthFlow WebUI",
+            fill_height=True,
+            fill_width=True
         ) as self.interface:
-            gradio.Markdown("# DepthFlow")
+
+            gradio.Markdown("# 🌊 DepthFlow")
 
             with gradio.Tab("Application"):
                 with gradio.Row():
-                    self.image = gradio.Image(sources=["upload", "clipboard"], type="pil", label="Input image")
-                    self.depth = gradio.Image(interactive=False, label="Depthmap")
+                    with gradio.Column(variant="panel"):
+                        self.fields.image = gradio.Image(scale=1,
+                            sources=["upload", "clipboard"],
+                            type="pil", label="Input image",
+                        )
+                        self.fields.upscaler = gradio.Dropdown(
+                            choices=list(self.upscalers.keys()),
+                            value=list(self.upscalers.keys())[0],
+                            label="Upscaler",
+                        )
+
+                    with gradio.Column(variant="panel"):
+                        self.fields.depth = gradio.Image(scale=1,
+                            sources=["upload", "clipboard"],
+                            type="pil", label="Depthmap",
+                        )
+                        self.fields.estimator = gradio.Dropdown(
+                            choices=list(self.estimators.keys()),
+                            value=list(self.estimators.keys())[0],
+                            label="Depth Estimator",
+                        )
+
+                    with gradio.Column(variant="panel"):
+                        self.fields.video = gradio.Video(scale=1,
+                            label="Output video",
+                            interactive=False,
+                            autoplay=True,
+                        )
+                        self.fields.render = gradio.Button(
+                            value="🔥 Render 🔥",
+                            variant="primary",
+                            size="lg",
+                        )
+
+                with gradio.Accordion("Animation", open=False):
+                    for preset in Presets.members():
+                        preset_name = preset.__name__
+                        preset_dict = self.fields.animation[preset_name]
+
+                        with gradio.Tab(preset_name):
+                            preset_dict.enabled = gradio.Checkbox(
+                                value=False, label="Enabled", info=preset.__doc__)
+
+                            for attr, field in preset.model_fields.items():
+                                if (field.annotation is bool):
+                                    preset_dict.options[attr] = gradio.Checkbox(
+                                        value=field.default,
+                                        label=attr.capitalize(),
+                                        info=field.description,
+                                    )
+                                elif (field.annotation is float):
+                                    preset_dict.options[attr] = gradio.Slider(
+                                        minimum=field.metadata[0].min,
+                                        maximum=field.metadata[0].max,
+                                        step=0.01, label=attr.capitalize(),
+                                        value=field.default,
+                                        info=field.description,
+                                    )
+                                elif (isinstance(field.annotation, Tuple)):
+                                    print(attr, field, field.annotation)
 
                 with gradio.Row():
-                    self.upscaler = gradio.Dropdown(
-                        choices=list(self.upscalers.keys()),
-                        value=list(self.upscalers.keys())[0],
-                        label="Upscaler",
-                    )
-                    self.estimator = gradio.Dropdown(
-                        choices=list(self.estimators.keys()),
-                        value=list(self.estimators.keys())[0],
-                        label="Depth Estimator",
-                    )
-                    self.estimator.change(
-                        self.estimate_depth,
-                        inputs=[self.estimator, self.image],
-                        outputs=[self.depth]
-                    )
+                    self.fields.width = gradio.Number(label="Width", value=1920, minimum=1, step=2)
+                    self.fields.height = gradio.Number(label="Height", value=1080, minimum=1, step=2)
 
-                self.image.change(
-                    self.estimate_depth,
-                    inputs=[self.estimator, self.image],
-                    outputs=[self.depth]
-                )
+                    self.fields.width.change(**self.simple(self.fit_width), trigger_mode="once")
+                    self.fields.height.change(**self.simple(self.fit_height), trigger_mode="once")
+
+                    self.fields.fps = gradio.Slider(
+                        minimum=1, maximum=120, step=1,
+                        label="Framerate", value=60,
+                    )
 
                 with gradio.Row():
-                    self.width = gradio.Number(label="Width", value=1920, minimum=1, maximum=4096)
-                    self.height = gradio.Number(label="Height", value=1080, minimum=1, maximum=4096)
-                    self.resolution_preset = gradio.Dropdown(
-                        choices=list(self.resolutions.keys()),
-                        label="Resolution", value="1080p (16:9)"
-                    )
-                    self.resolution_preset.change(
-                        self.set_resolution,
-                        inputs=[self.resolution_preset],
-                        outputs=[self.width, self.height]
-                    )
-                    self.quality = gradio.Dropdown(label="Quality", choices=list(self.qualities), value="High")
-                    self.ssaa = gradio.Slider(label="SSAA", minimum=0.1, maximum=2, step=0.1, value=1.0)
-                    self.fps = gradio.Slider(label="FPS", minimum=1, maximum=120, step=1, value=60)
-
-                with gradio.Row():
-                    self.time = gradio.Slider(
+                    self.fields.time = gradio.Slider(
                         minimum=0, maximum=30, step=0.5,
-                        label="Duration (seconds)", value=10
+                        label="Duration (seconds)", value=5
                     )
-                    self.repeat = gradio.Slider(
+                    self.fields.repeat = gradio.Slider(
                         minimum=1, maximum=10, step=1,
-                        label="Number of Loops", value=1
+                        label="Number of loops", value=1
                     )
 
-                render = gradio.Button("Render", size="lg")
+            # Update depth map and resolution on image change
+            self.fields.estimator.change(**self.simple(self.estimate,
+                outputs={self.fields.depth, self.fields.width, self.fields.height}
+            ))
+            self.fields.image.change(**self.simple(self.estimate,
+                outputs={self.fields.depth, self.fields.width, self.fields.height}
+            ))
 
-                self.video = gradio.Video(
-                    label="Output Video",
-                    interactive=False,
-                    autoplay=True
-                )
-
-                render.click(
-                    self.render,
-                    inputs=[self.image, self.depth, self.width, self.height, self.fps, self.quality, self.ssaa, self.time, self.repeat, self.estimator, self.upscaler],
-                    outputs=[self.video]
-                )
+            # Main render button
+            self.fields.render.click(**self.simple(
+                self.render, outputs={self.fields.video}
+            ))
 
             gradio.Markdown(''.join((
                 "Made with ❤️ by [**Tremeschin**](https://github.com/Tremeschin) | ",
-                f"**Version** {DEPTHFLOW.VERSION} | **Alpha** WebUI | ",
-                "[**Website**](https://brokensrc.dev/) | "
+                f"**Alpha** WebUI v{DEPTHFLOW.VERSION} | ",
+                "[**Website**](https://brokensrc.dev/depthflow) | "
                 "[**Discord**](https://discord.com/invite/KjqvcYwRHm/) | ",
                 "[**Telegram**](https://t.me/brokensource/) | ",
-                "[**GitHub**](https://github.com/BrokenSource/)"
+                "[**GitHub**](https://github.com/BrokenSource/DepthFlow)"
             )))
 
-        self.interface.launch(
-            share=bool(eval(os.getenv("SHARE", "0"))),
+        return self.interface.launch(
             allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA],
             favicon_path=DEPTHFLOW.RESOURCES.ICON_PNG,
+            inbrowser=browser, show_api=False,
             quiet=Broken.RELEASE,
-            inbrowser=True,
+            max_threads=threads,
+            share=share,
         )
+
+# ------------------------------------------------------------------------------------------------ #

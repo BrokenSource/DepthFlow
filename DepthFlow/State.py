@@ -8,27 +8,27 @@ from ShaderFlow.Variable import ShaderVariable, Uniform
 class DepthState(BaseModel):
     """Set effect parameters, animations might override them!"""
 
-    height: Annotated[float, typer.Option("--height", "-h", min=0,
+    height: Annotated[float, typer.Option("--height", "-h", min=0, max=2,
         help="[bold red](🔴 Basic   )[reset] Depthmap's peak value, the effect [bold cyan]intensity[reset] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[reset]")] = \
         Field(default=0.25)
 
-    steady: Annotated[float, typer.Option("--steady", "-s",
+    steady: Annotated[float, typer.Option("--steady", "-s", min=0, max=1,
         help="[bold red](🔴 Basic   )[reset] Focal depth plane of [bold cyan]offsets[reset] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[reset]")] = \
         Field(default=0.0)
 
-    focus: Annotated[float, typer.Option("--focus", "-f",
+    focus: Annotated[float, typer.Option("--focus", "-f", min=0, max=1,
         help="[bold red](🔴 Basic   )[reset] Focal depth plane of [bold cyan]perspective[reset] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[reset]")] = \
         Field(default=0.0)
 
-    zoom: Annotated[float, typer.Option("--zoom", "-z", min=0,
+    zoom: Annotated[float, typer.Option("--zoom", "-z", min=0, max=2,
         help="[bold red](🔴 Basic   )[reset] Camera [bold cyan]zoom factor[reset] [medium_purple3](2 means a quarter of the image is visible)[reset]")] = \
         Field(default=1.0)
 
-    isometric: Annotated[float, typer.Option("--isometric", "-i",
+    isometric: Annotated[float, typer.Option("--isometric", "-i", min=0, max=1,
         help="[bold yellow](🟡 Medium  )[reset] Isometric factor of [bold cyan]camera projections[reset] [medium_purple3](0 is full perspective, 1 is orthographic)[reset]")] = \
         Field(default=0.0)
 
-    dolly: Annotated[float, typer.Option("--dolly", "-d", min=0,
+    dolly: Annotated[float, typer.Option("--dolly", "-d", min=0, max=20,
         help="[bold yellow](🟡 Medium  )[reset] Same effect as --isometric, dolly zoom [medium_purple3](Move back ray projection origins by this amount)[reset]")] = \
         Field(default=0.0)
 
@@ -42,11 +42,11 @@ class DepthState(BaseModel):
 
     # # Offset
 
-    offset_x: Annotated[float, typer.Option("--offset-x", "--ofx",
+    offset_x: Annotated[float, typer.Option("--offset-x", "--ofx", min=-4, max=4,
         help="[bold green](🟢 Advanced)[reset] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[reset]")] = \
         Field(default=0)
 
-    offset_y: Annotated[float, typer.Option("--offset-y", "--ofy",
+    offset_y: Annotated[float, typer.Option("--offset-y", "--ofy", min=-1, max=1,
         help="[bold green](🟢 Advanced)[reset] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[reset]")] = \
         Field(default=0)
 
@@ -61,11 +61,11 @@ class DepthState(BaseModel):
 
     # # Center
 
-    center_x: Annotated[float, typer.Option("--center-x", "--cex",
+    center_x: Annotated[float, typer.Option("--center-x", "--cex", min=-4, max=4,
         help="[bold green](🟢 Advanced)[reset] Horizontal 'true' offset of the camera [medium_purple3](The camera *is* above this point)[reset]")] = \
         Field(default=0)
 
-    center_y: Annotated[float, typer.Option("--center-y", "--cey",
+    center_y: Annotated[float, typer.Option("--center-y", "--cey", min=-1, max=1,
         help="[bold green](🟢 Advanced)[reset] Vertical   'true' offset of the camera [medium_purple3](The camera *is* above this point)[reset]")] = \
         Field(default=0)
 
@@ -83,11 +83,11 @@ class DepthState(BaseModel):
     origin_x: float = Field(default=0)
     """Hozirontal focal point of the offsets, *as if* the camera was above this point"""
 
-    origin_x: Annotated[float, typer.Option("--origin-x", "--orx",
+    origin_x: Annotated[float, typer.Option("--origin-x", "--orx", min=-4, max=4,
         help="[bold green](🟢 Advanced)[reset] Horizontal focal point of the offsets [medium_purple3](*As if* the camera was above this point)[reset]")] = \
         Field(default=0)
 
-    origin_y: Annotated[float, typer.Option("--origin-y", "--ory",
+    origin_y: Annotated[float, typer.Option("--origin-y", "--ory", min=-1, max=1,
         help="[bold green](🟢 Advanced)[reset] Vertical   focal point of the offsets [medium_purple3](*As if* the camera was above this point)[reset]")] = \
         Field(default=0)
 

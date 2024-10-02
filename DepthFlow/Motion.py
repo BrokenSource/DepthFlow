@@ -8,6 +8,7 @@ import typer
 from pydantic import BaseModel, Field
 
 from Broken import BrokenEnum
+from DepthFlow.State import DepthState
 
 
 class Target(BrokenEnum):
@@ -56,13 +57,13 @@ hint: str = "[bold blue](🔵 Option)[reset]"
 TargetType: TypeAlias = Annotated[Target, typer.Option("--target", "-t",
     help=f"{hint} Target animation state variable to modulate")]
 
-IntensityType: TypeAlias = Annotated[float, typer.Option("--intensity", "-i",
+IntensityType: TypeAlias = Annotated[float, typer.Option("--intensity", "-i", min=0, max=4,
     help=f"{hint} Global intensity of the animation (scales all amplitudes)")]
 
 ReverseType: TypeAlias = Annotated[bool, typer.Option("--reverse", "-r", " /--forward", " /-fw",
     help=f"{hint} Time 'direction' to play the animation, makes the end the start")]
 
-BiasType: TypeAlias = Annotated[float, typer.Option("--bias", "-b",
+BiasType: TypeAlias = Annotated[float, typer.Option("--bias", "-b", min=-4, max=4,
     help=f"{hint} Constant offset added to the animation component")]
 
 SmoothType: TypeAlias = Annotated[bool, typer.Option("--smooth", "-s", " /--linear", " /-ns",
@@ -71,19 +72,22 @@ SmoothType: TypeAlias = Annotated[bool, typer.Option("--smooth", "-s", " /--line
 LoopType: TypeAlias = Annotated[bool, typer.Option("--loop", "-l", " /--no-loop", " /-nl",
     help=f"{hint} Loop the animation indefinitely (often 4x apparent frequency)")]
 
-SteadyType: TypeAlias = Annotated[float, typer.Option("--steady", "-S",
+SteadyType: TypeAlias = Annotated[float, typer.Option("--steady", "-S", min=0, max=1,
     help=f"{hint} Depth value of no displacements on camera movements")]
 
-PhaseType: TypeAlias = Annotated[float, typer.Option("--phase", "-p",
+IsometricType: TypeAlias = Annotated[float, typer.Option("--isometric", "-I", min=0, max=1,
+    help=f"{hint} The 'flatness' of the projection, 0 is perspective, 1 is isometric")]
+
+PhaseType: TypeAlias = Annotated[float, typer.Option("--phase", "-p", min=0, max=1,
     help=f"{hint} Phase shift of the main animation's wave")]
 
-PhaseXYZType: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--phase", "-p",
+PhaseXYZType: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--phase", "-p", min=0, max=1,
     help=f"{hint} Phase shift of the horizontal, vertical and depth waves")]
 
-AmplitudeXYZType: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--amplitude", "-a",
+AmplitudeXYZType: TypeAlias = Annotated[Tuple[float, float, float], typer.Option("--amplitude", "-a", min=0, max=2,
     help=f"{hint} Amplitude of the horizontal, vertical and depth waves")]
 
-DepthType = Annotated[float, typer.Option("--depth", "-d",
+DepthType = Annotated[float, typer.Option("--depth", "-d", min=0, max=1,
     help=f"{hint} Focal depth of this animation (orbit point, dolly zoom, etc.)")]
 
 CumulativeType = Annotated[bool, typer.Option("--cumulative", "-c", " /--force", " /-f",
@@ -157,11 +161,11 @@ class Components(GetMembers):
         """Add a Linear interpolation to some component's animation"""
         start: Annotated[float, typer.Option("--start", "-t0",
             help=f"{hint} Normalized start time")] = \
-            Field(default=0.0, ge=0, le=1)
+            Field(default=0.0)
 
         end: Annotated[float, typer.Option("--end", "-t1",
             help=f"{hint} Normalized end time")] = \
-            Field(default=1.0, ge=0, le=1)
+            Field(default=1.0)
 
         low: Annotated[float, typer.Option("--low", "-v0",
             help=f"{hint} Start value")] = \
@@ -257,8 +261,11 @@ class Preset(BaseModel, ABC):
 # --------------------------------------------------|
 
 class Presets(GetMembers):
+    Config: DepthState = DepthState
+
     class Vertical(Preset):
         """Add a Vertical motion to the camera"""
+        isometric: IsometricType = Field(default=0.6)
         reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
@@ -266,11 +273,12 @@ class Presets(GetMembers):
         steady:  SteadyType  = Field(default=0.3)
 
         def animation(self):
+            yield Components.Set(target=Target.Isometric, value=self.isometric)
             yield Components.Set(target=Target.Steady, value=self.steady)
             if self.loop:
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetY,
-                    amplitude = self.intensity,
+                    amplitude = 0.5*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
                     **self.common()
@@ -286,6 +294,7 @@ class Presets(GetMembers):
 
     class Horizontal(Preset):
         """Add a Horizontal motion to the camera"""
+        isometric: IsometricType = Field(default=0.6)
         reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
@@ -293,11 +302,12 @@ class Presets(GetMembers):
         steady:  SteadyType  = Field(default=0.3)
 
         def animation(self):
+            yield Components.Set(target=Target.Isometric, value=self.isometric)
             yield Components.Set(target=Target.Steady, value=self.steady)
             if self.loop:
                 yield (Components.Sine if self.smooth else Components.Triangle)(
                     target    = Target.OffsetX,
-                    amplitude = self.intensity,
+                    amplitude = 0.5*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
                     **self.common()
@@ -339,6 +349,7 @@ class Presets(GetMembers):
 
     class Circle(Preset):
         """Add a Circular motion to the camera"""
+        isometric: IsometricType    = Field(default=0.6)
         reverse:   ReverseType      = Field(default=False)
         smooth:    SmoothType       = Field(default=True)
         phase:     PhaseXYZType     = Field(default=(0.0, 0.0, 0.0))
@@ -346,16 +357,17 @@ class Presets(GetMembers):
         steady:    SteadyType       = Field(default=0.3)
 
         def animation(self):
+            yield Components.Set(target=Target.Isometric, value=self.isometric)
             yield Components.Set(target=Target.Steady, value=self.steady)
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetX,
-                amplitude = (self.intensity*self.amplitude[0]),
+                amplitude = (0.2*self.intensity*self.amplitude[0]),
                 phase     = self.phase[0] + 0.25,
                 **self.common()
             )
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.OffsetY,
-                amplitude = (self.intensity*self.amplitude[1]),
+                amplitude = (0.2*self.intensity*self.amplitude[1]),
                 phase     = self.phase[1],
                 **self.common()
             )

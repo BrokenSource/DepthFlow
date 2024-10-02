@@ -113,6 +113,7 @@ class DepthScene(ShaderScene):
         self.aspect_ratio = (16/9)
         self.ssaa = 1.2
 
+    # Todo: Overhaul this function
     def animate(self):
         if not self.animation:
             return
@@ -123,10 +124,12 @@ class DepthScene(ShaderScene):
             if issubclass(type(item), DepthState):
                 self.state = copy.deepcopy(item)
 
-            elif issubclass(type(item), Preset):
+        for item in self.animation:
+            if issubclass(type(item), DepthState):
+                continue
+            if issubclass(type(item), Preset):
                 for animation in item.animation():
                     animation(self)
-
             else:
                 item(self)
 
