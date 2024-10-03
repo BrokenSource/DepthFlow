@@ -103,6 +103,7 @@ class DepthGradio:
             scene = DepthScene(backend="headless")
             scene.set_estimator(self._estimator(user))
             scene.input(image=user[self.fields.image], depth=user[self.fields.depth])
+            scene.aspect_ratio = None
 
             # Build and add any enabled preset class
             for preset in Presets.members():
