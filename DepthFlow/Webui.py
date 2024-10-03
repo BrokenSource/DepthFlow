@@ -16,10 +16,11 @@ from Broken import BrokenPath, BrokenResolution, iter_dict
 from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
+    DepthEstimator,
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import NoUpscaler, Realesr, Waifu2x
+from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Motion import Presets
 
@@ -56,16 +57,25 @@ class DepthGradio:
             **options,
         )
 
+    def _estimator(self, user: Dict) -> DepthEstimator:
+        return self.estimators[user[self.fields.estimator]]()
+
+    def _upscaler(self, user: Dict) -> BrokenUpscaler:
+        return self.upscalers[user[self.fields.upscaler]]()
+
     def estimate(self, user: Dict):
-        if (user[self.fields.image] is None):
+        if ((image := user[self.fields.image]) is None):
             return None
-        estimator = self.estimators[user[self.fields.estimator]]()
-        image = user[self.fields.image]
         yield {
-            self.fields.depth:  estimator.estimate(image),
+            self.fields.depth:  self._estimator(user).estimate(image),
             self.fields.width:  image.size[0],
             self.fields.height: image.size[1]
         }
+
+    def upscale(self, user: Dict):
+        if ((image := user[self.fields.image]) is None):
+            return gradio.Warning("The input image is empty")
+        yield {self.fields.image: self._upscaler(user).upscale(image)}
 
     def _fit_resolution(self, user: Dict, target: Tuple[int, int]) -> Tuple[int, int]:
         if (user[self.fields.image] is None):
@@ -91,8 +101,7 @@ class DepthGradio:
         def _thread():
             from DepthFlow import DepthScene
             scene = DepthScene(backend="headless")
-            scene.set_estimator(self.estimators[user[self.fields.estimator]]())
-            scene.set_upscaler(self.upscalers[user[self.fields.upscaler]]())
+            scene.set_estimator(self._estimator(user))
             scene.input(image=user[self.fields.image], depth=user[self.fields.depth])
 
             # Build and add any enabled preset class
@@ -156,23 +165,28 @@ class DepthGradio:
                         self.fields.image = gradio.Image(scale=1,
                             sources=["upload", "clipboard"],
                             type="pil", label="Input image",
+                            interactive=True,
                         )
-                        self.fields.upscaler = gradio.Dropdown(
-                            choices=list(self.upscalers.keys()),
-                            value=list(self.upscalers.keys())[0],
-                            label="Upscaler",
-                        )
+                        with gradio.Row():
+                            self.fields.upscaler = gradio.Dropdown(
+                                choices=list(self.upscalers.keys()),
+                                value=list(self.upscalers.keys())[0],
+                                label="Upscaler", scale=10
+                            )
+                            self.fields.upscale = gradio.Button(value="Upscale", scale=1)
 
                     with gradio.Column(variant="panel"):
                         self.fields.depth = gradio.Image(scale=1,
                             sources=["upload", "clipboard"],
-                            type="pil", label="Depthmap",
+                            type="pil", label="Depthmap"
                         )
-                        self.fields.estimator = gradio.Dropdown(
-                            choices=list(self.estimators.keys()),
-                            value=list(self.estimators.keys())[0],
-                            label="Depth Estimator",
-                        )
+                        with gradio.Row():
+                            self.fields.estimator = gradio.Dropdown(
+                                choices=list(self.estimators.keys()),
+                                value=list(self.estimators.keys())[0],
+                                label="Depth Estimator", scale=10
+                            )
+                            self.fields.estimate = gradio.Button(value="Estimate", scale=1)
 
                     with gradio.Column(variant="panel"):
                         self.fields.video = gradio.Video(scale=1,
@@ -233,7 +247,7 @@ class DepthGradio:
                     with gradio.Row(variant="panel"):
                         self.fields.quality = gradio.Slider(label="Shader quality",
                             info="Reduces internal step size for better quality",
-                            value=50, minimum=0, maximum=100, step=1)
+                            value=50, minimum=0, maximum=100, step=10)
 
                     self.fields.fit_height.click(**self.simple(self.fit_width))
                     self.fields.fit_width.click(**self.simple(self.fit_height))
@@ -247,12 +261,11 @@ class DepthGradio:
                         minimum=1, maximum=10, step=1, value=1)
 
             # Update depth map and resolution on image change
-            self.fields.estimator.change(**self.simple(self.estimate,
-                outputs={self.fields.depth, self.fields.width, self.fields.height}
-            ))
-            self.fields.image.change(**self.simple(self.estimate,
-                outputs={self.fields.depth, self.fields.width, self.fields.height}
-            ))
+            outputs = {self.fields.image, self.fields.depth, self.fields.width, self.fields.height}
+            self.fields.image    .change(**self.simple(self.estimate, outputs=outputs))
+            self.fields.upscale  .click (**self.simple(self.upscale,  outputs=outputs))
+            self.fields.estimator.change(**self.simple(self.estimate, outputs=outputs))
+            self.fields.estimate .click (**self.simple(self.estimate, outputs=outputs))
 
             # Main render button
             self.fields.render.click(**self.simple(
