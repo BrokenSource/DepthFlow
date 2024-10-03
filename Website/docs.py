@@ -94,13 +94,13 @@ class BrokenMinio:
 # ------------------------------------------------------------------------------------------------ #
 
 SHADER_PATCH = """
-if (iSteadyPlane && abs(depth.value - iDepthSteady) < 0.002) {
+if (iSteadyPlane && abs(depthflow.value - iDepthSteady) < 0.002) {
     fragColor = vec4(255.0, 79.0, 0, 255.0)/255.0;
-    return depth;
+    return;
 }
-if (iFocusPlane && abs(depth.value - iDepthFocus) < 0.002) {
+if (iFocusPlane && abs(depthflow.value - iDepthFocus) < 0.002) {
     fragColor = vec4(255.0, 79.0, 0, 255.0)/255.0;
-    return depth;
+    return;
 }"""
 
 @define
@@ -113,8 +113,7 @@ class DocScene(DepthScene):
     def build(self):
         DepthScene.build(self)
         self.shader.fragment = self.DEPTH_SHADER.read_text().replace(
-            "} else if (BACKWARD) {",
-            "} else if (BACKWARD) {" + SHADER_PATCH
+            "if (depthflow.oob) {", (SHADER_PATCH + "if (depthflow.oob) {")
         )
 
     def pipeline(self) -> Iterable[ShaderVariable]:
