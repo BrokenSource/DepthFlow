@@ -58,17 +58,19 @@ class DepthGradio:
 
     def estimate(self, user: Dict):
         if (user[self.fields.image] is None):
-            return gradio.Warning("The input image is empty")
+            return None
         estimator = self.estimators[user[self.fields.estimator]]()
         image = user[self.fields.image]
-        yield {self.fields.width:  image.size[0]}
-        yield {self.fields.height: image.size[1]}
-        yield {self.fields.depth:  estimator.estimate(image)}
+        yield {
+            self.fields.depth:  estimator.estimate(image),
+            self.fields.width:  image.size[0],
+            self.fields.height: image.size[1]
+        }
 
-    def _fit_resolution(self, live: Dict, target: Tuple[int, int]) -> Tuple[int, int]:
-        if (live[self.fields.image] is None):
+    def _fit_resolution(self, user: Dict, target: Tuple[int, int]) -> Tuple[int, int]:
+        if (user[self.fields.image] is None):
             raise GeneratorExit()
-        width, height = live[self.fields.image].size
+        width, height = user[self.fields.image].size
         return BrokenResolution().fit(
             old=(1920, 1080), new=target,
             ar=(width/height), multiple=1,
@@ -106,12 +108,12 @@ class DepthGradio:
             return scene.main(
                 width=user[self.fields.width],
                 height=user[self.fields.height],
+                ssaa=user[self.fields.ssaa],
                 fps=user[self.fields.fps],
                 time=user[self.fields.time],
-                loop=user[self.fields.repeat],
+                loop=user[self.fields.loop],
                 output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
                 noturbo=(os.getenv("NOTURBO","0")=="1"),
-                ssaa=1.5,
             )[0]
 
         with ThreadPool() as pool:
@@ -121,14 +123,14 @@ class DepthGradio:
 
     def launch(self,
         port: Annotated[int, typer.Option("--port", "-p",
-            help="Port to run the WebUI on")]=8080,
+            help="Port to run the WebUI on")]=None,
         server: Annotated[str, typer.Option("--server",
             help="Server to run the WebUI on")]="0.0.0.0",
         share: Annotated[bool, typer.Option("--share", "-s",
             help="Share the WebUI on the network")]=False,
         threads: Annotated[int,  typer.Option("--threads", "-t",
             help="Number of maximum concurrent renders")]=4,
-        browser: Annotated[bool, typer.Option("--open", " /--quiet", "-q",
+        browser: Annotated[bool, typer.Option("--open", " /--no-open",
             help="Open the WebUI in the browser")]=True,
     ) -> gradio.Blocks:
         with gradio.Blocks(
@@ -184,54 +186,65 @@ class DepthGradio:
                             size="lg",
                         )
 
-                with gradio.Accordion("Animation", open=False):
-                    for preset in Presets.members():
-                        preset_name = preset.__name__
-                        preset_dict = self.fields.animation[preset_name]
+                with gradio.Row(variant="panel"):
+                    with gradio.Accordion("Animation (WIP)", open=False):
+                        for preset in Presets.members():
+                            preset_name = preset.__name__
+                            preset_dict = self.fields.animation[preset_name]
 
-                        with gradio.Tab(preset_name):
-                            preset_dict.enabled = gradio.Checkbox(
-                                value=False, label="Enabled", info=preset.__doc__)
+                            with gradio.Tab(preset_name):
+                                preset_dict.enabled = gradio.Checkbox(
+                                    value=False, label="Enabled", info=preset.__doc__)
 
-                            for attr, field in preset.model_fields.items():
-                                if (field.annotation is bool):
-                                    preset_dict.options[attr] = gradio.Checkbox(
-                                        value=field.default,
-                                        label=attr.capitalize(),
-                                        info=field.description,
-                                    )
-                                elif (field.annotation is float):
-                                    preset_dict.options[attr] = gradio.Slider(
-                                        minimum=field.metadata[0].min,
-                                        maximum=field.metadata[0].max,
-                                        step=0.01, label=attr.capitalize(),
-                                        value=field.default,
-                                        info=field.description,
-                                    )
-                                elif (isinstance(field.annotation, Tuple)):
-                                    print(attr, field, field.annotation)
-
-                with gradio.Row():
-                    self.fields.width = gradio.Number(label="Width", value=1920, minimum=1, step=2)
-                    self.fields.height = gradio.Number(label="Height", value=1080, minimum=1, step=2)
-
-                    self.fields.width.change(**self.simple(self.fit_width), trigger_mode="once")
-                    self.fields.height.change(**self.simple(self.fit_height), trigger_mode="once")
-
-                    self.fields.fps = gradio.Slider(
-                        minimum=1, maximum=120, step=1,
-                        label="Framerate", value=60,
-                    )
+                                for attr, field in preset.model_fields.items():
+                                    if (field.annotation is bool):
+                                        preset_dict.options[attr] = gradio.Checkbox(
+                                            value=field.default,
+                                            label=attr.capitalize(),
+                                            info=field.description,
+                                        )
+                                    elif (field.annotation is float):
+                                        preset_dict.options[attr] = gradio.Slider(
+                                            minimum=field.metadata[0].min,
+                                            maximum=field.metadata[0].max,
+                                            step=0.01, label=attr.capitalize(),
+                                            value=field.default,
+                                            info=field.description,
+                                        )
+                                    elif (isinstance(field.annotation, Tuple)):
+                                        print(attr, field, field.annotation)
 
                 with gradio.Row():
-                    self.fields.time = gradio.Slider(
-                        minimum=0, maximum=30, step=0.5,
-                        label="Duration (seconds)", value=5
-                    )
-                    self.fields.repeat = gradio.Slider(
-                        minimum=1, maximum=10, step=1,
-                        label="Number of loops", value=1
-                    )
+                    with gradio.Row(variant="panel"):
+                        self.fields.width = gradio.Number(label="Width",
+                            minimum=1, precision=0, scale=10, value=1920)
+                        self.fields.fit_height = gradio.Button(value="Fit height", scale=1)
+
+                    with gradio.Row(variant="panel"):
+                        self.fields.height = gradio.Number(label="Height",
+                            minimum=1, precision=0, scale=10, value=1080)
+                        self.fields.fit_width = gradio.Button(value="Fit width", scale=1)
+
+                    with gradio.Row(variant="panel"):
+                        self.fields.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
+                            info="Renders at a higher resolution for smoother edges",
+                            value=1.5, minimum=1, maximum=2, step=0.1)
+
+                    with gradio.Row(variant="panel"):
+                        self.fields.quality = gradio.Slider(label="Shader quality",
+                            info="Reduces internal step size for better quality",
+                            value=50, minimum=0, maximum=100, step=1)
+
+                    self.fields.fit_height.click(**self.simple(self.fit_width))
+                    self.fields.fit_width.click(**self.simple(self.fit_height))
+
+                with gradio.Row(variant="panel"):
+                    self.fields.time = gradio.Slider(label="Duration (seconds)",
+                        minimum=0, maximum=30, step=0.5, value=5)
+                    self.fields.fps = gradio.Slider(label="Framerate",
+                        minimum=1, maximum=120, step=1, value=60)
+                    self.fields.loop = gradio.Slider(label="Number of loops",
+                        minimum=1, maximum=10, step=1, value=1)
 
             # Update depth map and resolution on image change
             self.fields.estimator.change(**self.simple(self.estimate,
@@ -265,5 +278,11 @@ class DepthGradio:
             server_port=port,
             share=share,
         )
+
+# ------------------------------------------------------------------------------------------------ #
+
+if (__name__ == "__main__"):
+    demo = DepthGradio()
+    demo.launch()
 
 # ------------------------------------------------------------------------------------------------ #

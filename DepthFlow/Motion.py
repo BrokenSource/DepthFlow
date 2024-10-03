@@ -265,12 +265,11 @@ class Presets(GetMembers):
 
     class Vertical(Preset):
         """Add a Vertical motion to the camera"""
-        isometric: IsometricType = Field(default=0.6)
-        reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
         phase:   PhaseType   = Field(default=0.0)
         steady:  SteadyType  = Field(default=0.3)
+        isometric: IsometricType = Field(default=0.6)
 
         def animation(self):
             yield Components.Set(target=Target.Isometric, value=self.isometric)
@@ -294,12 +293,11 @@ class Presets(GetMembers):
 
     class Horizontal(Preset):
         """Add a Horizontal motion to the camera"""
-        isometric: IsometricType = Field(default=0.6)
-        reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
         phase:   PhaseType   = Field(default=0.0)
         steady:  SteadyType  = Field(default=0.3)
+        isometric: IsometricType = Field(default=0.6)
 
         def animation(self):
             yield Components.Set(target=Target.Isometric, value=self.isometric)
@@ -323,7 +321,6 @@ class Presets(GetMembers):
 
     class Zoom(Preset):
         """Add a Zoom motion to the camera"""
-        reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=False)
         phase:   PhaseType   = Field(default=0.0)
@@ -349,12 +346,11 @@ class Presets(GetMembers):
 
     class Circle(Preset):
         """Add a Circular motion to the camera"""
-        isometric: IsometricType    = Field(default=0.6)
-        reverse:   ReverseType      = Field(default=False)
         smooth:    SmoothType       = Field(default=True)
         phase:     PhaseXYZType     = Field(default=(0.0, 0.0, 0.0))
         amplitude: AmplitudeXYZType = Field(default=(1.0, 1.0, 0.0))
         steady:    SteadyType       = Field(default=0.3)
+        isometric: IsometricType    = Field(default=0.6)
 
         def animation(self):
             yield Components.Set(target=Target.Isometric, value=self.isometric)
@@ -380,7 +376,6 @@ class Presets(GetMembers):
 
     class Dolly(Preset):
         """Add a Dolly zoom to the camera"""
-        reverse: ReverseType = Field(default=False)
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
         depth:   DepthType   = Field(default=0.5)
