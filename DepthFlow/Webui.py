@@ -20,7 +20,7 @@ from Broken.Externals.Depthmap import (
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
+from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Waifu2x
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Motion import Presets
 
@@ -254,7 +254,7 @@ class DepthGradio:
 
                 with gradio.Row(variant="panel"):
                     self.fields.time = gradio.Slider(label="Duration (seconds)",
-                        info="How long the animation or its loop are",
+                        info="How long the animation or its loop lasts",
                         minimum=0, maximum=30, step=0.5, value=5)
                     self.fields.fps = gradio.Slider(label="Framerate (fps)",
                         info="Defines the animation smoothness",
