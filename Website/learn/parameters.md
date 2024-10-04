@@ -87,7 +87,7 @@ This section is about the **core parameters** of DepthFlow.
     1. That would simply move the image around without changing the perspective, which is what the [**`center`**](#center) parameter does.
     2. The camera always _"looks"_ to the image (`origin` parameter) by adding an opposite bias to the ray's projection on how much the image is displaced.
 
-As you might expect, setting $x=cos(t)$ and $y=cos(t)$ parameter to follow a circular motion, will create a _"orbiting"_ effect around the center of the image.
+As you might expect, setting $x=cos(t)$ and $y=sin(t)$ parameter to follow a circular motion, will create a _"orbiting"_ effect around the center of the image.
 
 <video loop autoplay controls src="https://assets.brokensrc.dev/depthflow/learn/parameters/offset-xy-varying.mp4"></video>
 
