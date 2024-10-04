@@ -78,6 +78,6 @@
 <!-- Website end -->
 <br><br><div align="center">
   <h2>🍁 Learn More 🍁</h2>
-  <h3>✨ Check out my <a href="https://brokensrc.dev/depthflow/get"><b>Awesome Website</b></a> instead of a boring Readme ✨</h3>
+  <h3>✨ Check out my <a href="https://brokensrc.dev/get/"><b>Awesome Website</b></a> instead of a boring Readme ✨</h3>
   <h5>Installation Guides, Usage, Tips, Code Reference and More!</h5>
 </div>
