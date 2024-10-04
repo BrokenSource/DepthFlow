@@ -42,7 +42,6 @@ class DepthGradio:
     }
 
     upscalers = {
-        "No upscaler": NoUpscaler,
         "Real-ESRGAN": Realesr,
         "Waifu2x": Waifu2x,
     }
@@ -174,7 +173,7 @@ class DepthGradio:
                                 value=list(self.upscalers.keys())[0],
                                 label="Upscaler", scale=10
                             )
-                            self.fields.upscale = gradio.Button(value="Upscale", scale=1)
+                            self.fields.upscale = gradio.Button(value="🚀 Upscale", scale=1)
 
                     with gradio.Column(variant="panel"):
                         self.fields.depth = gradio.Image(scale=1,
@@ -187,7 +186,7 @@ class DepthGradio:
                                 value=list(self.estimators.keys())[0],
                                 label="Depth Estimator", scale=10
                             )
-                            self.fields.estimate = gradio.Button(value="Estimate", scale=1)
+                            self.fields.estimate = gradio.Button(value="🔎 Estimate", scale=1)
 
                     with gradio.Column(variant="panel"):
                         self.fields.video = gradio.Video(scale=1,
@@ -233,12 +232,12 @@ class DepthGradio:
                     with gradio.Row(variant="panel"):
                         self.fields.width = gradio.Number(label="Width",
                             minimum=1, precision=0, scale=10, value=1920)
-                        self.fields.fit_height = gradio.Button(value="Fit height", scale=1)
+                        self.fields.fit_height = gradio.Button(value="➡️ Fit height", scale=1)
 
                     with gradio.Row(variant="panel"):
                         self.fields.height = gradio.Number(label="Height",
                             minimum=1, precision=0, scale=10, value=1080)
-                        self.fields.fit_width = gradio.Button(value="Fit width", scale=1)
+                        self.fields.fit_width = gradio.Button(value="⬅️ Fit width", scale=1)
 
                     with gradio.Row(variant="panel"):
                         self.fields.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
@@ -255,10 +254,13 @@ class DepthGradio:
 
                 with gradio.Row(variant="panel"):
                     self.fields.time = gradio.Slider(label="Duration (seconds)",
+                        info="How long the animation or its loop are",
                         minimum=0, maximum=30, step=0.5, value=5)
-                    self.fields.fps = gradio.Slider(label="Framerate",
+                    self.fields.fps = gradio.Slider(label="Framerate (fps)",
+                        info="Defines the animation smoothness",
                         minimum=1, maximum=120, step=1, value=60)
-                    self.fields.loop = gradio.Slider(label="Number of loops",
+                    self.fields.loop = gradio.Slider(label="Loop count",
+                        info="Repeat the final video this many times",
                         minimum=1, maximum=10, step=1, value=1)
 
             # Update depth map and resolution on image change

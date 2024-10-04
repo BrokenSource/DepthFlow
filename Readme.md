@@ -20,20 +20,22 @@
 
 ## 🔥 Description
 
-> **DepthFlow** is a heavily customizable **parallax shader** for animating your images.
+**DepthFlow** is a heavily customizable **parallax shader** for animating your images.
 
-- **🛡️ Open source:** trust and transparency, cross platform, configurable
-- **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060
-- **🎨 Post processing:** easy vignette, depth of field, lens distortion
-- **⚙️ Flexible:** multiple parameters to tweak and create movement
-- **🎥 Presets:** quality built-in extensively configurable animations
-- **📈 Upscaler:** built-in pipeline, powered by [**RealESR**](https://github.com/xinntao/Real-ESRGAN) `(optional)`
-- **♻️ Seamless loops:** perfect for backgrounds, wallpapers, fillers
-- **📔 Video codecs:** easily export to H264, HEVC, AV1, (+NVENC)
-- **🔱 High quality:** any resolution, framerate, bitrate, SSAA
-- **⭐️ Smooth borders:** no artifacts, _petite_ step size
-- **🎨 No watermarks:** user first experience
-- **🌵 Fastest** rendering times in the west
+- **🌐 Web interface** made with [**Gradio**](https://gradio.app), get quick feedback on animations.
+- **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060.
+- **🎨 Post processing:** easy vignette, depth of field, lens distortion.
+- **⚙️ Flexible:** multiple parameters to tweak and create movement.
+- **🎥 Presets:** quality built-in extensively configurable animations.
+- **📈 Upscaler:** built-in pipeline, powered by [**RealESR**](https://github.com/xinntao/Real-ESRGAN) `(optional)`.
+- **♻️ Seamless loops:** perfect for backgrounds, wallpapers, fillers.
+- **📔 Video codecs:** easily export to H264, HEVC, AV1, (+NVENC).
+- **📦 Executables:** double click and run, automated complexity.
+- **🔱 High quality:** any resolution, framerate, bitrate, ssaa.
+- **⭐️ Smooth borders:** no artifacts, _petite_ step size.
+- **🎨 No watermarks:** user first experience.
+- **🌵 Fastest** rendering times in the west.
+- **🌀 Self hosted:** Unlimited usage.
 
 <br>
 
@@ -66,6 +68,12 @@
   <br>
   <br>
 </details>
+
+<br>
+
+🌐 Powerfull **WebUI** built with [**Gradio**](https://gradio.app)
+
+<img src="https://github.com/user-attachments/assets/05b81504-d736-4c95-8e6f-9b4901c9eebd">
 
 <!-- Website end -->
 <br><br><div align="center">
