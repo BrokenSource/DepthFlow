@@ -141,6 +141,8 @@ class DepthGradio:
             help="Number of maximum concurrent renders")]=4,
         browser: Annotated[bool, typer.Option("--open", " /--no-open",
             help="Open the WebUI in the browser")]=True,
+        block: Annotated[bool, typer.Option("--block", "-b", " /--no-block",
+            help="Holds the main thread until the WebUI is closed")]=True,
     ) -> gradio.Blocks:
         with gradio.Blocks(
             theme=gradio.themes.Default(
@@ -288,6 +290,7 @@ class DepthGradio:
             allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA],
             favicon_path=DEPTHFLOW.RESOURCES.ICON_PNG,
             inbrowser=browser, show_api=False,
+            prevent_thread_lock=(not block),
             max_threads=threads,
             server_name=server,
             server_port=port,

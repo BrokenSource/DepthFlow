@@ -46,11 +46,10 @@ DepthFlow DepthMake(
     camera.zoom        += (depth.zoom - 1.0) + ((1/depth.away) - 1.0);
     camera.plane_point  = vec3(0.0, 0.0, depth.away);
     camera              = iCameraProject(camera);
+    depth.oob           = camera.out_of_bounds;
 
-    if (camera.out_of_bounds) {
-        depth.oob = true;
+    if (depth.oob)
         return depth;
-    }
 
     // Point where the ray intersects with the infinity plane, with a fixed point
     // pivoting around depth=steady. I do not know how the math works.
