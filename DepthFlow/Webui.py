@@ -288,7 +288,6 @@ class DepthGradio:
             allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA],
             favicon_path=DEPTHFLOW.RESOURCES.ICON_PNG,
             inbrowser=browser, show_api=False,
-            quiet=Broken.RELEASE,
             max_threads=threads,
             server_name=server,
             server_port=port,
