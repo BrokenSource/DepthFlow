@@ -14,6 +14,7 @@ from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
+    DepthPro,
     Marigold,
     ZoeDepth,
 )
@@ -80,6 +81,7 @@ class DepthScene(ShaderScene):
         with self.typer.panel("🌊 Depth estimator"):
             self.typer.command(DepthAnythingV1, post=self.set_estimator, name="dav1")
             self.typer.command(DepthAnythingV2, post=self.set_estimator, name="dav2")
+            self.typer.command(DepthPro, post=self.set_estimator)
             self.typer.command(ZoeDepth, post=self.set_estimator)
             self.typer.command(Marigold, post=self.set_estimator)
 

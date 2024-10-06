@@ -11,12 +11,12 @@ from attrs import define
 from dotmap import DotMap
 from gradio.themes.utils import colors, fonts, sizes
 
-import Broken
 from Broken import BrokenPath, BrokenResolution, iter_dict
 from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
+    DepthPro,
     Marigold,
     ZoeDepth,
 )
@@ -37,6 +37,7 @@ class DepthGradio:
     estimators = {
         "DepthAnything V2": DepthAnythingV2,
         "DepthAnything V1": DepthAnythingV1,
+        "DepthPro": DepthPro,
         "ZoeDepth": ZoeDepth,
         "Marigold": Marigold,
     }
