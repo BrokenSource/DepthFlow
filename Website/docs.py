@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 os.environ["IMGUI_FONT_SCALE"] = "1.21"
 
 def _dir(path: str) -> str:
-    return f"[bold blue]{path}[reset]"
+    return f"[bold blue]{path}[/]"
 
 # ------------------------------------------------------------------------------------------------ #
 # Todo: Move Minio and Manim common classes to a DocsFabric module

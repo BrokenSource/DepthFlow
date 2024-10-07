@@ -4,7 +4,7 @@ from Broken import BrokenProfiler, BrokenTyper
 
 
 def gradio():
-    """Run the DepthFlow [bold red]Gradio user interface[reset]"""
+    """Run the DepthFlow [bold red]Gradio user interface[/]"""
     from DepthFlow.Webui import DepthGradio
 
     with BrokenProfiler("DEPTHFLOW"):
@@ -12,7 +12,7 @@ def gradio():
 
 
 def depthflow():
-    """Run the DepthFlow [bold red]Command line interface[reset]"""
+    """Run the DepthFlow [bold red]Command line interface[/]"""
     from DepthFlow import DepthScene
 
     with BrokenProfiler("DEPTHFLOW"):

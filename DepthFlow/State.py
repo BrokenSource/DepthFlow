@@ -9,45 +9,45 @@ class DepthState(BaseModel):
     """Set effect parameters, animations might override them!"""
 
     height: Annotated[float, typer.Option("--height", "-h", min=0, max=2,
-        help="[bold red](🔴 Basic   )[reset] Depthmap's peak value, the effect [bold cyan]intensity[reset] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[reset]")] = \
+        help="[bold red](🔴 Basic   )[/] Depthmap's peak value, the effect [bold cyan]intensity[/] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[/]")] = \
         Field(default=0.25)
 
     steady: Annotated[float, typer.Option("--steady", "-s", min=0, max=1,
-        help="[bold red](🔴 Basic   )[reset] Focal depth plane of [bold cyan]offsets[reset] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[reset]")] = \
+        help="[bold red](🔴 Basic   )[/] Focal depth plane of [bold cyan]offsets[/] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/]")] = \
         Field(default=0.0)
 
     focus: Annotated[float, typer.Option("--focus", "-f", min=0, max=1,
-        help="[bold red](🔴 Basic   )[reset] Focal depth plane of [bold cyan]perspective[reset] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[reset]")] = \
+        help="[bold red](🔴 Basic   )[/] Focal depth plane of [bold cyan]perspective[/] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/]")] = \
         Field(default=0.0)
 
     zoom: Annotated[float, typer.Option("--zoom", "-z", min=0, max=2,
-        help="[bold red](🔴 Basic   )[reset] Camera [bold cyan]zoom factor[reset] [medium_purple3](2 means a quarter of the image is visible)[reset]")] = \
+        help="[bold red](🔴 Basic   )[/] Camera [bold cyan]zoom factor[/] [medium_purple3](2 means a quarter of the image is visible)[/]")] = \
         Field(default=1.0)
 
     isometric: Annotated[float, typer.Option("--isometric", "-i", min=0, max=1,
-        help="[bold yellow](🟡 Medium  )[reset] Isometric factor of [bold cyan]camera projections[reset] [medium_purple3](0 is full perspective, 1 is orthographic)[reset]")] = \
+        help="[bold yellow](🟡 Medium  )[/] Isometric factor of [bold cyan]camera projections[/] [medium_purple3](0 is full perspective, 1 is orthographic)[/]")] = \
         Field(default=0.0)
 
     dolly: Annotated[float, typer.Option("--dolly", "-d", min=0, max=20,
-        help="[bold yellow](🟡 Medium  )[reset] Same effect as --isometric, dolly zoom [medium_purple3](Move back ray projection origins by this amount)[reset]")] = \
+        help="[bold yellow](🟡 Medium  )[/] Same effect as --isometric, dolly zoom [medium_purple3](Move back ray projection origins by this amount)[/]")] = \
         Field(default=0.0)
 
     invert: Annotated[float, typer.Option("--invert", "-v", min=0, max=1,
-        help="[bold yellow](🟡 Medium  )[reset] Interpolate depth values between (0=far, 1=near) and vice-versa, as in [bold cyan]mix(height, 1-height, invert)[reset]")] = \
+        help="[bold yellow](🟡 Medium  )[/] Interpolate depth values between (0=far, 1=near) and vice-versa, as in [bold cyan]mix(height, 1-height, invert)[/]")] = \
         Field(default=0.0)
 
     mirror: Annotated[bool, typer.Option("--mirror", "-m", " /-n",
-        help="[bold yellow](🟡 Medium  )[reset] Apply [bold cyan]GL_MIRRORED_REPEAT[reset] to the image [medium_purple3](The image is mirrored out of bounds on the respective edge)[reset]")] = \
+        help="[bold yellow](🟡 Medium  )[/] Apply [bold cyan]GL_MIRRORED_REPEAT[/] to the image [medium_purple3](The image is mirrored out of bounds on the respective edge)[/]")] = \
         Field(default=True)
 
     # # Offset
 
     offset_x: Annotated[float, typer.Option("--offset-x", "--ofx", min=-4, max=4,
-        help="[bold green](🟢 Advanced)[reset] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[reset]")] = \
+        help="[bold green](🟢 Advanced)[/] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[/]")] = \
         Field(default=0)
 
     offset_y: Annotated[float, typer.Option("--offset-y", "--ofy", min=-1, max=1,
-        help="[bold green](🟢 Advanced)[reset] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[reset]")] = \
+        help="[bold green](🟢 Advanced)[/] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[/]")] = \
         Field(default=0)
 
     @property
@@ -62,11 +62,11 @@ class DepthState(BaseModel):
     # # Center
 
     center_x: Annotated[float, typer.Option("--center-x", "--cex", min=-4, max=4,
-        help="[bold green](🟢 Advanced)[reset] Horizontal 'true' offset of the camera [medium_purple3](The camera *is* above this point)[reset]")] = \
+        help="[bold green](🟢 Advanced)[/] Horizontal 'true' offset of the camera [medium_purple3](The camera *is* above this point)[/]")] = \
         Field(default=0)
 
     center_y: Annotated[float, typer.Option("--center-y", "--cey", min=-1, max=1,
-        help="[bold green](🟢 Advanced)[reset] Vertical   'true' offset of the camera [medium_purple3](The camera *is* above this point)[reset]")] = \
+        help="[bold green](🟢 Advanced)[/] Vertical   'true' offset of the camera [medium_purple3](The camera *is* above this point)[/]")] = \
         Field(default=0)
 
     @property
@@ -84,11 +84,11 @@ class DepthState(BaseModel):
     """Hozirontal focal point of the offsets, *as if* the camera was above this point"""
 
     origin_x: Annotated[float, typer.Option("--origin-x", "--orx", min=-4, max=4,
-        help="[bold green](🟢 Advanced)[reset] Horizontal focal point of the offsets [medium_purple3](*As if* the camera was above this point)[reset]")] = \
+        help="[bold green](🟢 Advanced)[/] Horizontal focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/]")] = \
         Field(default=0)
 
     origin_y: Annotated[float, typer.Option("--origin-y", "--ory", min=-1, max=1,
-        help="[bold green](🟢 Advanced)[reset] Vertical   focal point of the offsets [medium_purple3](*As if* the camera was above this point)[reset]")] = \
+        help="[bold green](🟢 Advanced)[/] Vertical   focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/]")] = \
         Field(default=0)
 
     @property
@@ -109,51 +109,51 @@ class DepthState(BaseModel):
     # ---------------------------------------------------------------------------------------------|
 
     vignette_enable: Annotated[bool, typer.Option("--vig-enable", "--ve",
-        help="[bold blue](🔵 Vignette)[reset] Enable a Vignette effect [green](Darken the corners of the image)[reset]")] = \
+        help="[bold blue](🔵 Vignette)[/] Enable a Vignette effect [green](Darken the corners of the image)[/]")] = \
         Field(default=False)
 
     vignette_intensity: Annotated[float, typer.Option("--vig-intensity", "--vi", min=0, max=100,
-        help="[bold blue](🔵 Vignette)[reset] • Intensity of the Vignette effect")] = \
+        help="[bold blue](🔵 Vignette)[/] • Intensity of the Vignette effect")] = \
         Field(default=30)
 
     vignette_decay: Annotated[float, typer.Option("--vig-decay", "--vd", min=0, max=1,
-        help="[bold blue](🔵 Vignette)[reset] • Decay of the Vignette effect")] = \
+        help="[bold blue](🔵 Vignette)[/] • Decay of the Vignette effect")] = \
         Field(default=0.1)
 
     # ---------------------------------------------------------------------------------------------|
 
     dof_enable: Annotated[bool, typer.Option("--dof-enable", "--de",
-        help="[bold blue](🔵 DoField )[reset] Enable a Depth of field effect [green](Blur the image based on depth)[reset]")] = \
+        help="[bold blue](🔵 DoField )[/] Enable a Depth of field effect [green](Blur the image based on depth)[/]")] = \
         Field(default=False)
 
     dof_start: Annotated[float, typer.Option("--dof-start", "--da",
-        help="[bold blue](🔵 DoField )[reset] • Blur starts at this depth value")] = \
+        help="[bold blue](🔵 DoField )[/] • Blur starts at this depth value")] = \
         Field(default=0.6)
 
     dof_end: Annotated[float, typer.Option("--dof-end", "--db",
-        help="[bold blue](🔵 DoField )[reset] • Blur ends at this depth value")] = \
+        help="[bold blue](🔵 DoField )[/] • Blur ends at this depth value")] = \
         Field(default=1.0)
 
     dof_exponent: Annotated[float, typer.Option("--dof-exponent", "--dx", min=-10, max=10,
-        help="[bold blue](🔵 DoField )[reset] • Shaping exponent")] = \
+        help="[bold blue](🔵 DoField )[/] • Shaping exponent")] = \
         Field(default=2.0)
 
     dof_intensity: Annotated[float, typer.Option("--dof-intensity", "--di", min=0, max=2,
-        help="[bold blue](🔵 DoField )[reset] • Blur intensity (radius)")] = \
+        help="[bold blue](🔵 DoField )[/] • Blur intensity (radius)")] = \
         Field(default=1.0)
 
     dof_quality: Annotated[int, typer.Option("--dof-quality", "--dq", min=1, max=16,
-        help="[bold blue](🔵 DoField )[reset] • Blur quality (radial steps)")] = \
+        help="[bold blue](🔵 DoField )[/] • Blur quality (radial steps)")] = \
         Field(default=4)
 
     dof_directions: Annotated[int, typer.Option("--dof-directions", "--dd", min=1, max=32,
-        help="[bold blue](🔵 DoField )[reset] • Blur quality (directions)")] = \
+        help="[bold blue](🔵 DoField )[/] • Blur quality (directions)")] = \
         Field(default=16)
 
     # ---------------------------------------------------------------------------------------------|
 
     saturation: Annotated[float, typer.Option("--saturation", "--sat", min=0, max=400,
-        help="[bold blue](🔵 Saturate)[reset] Saturation of the image [medium_purple3](0 is grayscale, 100 is full color)[reset]")] = \
+        help="[bold blue](🔵 Saturate)[/] Saturation of the image [medium_purple3](0 is grayscale, 100 is full color)[/]")] = \
         Field(default=100)
 
     # ---------------------------------------------------------------------------------------------|
