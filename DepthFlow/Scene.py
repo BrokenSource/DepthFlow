@@ -66,6 +66,7 @@ class DepthScene(ShaderScene):
         """Load an Image from Path, URL and its estimated Depthmap"""
         image = self.upscaler.upscale(LoaderImage(image))
         depth = LoaderImage(depth) or self.estimator.estimate(image)
+        self.resolution   = (image.width,image.height)
         self.aspect_ratio = (image.width/image.height)
         self.normal.from_numpy(self.estimator.normal_map(depth))
         self.image.from_image(image)
