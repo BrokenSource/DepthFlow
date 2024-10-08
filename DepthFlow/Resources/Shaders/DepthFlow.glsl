@@ -70,7 +70,7 @@ DepthFlow DepthMake(
     if (abs(tan_theta) < 1e-6)
         return depth;
 
-    // The util distance the walk height is not greater than the surface
+    // The util distance the 'projection ceiling' is always above the surface
     float edge = tan_theta * (depth.away - camera.origin.z - depth.height);
     float util = (length(displacement) - edge);
 
