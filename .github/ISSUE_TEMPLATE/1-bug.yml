@@ -1,6 +1,5 @@
-name: 🐞 Create a new bug report ticket
+name: 🐞 Create a new issue or bug report ticket
 description: Facing some unexpected behavior or error? Let me help you! •
-title: Describe what went wrong, to your best guess • don't worry, we can edit the title later
 labels:
   - bug
 
