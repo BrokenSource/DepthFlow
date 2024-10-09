@@ -10,8 +10,8 @@ it via CLI or a code managing it for automation
 import math
 import sys
 
-from DepthFlow import DepthScene
-from ShaderFlow.Message import ShaderMessage
+from depthflow import DepthScene
+from shaderflow.message import ShaderMessage
 
 # Note: DepthScene.method(self) is preferred over super().method(self) for clarity
 
@@ -33,7 +33,7 @@ def manual():
     scene.cli(sys.argv[1:])
 
 def managed():
-    from Broken.Externals.Upscaler import Realesr
+    from broken.externals.upscaler import Realesr
     # Note: For headless rendering / server, use backend='headless'
     scene = YourScene(backend="glfw")
     scene.set_upscaler(Realesr())

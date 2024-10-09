@@ -2,7 +2,7 @@ from typing import Annotated, Iterable, Tuple
 
 import typer
 from pydantic import BaseModel, Field, PrivateAttr
-from ShaderFlow.Variable import ShaderVariable, Uniform
+from shaderflow.variable import ShaderVariable, Uniform
 
 
 class DepthState(BaseModel):

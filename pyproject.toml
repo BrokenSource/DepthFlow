@@ -21,17 +21,17 @@ dependencies = [
 ]
 
 [project.scripts]
-depthflow-gradio = "DepthFlow.__main__:gradio"
-depthflow        = "DepthFlow.__main__:depthflow"
-depth-gradio     = "DepthFlow.__main__:gradio"
-depth            = "DepthFlow.__main__:depthflow"
-mkdocs-depthflow = "Website.docs:main"
+depthflow-gradio = "depthflow.__main__:gradio"
+depthflow        = "depthflow.__main__:depthflow"
+depth-gradio     = "depthflow.__main__:gradio"
+depth            = "depthflow.__main__:depthflow"
+mkdocs-depthflow = "website.docs:main"
 
 [tool.rye]
 managed = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["DepthFlow"]
+packages = ["depthflow"]
 
 [build-system]
 requires = ["hatchling", "hatch-fancy-pypi-readme"]
@@ -42,4 +42,4 @@ content-type = "text/markdown"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
 start-after = "<!-- PyPI Start -->"
-path = "Readme.md"
+path = "readme.md"

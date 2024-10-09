@@ -1,25 +1,25 @@
 import sys
 
-from Broken import BrokenProfiler, BrokenTyper
+from broken import BrokenProfiler, BrokenTerminal
 
 
 def gradio():
     """Run the DepthFlow [bold red]Gradio user interface[/]"""
-    from DepthFlow.Webui import DepthGradio
+    from depthflow.webui import DepthGradio
 
     with BrokenProfiler("DEPTHFLOW"):
-        BrokenTyper.simple(DepthGradio().launch)
+        BrokenTerminal.simple(DepthGradio().launch)
 
 
 def depthflow():
     """Run the DepthFlow [bold red]Command line interface[/]"""
-    from DepthFlow import DepthScene
+    from depthflow import DepthScene
 
     with BrokenProfiler("DEPTHFLOW"):
         DepthScene().cli(*sys.argv[1:])
 
 def main():
-    BrokenTyper.release(depthflow, gradio)
+    BrokenTerminal.release(depthflow, gradio)
 
 if __name__ == "__main__":
     main()

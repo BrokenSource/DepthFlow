@@ -1,8 +1,9 @@
 > [!IMPORTANT]
 > <sub>This repository is part of a [**monorepo**](https://github.com/BrokenSource/BrokenSource) and [**shouldn't be cloned alone**](https://brokensrc.dev/get/source)</sub>
+
 <!-- PyPI Start -->
 <div align="center">
-  <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="200"></a>
+  <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/depthflow/resources/images/depthflow.png" width="200"></a>
   <h1 style="margin-top: 0">DepthFlow</h1>
   <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>ImmersityAI</b></a> Alternative
   <br>

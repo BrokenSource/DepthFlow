@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Annotated, Dict, Generator, Tuple, Type, TypeA
 import typer
 from pydantic import BaseModel, Field
 
-from Broken import BrokenEnum
-from DepthFlow.State import DepthState
+from broken import BrokenEnum
+from depthflow.state import DepthState
 
 
 class Target(BrokenEnum):
@@ -414,4 +414,4 @@ class Presets(GetMembers):
 # -------------------------------------------------------------------------------------------------|
 
 if TYPE_CHECKING:
-    from DepthFlow.Scene import DepthScene
+    from depthflow.scene import DepthScene

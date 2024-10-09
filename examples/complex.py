@@ -21,13 +21,13 @@ from typing import List, Self, Type
 
 from attr import Factory, define
 from click import clear
-from DepthFlow import DepthScene
-from DepthFlow.Motion import Animation, Components, Preset, Presets, Target
-from DepthFlow.State import DepthState
+from depthflow import DepthScene
+from depthflow.motion import Animation, Components, Preset, Presets, Target
+from depthflow.state import DepthState
 from dotmap import DotMap
 
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr
+from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
+from broken.externals.upscaler import BrokenUpscaler, NoUpscaler, Realesr
 
 
 def combinations(**options):

@@ -11,8 +11,8 @@ from attrs import define
 from dotmap import DotMap
 from gradio.themes.utils import colors, fonts, sizes
 
-from Broken import BrokenPath, BrokenResolution, iter_dict
-from Broken.Externals.Depthmap import (
+from broken import BrokenPath, BrokenResolution, iter_dict
+from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
@@ -20,11 +20,11 @@ from Broken.Externals.Depthmap import (
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Waifu2x
-from DepthFlow import DEPTHFLOW
-from DepthFlow.Motion import Presets
+from broken.externals.upscaler import BrokenUpscaler, Realesr, Waifu2x
+from depthflow import DEPTHFLOW
+from depthflow.motion import Presets
 
-WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"DepthFlow"/"WebUI")
+WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.directories.system_temp/"DepthFlow"/"WebUI")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
 
 # ------------------------------------------------------------------------------------------------ #
@@ -99,7 +99,7 @@ class DepthGradio:
             return gradio.Warning("The input depthmap is empty")
 
         def _thread():
-            from DepthFlow import DepthScene
+            from depthflow import DepthScene
             scene = DepthScene(backend="headless")
             scene.set_estimator(self._estimator(user))
             scene.input(image=user[self.fields.image], depth=user[self.fields.depth])
@@ -280,7 +280,7 @@ class DepthGradio:
 
             gradio.Markdown(''.join((
                 "Made with ❤️ by [**Tremeschin**](https://github.com/Tremeschin) | ",
-                f"**Alpha** WebUI v{DEPTHFLOW.VERSION} | ",
+                f"**Alpha** WebUI v{DEPTHFLOW.version} | ",
                 "[**Website**](https://brokensrc.dev/depthflow) | "
                 "[**Discord**](https://discord.com/invite/KjqvcYwRHm/) | ",
                 "[**Telegram**](https://t.me/brokensource/) | ",
@@ -288,8 +288,8 @@ class DepthGradio:
             )))
 
         return self.interface.launch(
-            allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA],
-            favicon_path=DEPTHFLOW.RESOURCES.ICON_PNG,
+            allowed_paths=[DEPTHFLOW.directories.data],
+            favicon_path=DEPTHFLOW.resources.icon_png,
             inbrowser=browser, show_api=False,
             prevent_thread_lock=(not block),
             max_threads=threads,

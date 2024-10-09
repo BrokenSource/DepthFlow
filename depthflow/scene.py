@@ -4,13 +4,13 @@ from typing import Annotated, Iterable, List, Union
 
 import imgui
 from attr import define, field
-from ShaderFlow.Message import ShaderMessage
-from ShaderFlow.Scene import ShaderScene
-from ShaderFlow.Texture import ShaderTexture
-from ShaderFlow.Variable import ShaderVariable
+from shaderflow.message import ShaderMessage
+from shaderflow.scene import ShaderScene
+from shaderflow.texture import ShaderTexture
+from shaderflow.variable import ShaderVariable
 from typer import Option
 
-from Broken.Externals.Depthmap import (
+from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
@@ -18,11 +18,11 @@ from Broken.Externals.Depthmap import (
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
-from Broken.Loaders import LoaderImage
-from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
-from DepthFlow.Motion import Animation, Components, Preset, Presets
-from DepthFlow.State import DepthState
+from broken.externals.upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
+from broken.loaders import LoaderImage
+from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT
+from depthflow.motion import Animation, Components, Preset, Presets
+from depthflow.state import DepthState
 
 # -------------------------------------------------------------------------------------------------|
 
@@ -32,7 +32,7 @@ class DepthScene(ShaderScene):
 
     # Constants
     DEFAULT_IMAGE = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-    DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
+    DEPTH_SHADER  = (DEPTHFLOW.resources.shaders/"depthflow.glsl")
 
     # DepthFlow objects
     animation: List[Union[Animation, Preset, DepthState]] = field(factory=list)

@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Callable, Iterable, Type
 
 import imgui
 from attr import Factory, define
-from DepthFlow import DepthScene
-from ShaderFlow.Variable import ShaderVariable, Uniform
+from depthflow import DepthScene
+from shaderflow.variable import ShaderVariable, Uniform
 
-from Broken import BROKEN, OnceTracker, install, log
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
+from broken import BROKEN, OnceTracker, install, log
+from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 
 install("manim", "minio")
 
@@ -165,7 +165,7 @@ class DocsParameters:
 
     def render(self, scene: DepthScene, name: str, *, time: float=10):
         # Find local and remote paths for the asset video
-        base = BROKEN.DIRECTORIES.SYSTEM_TEMP/"mkdocs"
+        base = BROKEN.directories.system_temp/"mkdocs"
         file = Path(name).with_suffix(".mp4")
         output = (base/file)
 
