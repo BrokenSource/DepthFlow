@@ -21,11 +21,9 @@ dependencies = [
 ]
 
 [project.scripts]
-depthflow-gradio = "DepthFlow.__main__:gradio"
-depthflow        = "DepthFlow.__main__:depthflow"
-depth-gradio     = "DepthFlow.__main__:gradio"
-depth            = "DepthFlow.__main__:depthflow"
-mkdocs-depthflow = "Website.docs:main"
+depthflow = "DepthFlow.__main__:main"
+depth     = "DepthFlow.__main__:main"
+depthdocs = "Website.docs:main"
 
 [tool.rye]
 managed = true

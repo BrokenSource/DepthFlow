@@ -1,25 +1,28 @@
 import sys
 
-from Broken import BrokenProfiler, BrokenTyper
+from Broken import BrokenProfiler, BrokenTorch, BrokenTyper
+from DepthFlow import DepthScene
 
 
 def gradio():
-    """Run the DepthFlow [bold red]Gradio user interface[/]"""
+    """Run the DepthFlow [bold green]Gradio user interface[/]"""
     from DepthFlow.Webui import DepthGradio
 
-    with BrokenProfiler("DEPTHFLOW"):
-        BrokenTyper.simple(DepthGradio().launch)
+    BrokenTyper.simple(DepthGradio().launch)
 
 
 def depthflow():
-    """Run the DepthFlow [bold red]Command line interface[/]"""
-    from DepthFlow import DepthScene
+    """Run the DepthFlow [bold green]Command line interface[/]"""
+    DepthScene().cli(*sys.argv[1:])
 
-    with BrokenProfiler("DEPTHFLOW"):
-        DepthScene().cli(*sys.argv[1:])
 
 def main():
-    BrokenTyper.release(depthflow, gradio)
+    with BrokenProfiler("DEPTHFLOW"):
+        BrokenTyper.complex(
+            main=depthflow,
+            nested=(depthflow, gradio),
+            direct=BrokenTorch.install
+        )
 
 if __name__ == "__main__":
     main()

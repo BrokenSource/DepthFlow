@@ -1,7 +1,7 @@
 import math
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Type
+from typing import TYPE_CHECKING, Callable, Iterable
 
 import imgui
 from attr import Factory, define
