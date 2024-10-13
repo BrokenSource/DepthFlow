@@ -5,14 +5,14 @@ from DepthFlow import DepthScene
 
 
 def gradio():
-    """Run the DepthFlow [bold green]Gradio user interface[/]"""
+    """🎓 Run the DepthFlow [bold green]Gradio user interface[/]"""
     from DepthFlow.Webui import DepthGradio
 
     BrokenTyper.simple(DepthGradio().launch)
 
 
 def depthflow():
-    """Run the DepthFlow [bold green]Command line interface[/]"""
+    """🚀 Run the DepthFlow [bold green]Command line interface[/]"""
     DepthScene().cli(*sys.argv[1:])
 
 
