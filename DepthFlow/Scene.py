@@ -96,8 +96,6 @@ class DepthScene(ShaderScene):
                 self.typer.command(animation, post=self.add_animation, hidden=hidden)
 
         with self.typer.panel("🔮 Animation presets"):
-            self.typer.command(DepthState, name="config", post=self.add_animation)
-
             for preset in Presets.members():
                 self.typer.command(preset, post=self.add_animation)
 

@@ -1,5 +1,6 @@
 > [!IMPORTANT]
 > <sub>This repository is part of a [**monorepo**](https://github.com/BrokenSource/BrokenSource) and [**shouldn't be cloned alone**](https://brokensrc.dev/get/source)</sub>
+
 <!-- PyPI Start -->
 <div align="center">
   <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="200"></a>
@@ -20,7 +21,7 @@
 
 ## 🔥 Description
 
-**DepthFlow** is a heavily customizable **parallax shader** for animating your images.
+> **DepthFlow** is a heavily customizable **parallax shader** for animating your images.
 
 - **🌐 Web interface** made with [**Gradio**](https://gradio.app), get quick feedback on animations.
 - **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060.
