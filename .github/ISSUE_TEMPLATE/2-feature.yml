@@ -1,6 +1,5 @@
 name: 💡 Create a new general feedback ticket
 description: Have an idea or feedback to improve the project? Let me hear it! •
-title: Describe the main point of your idea or feedback • don't worry, we can edit the title later
 labels:
   - enhancement
 
@@ -9,8 +8,8 @@ body:
   attributes:
     value: |
       > [!IMPORTANT]
-      > - Not all ideas aligns with the project's goals, but all feedback is valuable and appreciated
-      > - **Consider** discussing your idea on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first
+      > - All feedback is valuable and appreciated, be constructive and respectful ✨
+      > - **Consider** discussing your idea on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first!
 
 - type: markdown
   attributes:

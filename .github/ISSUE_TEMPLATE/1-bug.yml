@@ -1,6 +1,5 @@
 name: 🐞 Create a new bug report ticket
 description: Facing some unexpected behavior or error? Let me help you! •
-title: Describe what went wrong, to your best guess • don't worry, we can edit the title later
 labels:
   - bug
 
@@ -9,9 +8,9 @@ body:
   attributes:
     value: |
       > [!IMPORTANT]
-      > - Only the [**latest versions**](https://brokensrc.dev/get/) of the Projects are **supported**<sup>*1</sup>
-      > - **Consider** getting in touch on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first
-      <sub><i>*1: I can still help you, please try the latest first, or say what version you're on</i></sub>
+      > - Only the [**latest versions**](https://brokensrc.dev/get/) of the projects are **supported**<sup>*1</sup>
+      > - **Consider** getting in touch on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first!
+      <sub><i>*1: I can still help you, please try latest first, or say what version you're on!</i></sub>
 
 - type: markdown
   attributes:
