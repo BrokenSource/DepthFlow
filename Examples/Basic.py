@@ -6,7 +6,7 @@ Simple example of running DepthFlow default implementation
 Note: This file is the same as running `python -m DepthFlow` or just `depthflow` with the pyproject
     scripts entry points when on the venv. You can also run this directly with `python Basic.py`
 
-• For more information, visit https://brokensrc.dev/depthflow (WIP)
+• For more information, visit https://brokensrc.dev/depthflow
 """
 import sys
 

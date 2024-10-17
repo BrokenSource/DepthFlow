@@ -7,7 +7,7 @@ file, limiting the number of concurrent processes, thread and vram leaks safe
 Warning: This WILL use A LOT OF RAM depending on concurrency and image size
 Warning: This WILL use A LOT OF CPU for the video encoding, if enough GPU
 
-• For more information, visit https://brokensrc.dev/depthflow (WIP)
+• For more information, visit https://brokensrc.dev/depthflow
 """
 
 import itertools

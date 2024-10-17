@@ -1,5 +1,6 @@
 import copy
 import os
+import sys
 from typing import Annotated, Iterable, List, Union
 
 import imgui
@@ -100,8 +101,6 @@ class DepthScene(ShaderScene):
                 self.typer.command(preset, post=self.add_animation)
 
     def setup(self):
-        if self.image.is_empty():
-            self.input(image=DepthScene.DEFAULT_IMAGE)
         if (not self.animation):
             self.add_animation(Presets.Orbital())
         self.time = 0
@@ -111,8 +110,10 @@ class DepthScene(ShaderScene):
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
         self.normal = ShaderTexture(scene=self, name="normal")
         self.shader.fragment = self.DEPTH_SHADER
-        self.aspect_ratio = (16/9)
         self.ssaa = 1.2
+
+        if ("input" not in sys.argv):
+            self.input(image=DepthScene.DEFAULT_IMAGE)
 
     # Todo: Overhaul this function
     def animate(self):
