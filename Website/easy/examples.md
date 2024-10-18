@@ -30,7 +30,7 @@ For example, `depthflow gradio --help` will show all options for the web interfa
 
 The user interface _should_ be somewhat self-explanatory, and is subject to change.
 
-- 📁 **Input any** image on the top left, optionally upscale it; configure rendering options below and/or change the animations, and hit _"Render"_ to generate a video!
+- 📁 **Input any image** on the top left, optionally upscale it; configure rendering options below and/or change the animations, and hit _"Render"_ to generate a video!
 
 - ♻️ **You can pass** a `depthflow gradio --share` flag to have a temporary _public link_ of your instance, _proxied_ through [**Gradio**](https://www.gradio.app/)'s servers. Do this when hosting for a friend, or if you don't have access to the local network of a remote/rented server!
 
@@ -45,7 +45,7 @@ The user interface _should_ be somewhat self-explanatory, and is subject to chan
 
 ## 🔘 Command line
 
-✅ As **DepthFlow** is a [**ShaderFlow**](site:shaderflow) _"spin-off"_ - a custom Scene - most of its documentation on commands, behavior, issues and options are shared between the two.
+✅ As **DepthFlow** is a [**ShaderFlow**](site:/shaderflow) _"spin-off"_ - a custom Scene - most of its documentation on commands, behavior, issues and options are shared between the two.
 
 - The examples of each section shows a single functionality, but you can combine them[^combine].
 
@@ -275,8 +275,8 @@ Talk is cheap, and if you're here, you know what you want 😅
 
 ## 🎓 Next Steps
 
-- Explore the [Parameters](site:depthflow/parameters) documentation to understand how to fine-tune your animations.
-- Check out the [ShaderFlow](site:shaderflow) documentation for more rendering and exporting options.
-- Dive into the [Foundations](site:depthflow/learn/foundations) page to understand the math behind DepthFlow.
+- Explore the [Parameters](site:/depthflow/parameters) documentation to understand how to fine-tune your animations.
+- Check out the [ShaderFlow](site:/shaderflow) documentation for more rendering and exporting options.
+- Dive into the [Foundations](site:/depthflow/learn/foundations) page to understand the math behind DepthFlow.
 
 Happy animating with DepthFlow! 🌊✨

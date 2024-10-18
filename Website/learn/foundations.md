@@ -9,7 +9,7 @@ This page describes _in depth_[^pun] the DepthFlow project in a paper-like forma
 
 [^pun]: Pun intended 🙂
 
-> **Note**: This is a mostly technical write-up with notable trivia, and it's not necessary to understand the math or history to use it. For what you should know, see [**Parameters**](site:depthflow/learn/parameters).
+> **Note**: This is a mostly technical write-up with notable trivia, and it's not necessary to understand the math or history to use it. For what you should know, see [**Parameters**](site:/depthflow/learn/parameters).
 
 <hr>
 
@@ -21,7 +21,7 @@ This page describes _in depth_[^pun] the DepthFlow project in a paper-like forma
 
 <b><span class="the">D</span>epthFlow</b> is a software that generates 2.5D parallax effect videos from images and their depthmaps. This is done by projecting the image in 3D space and rendering from a camera's perspective, with many different parameters that can vary over time.
 
-The code heavily relies on the [**ShaderFlow**](site:shaderflow){:target="_blank"} engine, providing high level abstractions and utilities such as exporting videos, camera modeling, and more. Technically speaking, DepthFlow is a ShaderFlow spin-off, so does other projects like [**Pianola**](site:pianola){:target="_blank"} and [**SpectroNote**](site:spectronote){:target="_blank"}, where the [**main implementation**](https://github.com/BrokenSource/DepthFlow/blob/main/DepthFlow/Resources/Shaders/DepthFlow.glsl){:target="_blank"} is a feature simple, not-so-long but dense [**GLSL**](https://en.wikipedia.org/wiki/OpenGL_Shading_Language){:target="_blank"} shader[^glsl].
+The code heavily relies on the [**ShaderFlow**](site:/shaderflow){:target="_blank"} engine, providing high level abstractions and utilities such as exporting videos, camera modeling, and more. Technically speaking, DepthFlow is a ShaderFlow spin-off, so does other projects like [**Pianola**](site:/pianola){:target="_blank"} and [**SpectroNote**](site:/spectronote){:target="_blank"}, where the [**main implementation**](https://github.com/BrokenSource/DepthFlow/blob/main/DepthFlow/Resources/Shaders/DepthFlow.glsl){:target="_blank"} is a feature simple, not-so-long but dense [**GLSL**](https://en.wikipedia.org/wiki/OpenGL_Shading_Language){:target="_blank"} shader[^glsl].
 
 [^glsl]: As such, it can be easily ported to other shading languages or platforms, such as [**WebGL**](https://en.wikipedia.org/wiki/WebGL){:target="_blank"}, [**HLSL**](https://en.wikipedia.org/wiki/High-Level_Shading_Language){:target="_blank"}, or [**Metal**](https://en.wikipedia.org/wiki/Metal_(API)){:target="_blank"}.
 
@@ -85,7 +85,7 @@ For that, let's start defining the problem from basic, reasonable assumptions:
 - The image is centered on the $xy$ screen plane at $z = 1$ (forward)
 - The camera is at the origin $(0, 0, 0)$, looking forward $(0, 0, 1)$
 - The depthmap uses a (0=far) (1=near) convention
-- The camera uses [**this modelling**](site:shaderflow/learn/camera){:target="_blank"}
+- The camera uses [**this modelling**](site:/shaderflow/learn/camera){:target="_blank"}
 
 And additional
 
@@ -94,7 +94,7 @@ And additional
 
 With only that, we can look at a 2D slice and solve the simplified problem!
 
-!!! note "For more information on the coordinate system details or choice, see [**here**](site:shaderflow/learn/camera){:target="_blank"}"
+!!! note "For more information on the coordinate system details or choice, see [**here**](site:/shaderflow/learn/camera){:target="_blank"}"
 
 
 ### Intersections
