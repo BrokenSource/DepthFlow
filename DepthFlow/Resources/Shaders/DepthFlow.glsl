@@ -12,23 +12,23 @@ struct DepthFlow {
     float dolly;
     float zoom;
     vec3 plane;
-    bool oob;
 
     // Parallax
-    float quality;
-    float invert;
-    float height;
-    float steady;
-    float focus;
-    float away;
     vec2 offset;
+    float height;
+    float focus;
     vec2 center;
+    float steady;
     vec2 origin;
     bool mirror;
+    float invert;
+    float quality;
+    float away;
 
     // Output
     float value;
     vec2 gluv;
+    bool oob;
 };
 
 DepthFlow DepthMake(
@@ -135,6 +135,9 @@ void iDepthInit() {
     depthflow.invert    = iDepthInvert;
     depthflow.quality   = iQuality;
     depthflow.away      = 1.0;
+    depthflow.value     = 0.0;
+    depthflow.gluv      = vec2(0.0);
+    depthflow.oob       = false;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
