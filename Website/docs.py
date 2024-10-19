@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable
 
-import imgui
 from attr import Factory, define
 from DepthFlow import DepthScene
+from imgui_bundle import imgui
 from ShaderFlow.Variable import ShaderVariable, Uniform
 
 from Broken import BROKEN, OnceTracker, install, log
@@ -49,7 +49,7 @@ class BrokenMinio:
             log.success(f"Connected to Minio instance at ({self.endpoint})")
             self.make_bucket(self.bucket)
         except Exception:
-            log.warning("Failed to connect to Minio instance at ({self.endpoint})")
+            log.warning(f"Failed to connect to Minio instance at ({self.endpoint})")
 
     def guarded(method: Callable) -> Callable:
         def wrapper(self, *args, **kwargs):
@@ -122,15 +122,16 @@ class DocScene(DepthScene):
         yield Uniform("bool", "iFocusPlane", self.focus_plane)
 
     def _render_ui(self):
-        imgui.push_style_var(imgui.STYLE_WINDOW_BORDERSIZE, 2.0)
-        imgui.push_style_var(imgui.STYLE_WINDOW_ROUNDING, 8)
-        imgui.push_style_var(imgui.STYLE_GRAB_ROUNDING, 8)
-        imgui.push_style_var(imgui.STYLE_FRAME_ROUNDING, 8)
-        imgui.push_style_color(imgui.COLOR_FRAME_BACKGROUND, 0.1, 0.1, 0.1, 0.5)
+        imgui.push_style_var(imgui.StyleVar_.window_border_size, 0.0)
+        imgui.push_style_var(imgui.StyleVar_.window_rounding, 8)
+        imgui.push_style_var(imgui.StyleVar_.grab_rounding, 8)
+        imgui.push_style_var(imgui.StyleVar_.frame_rounding, 8)
+        imgui.push_style_var(imgui.StyleVar_.child_rounding, 8)
+        imgui.push_style_color(imgui.Col_.frame_bg, (0.1, 0.1, 0.1, 0.5))
         imgui.new_frame()
-        imgui.set_next_window_position(0, 0)
+        imgui.set_next_window_pos((0, 0))
         imgui.set_next_window_bg_alpha(0.6)
-        imgui.begin("Parameters", False, imgui.WINDOW_ALWAYS_AUTO_RESIZE)
+        imgui.begin("Parameters", False, imgui.WindowFlags_.always_auto_resize)
         imgui.slider_float("Height",    self.state.height,    0, 1, "%.2f")
         imgui.slider_float("Steady",    self.state.steady,    0, 1, "%.2f")
         imgui.slider_float("Focus",     self.state.focus,     0, 1, "%.2f")
@@ -197,6 +198,8 @@ class DocsParameters:
         for _ in range(1):
             video = scene.main(
                 output=output,
+                width=1920,
+                height=1080,
                 quality=100,
                 time=time,
                 ssaa=2,

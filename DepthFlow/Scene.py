@@ -3,8 +3,8 @@ import os
 import sys
 from typing import Annotated, Iterable, List, Union
 
-import imgui
 from attr import define, field
+from imgui_bundle import imgui
 from ShaderFlow.Message import ShaderMessage
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
