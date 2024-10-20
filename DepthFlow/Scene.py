@@ -1,16 +1,21 @@
 import copy
 import os
-import sys
-from typing import Annotated, Iterable, List, Union
+from pathlib import Path
+from typing import Annotated, Generator, Iterable, List, Optional, Set, Tuple, Union
 
+import numpy
+import validators
 from attr import define, field
 from imgui_bundle import imgui
+from PIL.Image import Image
+from ShaderFlow.Exceptions import ShaderBatchStop
 from ShaderFlow.Message import ShaderMessage
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
+from Broken import BrokenPath, flatten, list_get
 from Broken.Externals.Depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -20,7 +25,8 @@ from Broken.Externals.Depthmap import (
     ZoeDepth,
 )
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
-from Broken.Loaders import LoaderImage
+from Broken.Loaders import LoadableImage, LoaderImage
+from Broken.Types import FileExtensions
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Motion import Animation, Components, Preset, Presets
 from DepthFlow.State import DepthState
@@ -40,6 +46,8 @@ class DepthScene(ShaderScene):
     estimator: DepthEstimator = field(factory=DepthAnythingV2)
     upscaler: BrokenUpscaler = field(factory=NoUpscaler)
     state: DepthState = field(factory=DepthState)
+    _image: Union[LoadableImage, Iterable] = DEFAULT_IMAGE
+    _depth: Union[LoadableImage, Iterable] = None
 
     def add_animation(self, animation: Union[Animation, Preset]) -> object:
         self.animation.append(animation := copy.deepcopy(animation))
@@ -61,17 +69,16 @@ class DepthScene(ShaderScene):
         self.estimator.load_model()
 
     def input(self,
-        image: Annotated[str, Option("--image", "-i", help="[bold green](🟢 Basic)[/] Background Image [green](Path, URL, NumPy, PIL)[/]")],
-        depth: Annotated[str, Option("--depth", "-d", help="[bold green](🟢 Basic)[/] Depthmap of the Image [medium_purple3](None to estimate)[/]")]=None,
+        image: Annotated[List[str], Option("--image", "-i",
+            help="[bold green](🟢 Basic)[/] Background Image [green](Path, URL, NumPy, PIL)[/]"
+        )],
+        depth: Annotated[List[str], Option("--depth", "-d",
+            help="[bold green](🟢 Basic)[/] Depthmap of the Image [medium_purple3](None to estimate)[/]"
+        )]=None,
     ) -> None:
         """Load an Image from Path, URL and its estimated Depthmap"""
-        image = self.upscaler.upscale(LoaderImage(image))
-        depth = LoaderImage(depth) or self.estimator.estimate(image)
-        self.normal.from_numpy(self.estimator.normal_map(depth))
-        self.resolution   = (image.width,image.height)
-        self.aspect_ratio = (image.width/image.height)
-        self.image.from_image(image)
-        self.depth.from_image(depth)
+        self._image = image
+        self._depth = depth
 
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
@@ -100,9 +107,80 @@ class DepthScene(ShaderScene):
             for preset in Presets.members():
                 self.typer.command(preset, post=self.add_animation)
 
+    def _iterate_inputs(self, item: Optional[LoadableImage]) -> Generator[LoadableImage, None, None]:
+        if (item is None):
+            return None
+
+        # Recurse on multiple inputs
+        if isinstance(item, (List, Tuple, Set)):
+            for part in item:
+                yield from self._iterate_inputs(part)
+
+        # Return known valid inputs as is
+        elif isinstance(item, Image):
+            yield item
+        elif isinstance(item, numpy.ndarray):
+            yield Image.fromarray(item)
+        elif validators.url(item):
+            yield item
+
+        # Valid directory on disk
+        elif (path := BrokenPath.get(item)).exists():
+            if (path.is_dir()):
+                files = (path.glob("*" + x) for x in FileExtensions.Image)
+                yield from sorted(flatten(files))
+            else:
+                yield path
+
+        # Interpret as a glob pattern
+        elif ("*" in str(item)):
+            yield from sorted(path.parent.glob(path.name))
+        else:
+            self.log_minor(f"Assuming {item} is an iterable, could go wrong..")
+            yield from item
+
+    def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:
+        return list_get(list(self._iterate_inputs(item)), self.index)
+
+    def _load_inputs(self) -> None:
+        """Load inputs: single or batch exporting"""
+        image = self._get_batch_input(self._image)
+        depth = self._get_batch_input(self._depth)
+        if (image is None):
+            raise ShaderBatchStop()
+        self.log_info(f"Loading image: {image}")
+        self.log_info(f"Loading depth: {depth or 'estimate'}")
+        image = self.upscaler.upscale(LoaderImage(image))
+        depth = LoaderImage(depth) or self.estimator.estimate(image)
+        self.normal.from_numpy(self.estimator.normal_map(depth))
+        self.resolution   = (image.width,image.height)
+        self.aspect_ratio = (image.width/image.height)
+        self.image.from_image(image)
+        self.depth.from_image(depth)
+
+    def export_name(self, path: Path) -> Path:
+        """Modifies the output path if on batch exporting mode"""
+        options = list(self._iterate_inputs(self._image))
+
+        # Single file mode, return as-is
+        if (len(options) == 1):
+            return path
+
+        # Assume it's a local path
+        image = Path(options[self.index])
+        original = image.stem
+
+        # Use the URL filename as base
+        if validators.url(image):
+            original = BrokenPath.url_filename(image)
+
+        # Build the batch filename: 'file' + -'custom stem' + '.format'
+        return path.with_name(original + "-" + path.stem + path.suffix)
+
     def setup(self):
         if (not self.animation):
             self.add_animation(Presets.Orbital())
+        self._load_inputs()
         self.time = 0
 
     def build(self):
@@ -111,9 +189,6 @@ class DepthScene(ShaderScene):
         self.normal = ShaderTexture(scene=self, name="normal")
         self.shader.fragment = self.DEPTH_SHADER
         self.ssaa = 1.2
-
-        if ("input" not in sys.argv):
-            self.input(image=DepthScene.DEFAULT_IMAGE)
 
     # Todo: Overhaul this function
     def animate(self):
