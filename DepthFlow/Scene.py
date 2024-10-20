@@ -49,6 +49,9 @@ class DepthScene(ShaderScene):
     _image: Union[LoadableImage, Iterable] = DEFAULT_IMAGE
     _depth: Union[LoadableImage, Iterable] = None
 
+    # -------------------------------------------------------------------------------------------- #
+    # Proxy methods
+
     def add_animation(self, animation: Union[Animation, Preset]) -> object:
         self.animation.append(animation := copy.deepcopy(animation))
         return animation
@@ -68,17 +71,8 @@ class DepthScene(ShaderScene):
     def load_model(self) -> None:
         self.estimator.load_model()
 
-    def input(self,
-        image: Annotated[List[str], Option("--image", "-i",
-            help="[bold green](🟢 Basic)[/] Background Image [green](Path, URL, NumPy, PIL)[/]"
-        )],
-        depth: Annotated[List[str], Option("--depth", "-d",
-            help="[bold green](🟢 Basic)[/] Depthmap of the Image [medium_purple3](None to estimate)[/]"
-        )]=None,
-    ) -> None:
-        """Load an Image from Path, URL and its estimated Depthmap"""
-        self._image = image
-        self._depth = depth
+    # -------------------------------------------------------------------------------------------- #
+    # User commands
 
     def commands(self):
         self.typer.description = DEPTHFLOW_ABOUT
@@ -107,81 +101,20 @@ class DepthScene(ShaderScene):
             for preset in Presets.members():
                 self.typer.command(preset, post=self.add_animation)
 
-    def _iterate_inputs(self, item: Optional[LoadableImage]) -> Generator[LoadableImage, None, None]:
-        if (item is None):
-            return None
+    def input(self,
+        image: Annotated[List[str], Option("--image", "-i",
+            help="[bold green](🟢 Basic)[/] Background Image [green](Path, URL, NumPy, PIL)[/]"
+        )],
+        depth: Annotated[List[str], Option("--depth", "-d",
+            help="[bold green](🟢 Basic)[/] Depthmap of the Image [medium_purple3](None to estimate)[/]"
+        )]=None,
+    ) -> None:
+        """Input images from Path, URL, Directories and its estimated Depthmap"""
+        self._image = image
+        self._depth = depth
 
-        # Recurse on multiple inputs
-        if isinstance(item, (List, Tuple, Set)):
-            for part in item:
-                yield from self._iterate_inputs(part)
-
-        # Return known valid inputs as is
-        elif isinstance(item, Image):
-            yield item
-        elif isinstance(item, numpy.ndarray):
-            yield Image.fromarray(item)
-        elif validators.url(item):
-            yield item
-
-        # Valid directory on disk
-        elif (path := BrokenPath.get(item)).exists():
-            if (path.is_dir()):
-                files = (path.glob("*" + x) for x in FileExtensions.Image)
-                yield from sorted(flatten(files))
-            else:
-                yield path
-
-        # Interpret as a glob pattern
-        elif ("*" in str(item)):
-            yield from sorted(path.parent.glob(path.name))
-        else:
-            self.log_minor(f"Assuming {item} is an iterable, could go wrong..")
-            yield from item
-
-    def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:
-        return list_get(list(self._iterate_inputs(item)), self.index)
-
-    def _load_inputs(self) -> None:
-        """Load inputs: single or batch exporting"""
-        image = self._get_batch_input(self._image)
-        depth = self._get_batch_input(self._depth)
-        if (image is None):
-            raise ShaderBatchStop()
-        self.log_info(f"Loading image: {image}")
-        self.log_info(f"Loading depth: {depth or 'estimate'}")
-        image = self.upscaler.upscale(LoaderImage(image))
-        depth = LoaderImage(depth) or self.estimator.estimate(image)
-        self.normal.from_numpy(self.estimator.normal_map(depth))
-        self.resolution   = (image.width,image.height)
-        self.aspect_ratio = (image.width/image.height)
-        self.image.from_image(image)
-        self.depth.from_image(depth)
-
-    def export_name(self, path: Path) -> Path:
-        """Modifies the output path if on batch exporting mode"""
-        options = list(self._iterate_inputs(self._image))
-
-        # Single file mode, return as-is
-        if (len(options) == 1):
-            return path
-
-        # Assume it's a local path
-        image = Path(options[self.index])
-        original = image.stem
-
-        # Use the URL filename as base
-        if validators.url(image):
-            original = BrokenPath.url_filename(image)
-
-        # Build the batch filename: 'file' + -'custom stem' + '.format'
-        return path.with_name(original + "-" + path.stem + path.suffix)
-
-    def setup(self):
-        if (not self.animation):
-            self.add_animation(Presets.Orbital())
-        self._load_inputs()
-        self.time = 0
+    # -------------------------------------------------------------------------------------------- #
+    # ShaderFlow Scene implementation
 
     def build(self):
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
@@ -189,6 +122,12 @@ class DepthScene(ShaderScene):
         self.normal = ShaderTexture(scene=self, name="normal")
         self.shader.fragment = self.DEPTH_SHADER
         self.ssaa = 1.2
+
+    def setup(self):
+        if (not self.animation):
+            self.add_animation(Presets.Orbital())
+        self._load_inputs()
+        self.time = 0
 
     # Todo: Overhaul this function
     def animate(self):
@@ -223,6 +162,79 @@ class DepthScene(ShaderScene):
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
         yield from self.state.pipeline()
+
+    # -------------------------------------------------------------------------------------------- #
+    # Internal batch exporting
+
+    def _itr_batch_input(self, item: Optional[LoadableImage]) -> Generator[LoadableImage, None, None]:
+        if (item is None):
+            return None
+
+        # Recurse on multiple inputs
+        if isinstance(item, (List, Tuple, Set)):
+            for part in item:
+                yield from self._itr_batch_input(part)
+
+        # Return known valid inputs as is
+        elif isinstance(item, Image):
+            yield item
+        elif isinstance(item, numpy.ndarray):
+            yield item
+        elif validators.url(item):
+            yield item
+
+        # Valid directory on disk
+        elif (path := BrokenPath.get(item)).exists():
+            if (path.is_dir()):
+                files = (path.glob("*" + x) for x in FileExtensions.Image)
+                yield from sorted(flatten(files))
+            else:
+                yield path
+
+        # Interpret as a glob pattern
+        elif ("*" in str(item)):
+            yield from sorted(path.parent.glob(path.name))
+        else:
+            self.log_minor(f"Assuming {item} is an iterable, could go wrong..")
+            yield from item
+
+    def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:
+        return list_get(list(self._itr_batch_input(item)), self.index)
+
+    def _load_inputs(self) -> None:
+        """Load inputs: single or batch exporting"""
+        image = self._get_batch_input(self._image)
+        depth = self._get_batch_input(self._depth)
+        if (image is None):
+            raise ShaderBatchStop()
+        self.log_info(f"Loading image: {image}")
+        self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
+        image = self.upscaler.upscale(LoaderImage(image))
+        depth = LoaderImage(depth) or self.estimator.estimate(image)
+        self.normal.from_numpy(self.estimator.normal_map(depth))
+        self.resolution   = (image.width,image.height)
+        self.aspect_ratio = (image.width/image.height)
+        self.image.from_image(image)
+        self.depth.from_image(depth)
+
+    def export_name(self, path: Path) -> Path:
+        """Modifies the output path if on batch exporting mode"""
+        options = list(self._itr_batch_input(self._image))
+
+        # Single file mode, return as-is
+        if (len(options) == 1):
+            return path
+
+        # Assume it's a local path
+        image = Path(options[self.index])
+        original = image.stem
+
+        # Use the URL filename as base
+        if validators.url(image):
+            original = BrokenPath.url_filename(image)
+
+        # Build the batch filename: 'file' + -'custom stem' + '.format'
+        return path.with_name(original + "-" + path.stem + path.suffix)
 
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:
