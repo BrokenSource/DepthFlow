@@ -9,15 +9,15 @@ def gradio():
     from DepthFlow.Webui import DepthGradio
     BrokenTyper.simple(DepthGradio().launch)
 
-def cli():
+def depthflow():
     """🚀 Run the DepthFlow [bold green]Command line interface[/]"""
     DepthScene().cli(*sys.argv[1:])
 
 def main():
     with BrokenProfiler("DEPTHFLOW"):
         BrokenTyper.complex(
-            main=cli,
-            nested=(cli, gradio),
+            main=depthflow,
+            nested=(depthflow, gradio),
             direct=BrokenTorch.install,
         )
 

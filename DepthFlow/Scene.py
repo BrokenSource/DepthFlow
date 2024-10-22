@@ -166,6 +166,41 @@ class DepthScene(ShaderScene):
     # -------------------------------------------------------------------------------------------- #
     # Internal batch exporting
 
+    def _load_inputs(self) -> None:
+        """Load inputs: single or batch exporting"""
+        image = self._get_batch_input(self._image)
+        depth = self._get_batch_input(self._depth)
+        if (image is None):
+            raise ShaderBatchStop()
+        self.log_info(f"Loading image: {image}")
+        self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
+        image = self.upscaler.upscale(LoaderImage(image))
+        depth = LoaderImage(depth) or self.estimator.estimate(image)
+        self.normal.from_numpy(self.estimator.normal_map(depth))
+        self.resolution   = (image.width,image.height)
+        self.aspect_ratio = (image.width/image.height)
+        self.image.from_image(image)
+        self.depth.from_image(depth)
+
+    def export_name(self, path: Path) -> Path:
+        """Modifies the output path if on batch exporting mode"""
+        options = list(self._itr_batch_input(self._image))
+
+        # Single file mode, return as-is
+        if (len(options) == 1):
+            return path
+
+        # Assume it's a local path
+        image = Path(options[self.index])
+        original = image.stem
+
+        # Use the URL filename as base
+        if validators.url(image):
+            original = BrokenPath.url_filename(image)
+
+        # Build the batch filename: 'file' + -'custom stem'
+        return path.with_stem(original + "-" + path.stem)
+
     def _itr_batch_input(self, item: Optional[LoadableImage]) -> Generator[LoadableImage, None, None]:
         if (item is None):
             return None
@@ -200,41 +235,6 @@ class DepthScene(ShaderScene):
 
     def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:
         return list_get(list(self._itr_batch_input(item)), self.index)
-
-    def _load_inputs(self) -> None:
-        """Load inputs: single or batch exporting"""
-        image = self._get_batch_input(self._image)
-        depth = self._get_batch_input(self._depth)
-        if (image is None):
-            raise ShaderBatchStop()
-        self.log_info(f"Loading image: {image}")
-        self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
-        image = self.upscaler.upscale(LoaderImage(image))
-        depth = LoaderImage(depth) or self.estimator.estimate(image)
-        self.normal.from_numpy(self.estimator.normal_map(depth))
-        self.resolution   = (image.width,image.height)
-        self.aspect_ratio = (image.width/image.height)
-        self.image.from_image(image)
-        self.depth.from_image(depth)
-
-    def export_name(self, path: Path) -> Path:
-        """Modifies the output path if on batch exporting mode"""
-        options = list(self._itr_batch_input(self._image))
-
-        # Single file mode, return as-is
-        if (len(options) == 1):
-            return path
-
-        # Assume it's a local path
-        image = Path(options[self.index])
-        original = image.stem
-
-        # Use the URL filename as base
-        if validators.url(image):
-            original = BrokenPath.url_filename(image)
-
-        # Build the batch filename: 'file' + -'custom stem' + '.format'
-        return path.with_name(original + "-" + path.stem + path.suffix)
 
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:

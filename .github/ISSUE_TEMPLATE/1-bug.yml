@@ -45,7 +45,7 @@ body:
     description: |
       - Where are you running the projects from?
     options:
-      - PyPI Wheels (pip, poetry, pdm, rye, etc)
+      - PyPI Wheels (pip, poetry, pdm, rye, uv, etc)
       - Source Code (Install scripts or manual)
       - PyAPP Executables (experimental)
       - N/A
@@ -58,7 +58,7 @@ body:
   attributes:
     label: 🔘 Python version
     description: |
-      - **If running from Source Code**: Rye will use the `.python-version` (default below)
+      - **If running from Source Code**: uv will use the `.python-version` (default below)
       - **If running from PyPI Wheels**: Check the Python version with `python --version`
     options:
       - Python 3.10

@@ -14,19 +14,20 @@ version     = "0.0.0"
 description = "🌊 Image to → 2.5D Parallax Effect Video. A Free and Open Source ImmersityAI alternative"
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
 license     = "AGPL-3.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "broken-source[gradio]>=0.0.0",
     "shaderflow>=0.0.0",
 ]
 
+[tool.uv.sources]
+broken-source = {workspace=true}
+shaderflow    = {workspace=true}
+
 [project.scripts]
 depthflow = "DepthFlow.__main__:main"
 depth     = "DepthFlow.__main__:main"
 depthdocs = "Website.docs:main"
-
-[tool.rye]
-managed = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["DepthFlow"]
