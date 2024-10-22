@@ -12,9 +12,6 @@ From any installation method, you can simply run `depthflow` or double click the
     <img class="screenshot" src="https://github.com/user-attachments/assets/2785bd7c-97b1-45c7-b890-4ed48a556dfd">
 </div>
 
-!!! note "**Important**: The usage differs slightly between executable releases and others"
-    When double clicking binaries, you've already implicitly ran this first `depthflow` entry point, in fact, this is equivalent to running `.\depthflow-windows-latest.exe` on a terminal. Any further commands inside the **interactive prompt** doesn't need it. For example, `depthflow gradio --share` becomes `gradio --share`!
-
 You can run any of the commands above plus `#!ps --help` to list all options for that command.
 
 For example, `depthflow gradio --help` will show all options for the web interface, running `depthflow --help` will show all CLI options (as is the default command).
@@ -263,7 +260,7 @@ Talk is cheap, and if you're here, you know what you want 😅
 
 ### Complex
 
-!!! example "This monstruous script combines batch and parallel processing, animation variations"
+??? example "This monstruous script combines batch and parallel processing, animation variations"
     ```python
     {% include-markdown "../../depthflow/examples/complex.py" %}
     ```
