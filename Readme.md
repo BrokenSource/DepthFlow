@@ -15,13 +15,24 @@
   <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/v/release/BrokenSource/DepthFlow?label=Release&color=light-green"></a>
   <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=light-green"></a>
   <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple"></a>
+  <br>
+  <br>
+  <b>
+    Links:
+    <a target="_blank" href="https://brokensrc.dev/get/releases/">Releases</a> •
+    <a target="_blank" href="https://brokensrc.dev/get/pypi/">PyPI</a> •
+    <a target="_blank" href="https://brokensrc.dev/get/source/">Cloning</a> •
+    <a target="_blank" href="https://brokensrc.dev/depthflow/easy/">Quick Start</a> •
+    <a target="_blank" href="https://brokensrc.dev/depthflow/learn/">Documentation</a>
 </div>
 
 <br>
 
 ## 🔥 Description
 
-> **DepthFlow** is a heavily customizable **parallax shader** for animating your images.
+> **DepthFlow** is a heavily customizable **steep parallax shader** for animating your images.
+
+
 
 - **🌐 Web interface** made with [**Gradio**](https://gradio.app), get quick feedback on animations.
 - **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060.
@@ -75,6 +86,12 @@
 🌐 Powerfull **WebUI** built with [**Gradio**](https://gradio.app)
 
 <img src="https://github.com/user-attachments/assets/05b81504-d736-4c95-8e6f-9b4901c9eebd">
+
+<br>
+
+## 📦 Installation
+
+Find the many installation methods here: https://brokensrc.dev/get/
 
 <!-- Website end -->
 <br><br><div align="center">
