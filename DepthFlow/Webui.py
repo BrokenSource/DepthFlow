@@ -123,7 +123,7 @@ class DepthGradio:
                 time=user[self.fields.time],
                 loop=user[self.fields.loop],
                 output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
-                noturbo=(os.getenv("NOTURBO","0")=="1"),
+                noturbo=(not user[self.fields.turbopipe]),
             )[0]
 
         with ThreadPool() as pool:
@@ -265,6 +265,10 @@ class DepthGradio:
                     self.fields.loop = gradio.Slider(label="Loop count",
                         info="Repeat the final video this many times",
                         minimum=1, maximum=10, step=1, value=1)
+
+            with gradio.Tab("Advanced"):
+                self.fields.turbopipe = gradio.Checkbox(label="Enable TurboPipe", value=True,
+                    info="Uses the for faster rendering, disable if you encounter issues")
 
             # Update depth map and resolution on image change
             outputs = {self.fields.image, self.fields.depth, self.fields.width, self.fields.height}

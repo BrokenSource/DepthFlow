@@ -33,7 +33,7 @@
   <br>
   <b>
     Links:
-    <a target="_blank" href="https://brokensrc.dev/depthflow/easy/">Quick Start</a> •
+    <a target="_blank" href="https://brokensrc.dev/depthflow/quick/">Quick Start</a> •
     <a target="_blank" href="https://brokensrc.dev/get/releases/">Releases</a> •
     <a target="_blank" href="https://brokensrc.dev/get/pypi/">PyPI</a> •
     <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
