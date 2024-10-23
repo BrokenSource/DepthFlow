@@ -5,25 +5,43 @@
 <div align="center">
   <a href="https://brokensrc.dev/depthflow"><img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="200"></a>
   <h1 style="margin-top: 0">DepthFlow</h1>
-  <b>Image to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>ImmersityAI</b></a> Alternative
+  <b>Images to → 2.5D Parallax</b> Effect Video. A <b>Free and Open Source</b> <a href="https://www.immersity.ai/" target="_blank"><b>ImmersityAI</b></a> Alternative
   <br>
   <br>
-  <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue"></a>
-  <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/dw/depthflow?label=Installs&color=blue"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/"><img src="https://img.shields.io/github/v/tag/BrokenSource/BrokenSource?label=GitHub&color=orange"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/stargazers"><img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow?label=Stars&style=flat&color=orange"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/v/release/BrokenSource/DepthFlow?label=Release&color=light-green"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=light-green"></a>
-  <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple"></a>
+  <a href="https://pypi.org/project/depthflow/">
+    <img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue">
+  </a>
+  <a href="https://pypi.org/project/depthflow/">
+    <img src="https://img.shields.io/pypi/dw/depthflow?label=Installs&color=blue">
+  </a>
+  <a href="https://github.com/BrokenSource/DepthFlow/">
+    <img src="https://img.shields.io/github/v/tag/BrokenSource/BrokenSource?label=GitHub&color=orange">
+  </a>
+  <a href="https://github.com/BrokenSource/DepthFlow/stargazers">
+    <img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow?label=Stars&style=flat&color=orange">
+  </a>
+  <a href="https://github.com/BrokenSource/DepthFlow/releases/">
+    <img src="https://img.shields.io/github/v/release/BrokenSource/DepthFlow?label=Release&color=light-green">
+  </a>
+  <a href="https://github.com/BrokenSource/DepthFlow/releases/">
+    <img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=light-green">
+  </a>
+  <a href="https://discord.gg/KjqvcYwRHm">
+    <img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple">
+  </a>
   <br>
   <br>
   <b>
     Links:
+    <a target="_blank" href="https://brokensrc.dev/depthflow/easy/">Quick Start</a> •
     <a target="_blank" href="https://brokensrc.dev/get/releases/">Releases</a> •
     <a target="_blank" href="https://brokensrc.dev/get/pypi/">PyPI</a> •
+    <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
     <a target="_blank" href="https://brokensrc.dev/get/source/">Cloning</a> •
-    <a target="_blank" href="https://brokensrc.dev/depthflow/easy/">Quick Start</a> •
     <a target="_blank" href="https://brokensrc.dev/depthflow/learn/">Documentation</a>
+  </b>
+  <br>
+  <sub><small>⭐️ Consider starring the project to help it grow! ⭐️</small></sub>
 </div>
 
 <br>
@@ -31,8 +49,6 @@
 ## 🔥 Description
 
 > **DepthFlow** is a heavily customizable **steep parallax shader** for animating your images.
-
-
 
 - **🌐 Web interface** made with [**Gradio**](https://gradio.app), get quick feedback on animations.
 - **🚀 Fast:** heavily optimized shader, render at 8k50 with an RTX 3060.
@@ -92,6 +108,14 @@
 ## 📦 Installation
 
 Find the many installation methods here: https://brokensrc.dev/get/
+
+## ♻️ Community
+
+Check out amazing community work built on top of DepthFlow:
+
+- ⭐️ [**ComfyUI Integration**](https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes) by @akatz-ai, also in [**CivitAI**](https://civitai.com/models/855031)
+
+<small>Also give them a star and support!</small>
 
 <!-- Website end -->
 <br><br><div align="center">
