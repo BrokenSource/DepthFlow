@@ -239,7 +239,6 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 <hr class="thick-hr"/>
 
-        <!-- """Focal point of the offsets, *as if* the camera was above this point""" -->
 ### Origin
 
 > **Type:** `Tuple[float, float]`, **Range:** `([-ar, ar], [-1, 1])`
