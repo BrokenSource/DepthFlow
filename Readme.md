@@ -109,13 +109,15 @@
 
 Find the many installation methods here: https://brokensrc.dev/get/
 
+<br>
+
 ## ♻️ Community
 
 Check out amazing community work built on top of DepthFlow:
 
-- ⭐️ [**ComfyUI Integration**](https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes) by @akatz-ai, also in [**CivitAI**](https://civitai.com/models/855031)
+- ⭐️ [**ComfyUI Integration**](https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes) by [@akatz-ai](https://github.com/akatz-ai/), also in [**CivitAI**](https://civitai.com/models/855031)
 
-<small>Also give them a star and support!</small>
+<sup>Also give them a star and support!</sup>
 
 <!-- Website end -->
 <br><br><div align="center">
