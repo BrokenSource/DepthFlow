@@ -9,7 +9,7 @@ title: DepthFlow/Examples
 From any installation method, you can simply run `depthflow` or double click the executables to see all top-most available commands (entry points). You should see something like:
 
 <div align="center">
-    <img class="screenshot" src="https://github.com/user-attachments/assets/2785bd7c-97b1-45c7-b890-4ed48a556dfd">
+    <img class="screenshot" src="https://github.com/user-attachments/assets/243783b8-71e7-471c-8597-567e840cece1">
 </div>
 
 You can run any of the commands above plus `#!ps --help` to list all options for that command.
@@ -289,6 +289,13 @@ Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` fol
 
     ```shell title=""
     depthflow input -i ./images main -b all -o ./images
+    ```
+
+    It might be a good idea to specify a common height for all exports:
+
+    ```shell title=""
+    # Ensures all videos are '1080p', at least in the height
+    depthflow input -i ./images main -b all -o ./images -h 1080p
     ```
 
 {% include-markdown "include/love-short.md" %}
