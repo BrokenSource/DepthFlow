@@ -233,6 +233,64 @@ You can use a couple of high quality presets with:
     depthflow zoom main
     ```
 
+<hr>
+
+### Batch processing
+
+<sup><b>⚠️ Note:</b> Batch exporting feature is experimental and might have issues!</sup>
+
+You can also batch process images and videos with:
+
+#### Selecting inputs
+
+!!! example ""
+
+    ```shell title=""
+    # Multiple direct inputs, local paths:
+    depthflow input -i ./image1.png -i ./image2.png (...)
+
+    # Or even URLs, though only one at a time:
+    depthflow input -i https://.. -i https://.. (...)
+    ```
+
+    ```shell title=""
+    # All file contents of a folder
+    depthflow input -i ./images (...)
+    ```
+
+    ```shell title=""
+    # Glob pattern matching
+    depthflow input -i ./images/*.png (...)
+    ```
+
+#### Exporting
+
+Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` folder:
+
+1. Always have `-b all` or `--batch all` in the `main` command (or a range like `0-5` images)
+2. The output video basename will become a suffix of the exported video
+
+!!! example ""
+
+    ```shell title=""
+    # This creates 'foo-batch.mp4', 'bar-batch.mp4', 'baz-batch.mp4' in the './outputs' folder
+    depthflow input -i ./images -b all main -o ./outputs/batch
+    ```
+
+    The prefix is _enforced_ mainly as there's no 'empty' file in a directory, but also useful in:
+
+    ```shell title=""
+    # Create many different animations of the same image
+    depthflow input -i ./images orbital main -b all -o ./outputs/orbital
+    depthflow input -i ./images circle main -b all -o ./outputs/orbital
+    ```
+
+    Or even set the output folder to the same input, so videos sorts nicely alongside images:
+
+    ```shell title=""
+    depthflow input -i ./images main -b all -o ./images
+    ```
+
 {% include-markdown "include/love-short.md" %}
 
 
