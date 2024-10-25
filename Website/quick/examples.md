@@ -282,7 +282,7 @@ Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` fol
     ```shell title=""
     # Create many different animations of the same image
     depthflow input -i ./images orbital main -b all -o ./outputs/orbital
-    depthflow input -i ./images circle main -b all -o ./outputs/orbital
+    depthflow input -i ./images circle main -b all -o ./outputs/circle
     ```
 
     Or even set the output folder to the same input, so videos sorts nicely alongside images:

@@ -9,7 +9,6 @@ Warning: This WILL use A LOT OF CPU for the video encoding, if enough GPU
 
 • For more information, visit https://brokensrc.dev/depthflow
 """
-
 import itertools
 import math
 import os

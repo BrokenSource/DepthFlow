@@ -6,7 +6,6 @@ it via CLI or a code managing it for automation
 
 • For more information, visit https://brokensrc.dev/depthflow
 """
-
 import math
 import sys
 
