@@ -59,8 +59,8 @@ class DepthScene(ShaderScene):
     def clear_animations(self) -> None:
         self.animation.clear()
 
-    def set_upscaler(self, upscaler: BrokenUpscaler) -> None:
-        self.upscaler = upscaler
+    def set_upscaler(self, upscaler: Optional[BrokenUpscaler]) -> None:
+        self.upscaler = upscaler or NoUpscaler()
 
     def clear_upscaler(self) -> None:
         self.upscaler = NoUpscaler()
@@ -211,9 +211,7 @@ class DepthScene(ShaderScene):
                 yield from self._itr_batch_input(part)
 
         # Return known valid inputs as is
-        elif isinstance(item, Image):
-            yield item
-        elif isinstance(item, numpy.ndarray):
+        elif isinstance(item, (bytes, Image, numpy.ndarray)):
             yield item
         elif validators.url(item):
             yield item
