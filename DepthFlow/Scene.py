@@ -182,6 +182,11 @@ class DepthScene(ShaderScene):
         self.image.from_image(image)
         self.depth.from_image(depth)
 
+        # Default to 1920x1080 on base image
+        if (self._image is self.DEFAULT_IMAGE):
+            self.resolution   = (1920, 1080)
+            self.aspect_ratio = 16/9
+
     def export_name(self, path: Path) -> Path:
         """Modifies the output path if on batch exporting mode"""
         options = list(self._itr_batch_input(self._image))
