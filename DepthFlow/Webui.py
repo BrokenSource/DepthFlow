@@ -20,7 +20,7 @@ from Broken.Externals.Depthmap import (
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Waifu2x
+from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Motion import Presets
 
@@ -43,6 +43,7 @@ class DepthGradio:
     }
 
     upscalers = {
+        "Upscayl": Upscayl,
         "Real-ESRGAN": Realesr,
         "Waifu2x": Waifu2x,
     }

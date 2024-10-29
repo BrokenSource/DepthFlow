@@ -24,7 +24,13 @@ from Broken.Externals.Depthmap import (
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr, Waifu2x
+from Broken.Externals.Upscaler import (
+    BrokenUpscaler,
+    NoUpscaler,
+    Realesr,
+    Upscayl,
+    Waifu2x,
+)
 from Broken.Loaders import LoadableImage, LoaderImage
 from Broken.Types import FileExtensions
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
@@ -90,6 +96,7 @@ class DepthScene(ShaderScene):
 
         with self.typer.panel("⭐️ Upscaler"):
             self.typer.command(Realesr, post=self.set_upscaler)
+            self.typer.command(Upscayl, post=self.set_upscaler)
             self.typer.command(Waifu2x, post=self.set_upscaler)
 
         with self.typer.panel("🚀 Animation (Components, advanced)"):
@@ -127,7 +134,6 @@ class DepthScene(ShaderScene):
         if (not self.animation):
             self.add_animation(Presets.Orbital())
         self._load_inputs()
-        self.time = 0
 
     # Todo: Overhaul this function
     def animate(self):

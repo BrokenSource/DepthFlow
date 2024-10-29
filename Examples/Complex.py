@@ -26,7 +26,7 @@ from DepthFlow.State import DepthState
 from dotmap import DotMap
 
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Realesr
+from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Upscayl
 
 
 def combinations(**options):
@@ -182,9 +182,9 @@ if (__name__ == "__main__"):
     images = Path(os.getenv("IMAGES", "/home/tremeschin/Public/Images"))
 
     # Multiple unique videos per file
-    # Note: Use Realesr() for some upscaler!
+    # Note: Use Upscayl() for some upscaler!
     with DepthManager(upscaler=NoUpscaler()) as manager:
-    # with YourManager(upscaler=Realesr()) as manager:
+    # with YourManager(upscaler=Upscayl()) as manager:
         for image in images.glob("*"):
             manager.parallax(DepthScene, image)
 
