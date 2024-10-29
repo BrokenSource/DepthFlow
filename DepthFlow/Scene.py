@@ -156,8 +156,8 @@ class DepthScene(ShaderScene):
         ShaderScene.handle(self, message)
 
         if isinstance(message, ShaderMessage.Window.FileDrop):
-            files = iter(message.files)
-            self.input(image=next(files), depth=next(files, None))
+            self.input(image=message.first, depth=message.second)
+            self._load_inputs()
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
