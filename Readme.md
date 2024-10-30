@@ -33,13 +33,17 @@
   <br>
   <b>
     Links:
-    <a target="_blank" href="https://brokensrc.dev/depthflow/quick/">Quick Start</a> •
-    <a target="_blank" href="https://brokensrc.dev/get/releases/">Releases</a> •
-    <a target="_blank" href="https://brokensrc.dev/get/pypi/">PyPI</a> •
-    <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
-    <a target="_blank" href="https://brokensrc.dev/get/docker/">Cloud/Docker</a> •
-    <a target="_blank" href="https://brokensrc.dev/get/source/">Cloning</a> •
-    <a target="_blank" href="https://brokensrc.dev/depthflow/learn/">Documentation</a>
+    <a href="https://brokensrc.dev/depthflow/">Quick Start</a> •
+    <a href="https://brokensrc.dev/get/releases/">Releases</a> •
+    <a href="https://brokensrc.dev/get/pypi/">PyPI</a> •
+    <a href="https://brokensrc.dev/get/docker/">Cloud/Docker</a> •
+    <a href="https://brokensrc.dev/get/source/">Cloning</a> •
+    <a href="https://brokensrc.dev/depthflow/">Documentation</a>
+    <br>
+    <sub>
+      Community:
+      <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a>
+    </sub>
   </b>
   <br>
   <sub><small>⭐️ Consider starring the project to help it grow! ⭐️</small></sub>
