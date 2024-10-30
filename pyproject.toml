@@ -9,10 +9,10 @@ Homepage  = "https://brokensrc.dev"
 
 [project]
 name        = "depthflow"
-dynamic     = ["readme"]
-version     = "0.0.0"
 description = "🌊 Images to → 2.5D Parallax Effect Video. A Free and Open Source ImmersityAI alternative"
+version     = "0.0.0" # Part of a monorepo, managed on final builds
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
+dynamic     = ["readme"]
 license     = "AGPL-3.0"
 requires-python = ">=3.10"
 dependencies = [
