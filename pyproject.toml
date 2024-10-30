@@ -41,4 +41,4 @@ content-type = "text/markdown"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
 start-after = "<!-- PyPI Start -->"
-path = "Readme.md"
+path = "readme.md"
