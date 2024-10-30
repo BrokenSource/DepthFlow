@@ -37,6 +37,7 @@
     <a target="_blank" href="https://brokensrc.dev/get/releases/">Releases</a> •
     <a target="_blank" href="https://brokensrc.dev/get/pypi/">PyPI</a> •
     <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
+    <a target="_blank" href="https://brokensrc.dev/get/docker/">Cloud/Docker</a> •
     <a target="_blank" href="https://brokensrc.dev/get/source/">Cloning</a> •
     <a target="_blank" href="https://brokensrc.dev/depthflow/learn/">Documentation</a>
   </b>
