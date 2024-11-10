@@ -269,7 +269,7 @@ class DepthGradio:
 
             with gradio.Tab("Advanced"):
                 self.fields.turbopipe = gradio.Checkbox(label="Enable TurboPipe", value=True,
-                    info="Uses the for faster rendering, disable if you encounter issues")
+                    info="Improves rendering speeds, disable if you encounter issues or crashes")
 
             # Update depth map and resolution on image change
             outputs = {self.fields.image, self.fields.depth, self.fields.width, self.fields.height}
