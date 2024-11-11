@@ -14,6 +14,9 @@ struct DepthFlow {
     vec3 plane;
 
     // Parallax
+    float derivative;
+    float steep;
+    vec3 normal;
     vec2 offset;
     float height;
     float focus;
@@ -82,6 +85,9 @@ DepthFlow DepthMake(
     float probe = (-1.0) / mix(50.0, 100.0, depth.quality);
     float i = 1.0;
 
+    // Utilities
+    float last_value = 0.0;
+
     /* Main loop: Find the intersection with the scene */
     for (int stage=0; stage<2; stage++) {
         bool FORWARD  = (stage == 0);
@@ -96,6 +102,7 @@ DepthFlow DepthMake(
             i += (FORWARD ? probe : quality);
 
             // The checking point 'walks' on the util distance
+            last_value  = depth.value;
             depth.gluv  = intersect + (i*util*walk);
             depth.value = gtexture(depthmap, depth.gluv, depth.mirror).r;
 
@@ -109,10 +116,22 @@ DepthFlow DepthMake(
 
             // Finish when we're outside at smaller steps
             } else if (BACKWARD) {
+                depth.derivative = (last_value - depth.value) / quality;
                 break;
             }
         }
     }
+
+    // The gradient is always normal to a surface; assume the change
+    // of z is proportional to the maximum surface height
+    depth.normal = normalize(vec3(
+        (gtexture(depthmap, depth.gluv - vec2(quality, 0), depth.mirror).r - depth.value) / quality,
+        (gtexture(depthmap, depth.gluv - vec2(0, quality), depth.mirror).r - depth.value) / quality,
+        max(depth.height, quality)
+    ));
+
+    // Heuristic to determine the perceptual steepness of the surface, 'gaps'
+    depth.steep = depth.derivative * angle(depth.normal, vec3(0, 0, 1));
 
     return depth;
 }
@@ -154,6 +173,15 @@ void main() {
     }
 
     /* --------------------------------------- */
+
+    // Inpaint masking
+    if (iInpaint && depthflow.steep > iInpaintLimit) {
+        fragColor = vec4(0, 1, 0, 1);
+        return;
+    } else if (iInpaintBlack) {
+        fragColor = vec4(0, 0, 0, 1);
+        return;
+    }
 
     // Depth of Field
     if (iDofEnable) {

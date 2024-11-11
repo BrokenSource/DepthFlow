@@ -152,6 +152,20 @@ class DepthState(BaseModel):
 
     # ---------------------------------------------------------------------------------------------|
 
+    inpaint: Annotated[bool, typer.Option("--inpaint",
+        help="[bold blue]( Inpaint )[/] Replace steep regions with green color")] = \
+        Field(default=False)
+
+    inpaint_black: Annotated[bool, typer.Option("--inpaint-black",
+        help="[bold blue]( Inpaint )[/] Replace non-steep regions with black color")] = \
+        Field(default=False)
+
+    inpaint_limit: Annotated[float, typer.Option("--inpaint-limit", min=0,
+        help="[bold blue]( Inpaint )[/] The threshold for the steepness of the regions")] = \
+        Field(default=1)
+
+    # ---------------------------------------------------------------------------------------------|
+
     saturation: Annotated[float, typer.Option("--saturation", "--sat", min=0, max=400,
         help="[bold blue](🔵 Saturate)[/] Saturation of the image [medium_purple3](0 is grayscale, 100 is full color)[/]")] = \
         Field(default=100)
@@ -180,4 +194,7 @@ class DepthState(BaseModel):
         yield Uniform("float", "iDofIntensity",   self.dof_intensity/100)
         yield Uniform("int",   "iDofQuality",     self.dof_quality)
         yield Uniform("int",   "iDofDirections",  self.dof_directions)
+        yield Uniform("bool",  "iInpaint",        self.inpaint)
+        yield Uniform("bool",  "iInpaintBlack",   self.inpaint_black)
+        yield Uniform("float", "iInpaintLimit",   self.inpaint_limit)
         yield Uniform("float", "iSaturation",     self.saturation/100)

@@ -57,13 +57,13 @@ hint: str = "[bold blue](🔵 Option)[/]"
 TargetType: TypeAlias = Annotated[Target, typer.Option("--target", "-t",
     help=f"{hint} Target animation state variable to modulate")]
 
-IntensityType: TypeAlias = Annotated[float, typer.Option("--intensity", "-i", min=0, max=4,
+IntensityType: TypeAlias = Annotated[float, typer.Option("--intensity", "-i", min=0,
     help=f"{hint} Global intensity of the animation (scales all amplitudes)")]
 
 ReverseType: TypeAlias = Annotated[bool, typer.Option("--reverse", "-r", " /--forward", " /-fw",
     help=f"{hint} Time 'direction' to play the animation, makes the end the start")]
 
-BiasType: TypeAlias = Annotated[float, typer.Option("--bias", "-b", min=-4, max=4,
+BiasType: TypeAlias = Annotated[float, typer.Option("--bias", "-b", min=-4,
     help=f"{hint} Constant offset added to the animation component")]
 
 SmoothType: TypeAlias = Annotated[bool, typer.Option("--smooth", "-s", " /--linear", " /-ns",
@@ -262,6 +262,7 @@ class Preset(BaseModel, ABC):
 
 class Presets(GetMembers):
     Config: DepthState = DepthState
+    Config.__name__ = "config"
 
     class Vertical(Preset):
         """Add a Vertical motion to the camera"""
