@@ -153,15 +153,15 @@ class DepthState(BaseModel):
     # ---------------------------------------------------------------------------------------------|
 
     inpaint: Annotated[bool, typer.Option("--inpaint",
-        help="[bold blue]( Inpaint )[/] Replace steep regions with green color")] = \
+        help="[bold blue](🔵 Inpaint )[/] Replace steep regions with green color")] = \
         Field(default=False)
 
     inpaint_black: Annotated[bool, typer.Option("--inpaint-black",
-        help="[bold blue]( Inpaint )[/] Replace non-steep regions with black color")] = \
+        help="[bold blue](🔵 Inpaint )[/] Replace non-steep regions with black color")] = \
         Field(default=False)
 
     inpaint_limit: Annotated[float, typer.Option("--inpaint-limit", min=0,
-        help="[bold blue]( Inpaint )[/] The threshold for the steepness of the regions")] = \
+        help="[bold blue](🔵 Inpaint )[/] The threshold for the steepness of the regions")] = \
         Field(default=1)
 
     # ---------------------------------------------------------------------------------------------|
