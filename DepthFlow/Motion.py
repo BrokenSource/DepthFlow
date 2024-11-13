@@ -380,15 +380,22 @@ class Presets(GetMembers):
         smooth:  SmoothType  = Field(default=True)
         loop:    LoopType    = Field(default=True)
         depth:   DepthType   = Field(default=0.5)
+        phase:   PhaseType   = Field(default=0.0)
 
         def animation(self):
             yield Components.Set(target=Target.Focus, value=self.depth)
             yield Components.Set(target=Target.Steady, value=self.depth)
+
+            if self.loop:
+                phase, cycles = ( 0.75 if self.reverse else 0.25), 1.0
+            else:
+                phase, cycles = (-0.75 if self.reverse else 0.25), 0.5
+
             yield (Components.Sine if self.smooth else Components.Triangle)(
                 target    = Target.Isometric,
                 amplitude = self.intensity,
-                phase     = 0.5,
-                cycles    = (1 if self.loop else 0.25),
+                phase     = self.phase + phase,
+                cycles    = cycles,
                 bias      = 1,
                 **self.common()
             )
