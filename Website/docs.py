@@ -150,7 +150,7 @@ class DocScene(DepthScene):
         imgui.pop_style_var(4)
         imgui.render()
 
-        self._final.texture.fbo().use()
+        self._final.texture.fbo.use()
         self.imgui.render(imgui.get_draw_data())
 
         # Fixme: Dirty solution to frame zero issues
