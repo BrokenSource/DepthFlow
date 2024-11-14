@@ -1,4 +1,5 @@
 import copy
+import functools
 import os
 from pathlib import Path
 from typing import Annotated, Generator, Iterable, List, Optional, Set, Tuple, Union
@@ -65,17 +66,55 @@ class DepthScene(ShaderScene):
     def clear_animations(self) -> None:
         self.animation.clear()
 
-    def set_upscaler(self, upscaler: Optional[BrokenUpscaler]) -> None:
+    # Upscalers
+
+    def set_upscaler(self, upscaler: Optional[BrokenUpscaler]) -> BrokenUpscaler:
         self.upscaler = upscaler or NoUpscaler()
+        return self.upscaler
 
     def clear_upscaler(self) -> None:
         self.upscaler = NoUpscaler()
 
-    def set_estimator(self, estimator: DepthEstimator) -> None:
+    @functools.wraps(Realesr)
+    def realesr(self, **options) -> Realesr:
+        return self.set_upscaler(Realesr(**options))
+
+    @functools.wraps(Upscayl)
+    def upscayl(self, **options) -> Upscayl:
+        return self.set_upscaler(Upscayl(**options))
+
+    @functools.wraps(Waifu2x)
+    def waifu2x(self, **options) -> Waifu2x:
+        return self.set_upscaler(Waifu2x(**options))
+
+    # Estimators
+
+    def set_estimator(self, estimator: DepthEstimator) -> DepthEstimator:
         self.estimator = estimator
+        return estimator
 
     def load_model(self) -> None:
         self.estimator.load_model()
+
+    @functools.wraps(DepthAnythingV1)
+    def depth_anything1(self, **options) -> DepthAnythingV1:
+        return self.set_estimator(DepthAnythingV1(**options))
+
+    @functools.wraps(DepthAnythingV2)
+    def depth_anything2(self, **options) -> DepthAnythingV2:
+        return self.set_estimator(DepthAnythingV2(**options))
+
+    @functools.wraps(DepthPro)
+    def depth_pro(self, **options) -> DepthPro:
+        return self.set_estimator(DepthPro(**options))
+
+    @functools.wraps(ZoeDepth)
+    def zoe_depth(self, **options) -> ZoeDepth:
+        return self.set_estimator(ZoeDepth(**options))
+
+    @functools.wraps(Marigold)
+    def marigold(self, **options) -> Marigold:
+        return self.set_estimator(Marigold(**options))
 
     # -------------------------------------------------------------------------------------------- #
     # User commands
