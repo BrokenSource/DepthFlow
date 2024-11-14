@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable, Iterable
 
 from attr import Factory, define
 from DepthFlow import DepthScene
-from imgui_bundle import imgui
+from ShaderFlow.Imgui import imgui
 from ShaderFlow.Variable import ShaderVariable, Uniform
 
 from Broken import BROKEN, OnceTracker, install, log

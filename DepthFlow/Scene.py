@@ -7,9 +7,9 @@ from typing import Annotated, Generator, Iterable, List, Optional, Set, Tuple, U
 import numpy
 import validators
 from attr import define, field
-from imgui_bundle import imgui
 from PIL.Image import Image
 from ShaderFlow.Exceptions import ShaderBatchStop
+from ShaderFlow.Imgui import imgui
 from ShaderFlow.Message import ShaderMessage
 from ShaderFlow.Scene import ShaderScene
 from ShaderFlow.Texture import ShaderTexture
