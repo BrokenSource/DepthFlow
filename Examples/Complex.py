@@ -77,6 +77,7 @@ class DepthManager:
     # # User methods
 
     def parallax(self, scene: Type[DepthScene], image: Path) -> None:
+        self.estimator.estimate(image)
 
         # Limit the maximum concurrent threads, nice pattern 😉
         while len(self.threads) >= self.concurrency:
@@ -186,7 +187,8 @@ if (__name__ == "__main__"):
     with DepthManager(upscaler=NoUpscaler()) as manager:
     # with YourManager(upscaler=Upscayl()) as manager:
         for image in images.glob("*"):
-            manager.parallax(DepthScene, image)
+            if (image.is_file()):
+                manager.parallax(DepthScene, image)
 
         for output in manager.outputs:
             print(f"• {output}")
