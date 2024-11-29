@@ -23,13 +23,21 @@ import requests
 import uvicorn
 from attrs import Factory, define
 from diskcache import Cache as DiskCache
+from dotmap import DotMap
 from fastapi import FastAPI
 from fastapi.responses import Response
-from pydantic import Field, HttpUrl, computed_field
+from pydantic import Field, HttpUrl
 from ShaderFlow.Scene import RenderConfig
 from typer import Option
 
-from Broken import BrokenBaseModel, BrokenPlatform, BrokenTyper, Runtime, log, selfless
+from Broken import (
+    BrokenBaseModel,
+    BrokenPlatform,
+    BrokenTyper,
+    Runtime,
+    log,
+    selfless,
+)
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler
@@ -69,18 +77,6 @@ class DepthPayload(BrokenBaseModel):
     expire:    int            = Field(3600, exclude=True)
     hash:      int            = Field(0, exclude=True)
     priority:  int            = Field(0, exclude=True)
-
-    @computed_field
-    def cost(self) -> float:
-        return math.prod((
-            (self.render.width/1920),
-            (self.render.height/1080),
-            (self.render.time/10),
-            (self.render.fps/60),
-            (self.render.ssaa**2),
-            (self.render.scale**2),
-            (self.render.quality + 50)/100,
-        ))
 
     # Priority queue sorting
 
@@ -273,7 +269,7 @@ class DepthServer:
             config = DepthPayload(
                 priority=client,
                 input=DepthInput(
-                    image="https://w.wallhaven.cc/full/m3/wallhaven-m3kk2y.jpg"
+                    image="https://w.wallhaven.cc/full/ex/wallhaven-ex1yxk.jpg"
                 ),
                 # ffmpeg=BrokenFFmpeg().h264_nvenc(),
                 render=RenderConfig(
@@ -283,16 +279,17 @@ class DepthServer:
                     loop=1,
                     time=5,
                 ),
-                # animation=DepthAnimation(
-                #     steps=[
-                #         Animations.Sine(target=Target.OffsetX)
-                #     ]
-                # )
+                animation=DepthAnimation(
+                    steps=[
+                        Actions.Orbital(),
+                        Actions.Lens(),
+                    ]
+                )
             )
 
             # Debug print the payload
             from rich.pretty import pprint
-            # pprint(config.dict())
+            pprint("JSON: ", config.json())
 
             # Actually send the job request
             response = requests.post(
@@ -300,11 +297,13 @@ class DepthServer:
                 json=config.dict()
             )
 
+            headers = DotMap(response.headers)
+
             # Save the video to disk
             Path(path := f"/tmp/video-{client}.mp4") \
                 .write_bytes(response.content)
 
-            log.success(f"Saved video to {path}, cached: {response.headers['cached']}")
+            log.success(f"Saved video to {path}, cached: {headers.cached}")
 
         # Stress test parallel requests
         with ThreadPoolExecutor(max_workers=jobs) as pool:
