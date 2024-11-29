@@ -29,7 +29,7 @@ from pydantic import Field, HttpUrl, computed_field
 from ShaderFlow.Scene import RenderConfig
 from typer import Option
 
-from Broken import BrokenBaseModel, BrokenTyper, Runtime, log, selfless
+from Broken import BrokenBaseModel, BrokenPlatform, BrokenTyper, Runtime, log, selfless
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler
@@ -49,7 +49,8 @@ class Hosts:
     LOOPBACK: str = "127.0.0.1"
     WILDCARD: str = "0.0.0.0"
 
-DEFAULT_HOST: str = Hosts.WILDCARD
+# Wildcard not necessarily is localhost on Windows, make it explicit
+DEFAULT_HOST: str = (Hosts.WILDCARD if BrokenPlatform.OnUnix else Hosts.LOOPBACK)
 DEFAULT_PORT: int = 8000
 
 # ------------------------------------------------------------------------------------------------ #
@@ -77,6 +78,7 @@ class DepthPayload(BrokenBaseModel):
             (self.render.time/10),
             (self.render.fps/60),
             (self.render.ssaa**2),
+            (self.render.scale**2),
             (self.render.quality + 50)/100,
         ))
 
