@@ -24,7 +24,7 @@ from Broken.Externals.Upscaler import Realesr, UpscalerBase, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Animation import Actions, FilterBase, PresetBase
 
-WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"DepthFlow"/"WebUI")
+WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebUI")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
 
 # ------------------------------------------------------------------------------------------------ #
@@ -49,11 +49,14 @@ class DepthGradio:
     }
 
     def simple(self, method: Callable, **options: Dict) -> Dict:
+        """An ugly hack to avoid manually listing inputs and outputs"""
         show_progress = bool(options.get("outputs"))
-        outputs = options.pop("outputs", set(iter_dict(self.fields)))
-        inputs = options.pop("inputs", set(iter_dict(self.fields)))
+        outputs = options.pop(key="outputs", default=set(iter_dict(self.fields)))
+        inputs = options.pop(key="inputs", default=set(iter_dict(self.fields)))
         return dict(
-            fn=method, inputs=inputs, outputs=outputs,
+            fn=method,
+            inputs=inputs,
+            outputs=outputs,
             show_progress=show_progress,
             **options,
         )
@@ -99,7 +102,7 @@ class DepthGradio:
         if (user[self.fields.depth] is None):
             return gradio.Warning("The input depthmap is empty")
 
-        def _thread():
+        def worker():
             from DepthFlow.Scene import DepthScene
             scene = DepthScene(backend="headless")
             scene.set_estimator(self._estimator(user))
@@ -130,7 +133,7 @@ class DepthGradio:
             )[0]
 
         with ThreadPool() as pool:
-            task = pool.submit(_thread)
+            task = pool.submit(worker)
             yield {self.fields.video: task.result()}
             os.remove(task.result())
 

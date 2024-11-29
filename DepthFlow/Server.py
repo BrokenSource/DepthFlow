@@ -77,7 +77,7 @@ class DepthPayload(BrokenBaseModel):
             (self.render.time/10),
             (self.render.fps/60),
             (self.render.ssaa**2),
-            # (self.render.quality + 1)**0.5,
+            (self.render.quality + 50)/100,
         ))
 
     # Priority queue sorting
@@ -204,9 +204,11 @@ class DepthServer:
                         **config.render.dict(),
                         output=Path(temp.name),
                     )[0].read_bytes()
+
             except Exception as error:
                 log.error(f"Error rendering video: {error}")
                 video: Exception = error
+
             finally:
                 os.unlink(temp.name)
 
@@ -219,7 +221,7 @@ class DepthServer:
             )
 
     async def render(self, config: DepthPayload) -> dict:
-        start = time.perf_counter()
+        start: float = time.perf_counter()
         config.hash = hash(config)
 
         for index in itertools.count(1):

@@ -84,14 +84,11 @@ hint: str = "[bold blue](🔵 Option)[/]"
 TargetType: TypeAlias = Annotated[Target, Option("--target", "-t",
     help=f"{hint} Target animation state variable to modulate")]
 
-IntensityType: TypeAlias = Annotated[float, Option("--intensity", "-i", min=0,
+IntensityType: TypeAlias = Annotated[float, Option("--intensity", "-i", min=0, max=4,
     help=f"{hint} Global intensity of the animation (scales all amplitudes)")]
 
 ReverseType: TypeAlias = Annotated[bool, Option("--reverse", "-r", " /--forward", " /-fw",
     help=f"{hint} Time 'direction' to play the animation, makes the end the start")]
-
-BiasType: TypeAlias = Annotated[float, Option("--bias", "-b", min=-4,
-    help=f"{hint} Constant offset added to the animation component")]
 
 SmoothType: TypeAlias = Annotated[bool, Option("--smooth", "-s", " /--linear", " /-ns",
     help=f"{hint} Use the smooth variant of the animation (often a Sine wave)")]
@@ -99,7 +96,7 @@ SmoothType: TypeAlias = Annotated[bool, Option("--smooth", "-s", " /--linear", "
 LoopType: TypeAlias = Annotated[bool, Option("--loop", "-l", " /--no-loop", " /-nl",
     help=f"{hint} Loop the animation indefinitely (often 4x apparent frequency)")]
 
-SteadyType: TypeAlias = Annotated[float, Option("--steady", "-S", min=0, max=1,
+SteadyType: TypeAlias = Annotated[float, Option("--steady", "-S", min=-1, max=2,
     help=f"{hint} Depth value of no displacements on camera movements")]
 
 IsometricType: TypeAlias = Annotated[float, Option("--isometric", "-I", min=0, max=1,
@@ -111,10 +108,10 @@ PhaseType: TypeAlias = Annotated[float, Option("--phase", "-p", min=0, max=1,
 PhaseXYZType: TypeAlias = Annotated[Tuple[float, float, float], Option("--phase", "-p", min=0, max=1,
     help=f"{hint} Phase shift of the horizontal, vertical and depth waves")]
 
-AmplitudeXYZType: TypeAlias = Annotated[Tuple[float, float, float], Option("--amplitude", "-a", min=0, max=2,
+AmplitudeXYZType: TypeAlias = Annotated[Tuple[float, float, float], Option("--amplitude", "-a", min=-2, max=2,
     help=f"{hint} Amplitude of the horizontal, vertical and depth waves")]
 
-DepthType = Annotated[float, Option("--depth", "-d", min=0, max=1,
+DepthType = Annotated[float, Option("--depth", "-d", min=-1, max=2,
     help=f"{hint} Focal depth of this animation (orbit point, dolly zoom, etc.)")]
 
 CumulativeType = Annotated[bool, Option("--cumulative", "-c", " /--force", " /-f",
