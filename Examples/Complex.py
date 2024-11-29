@@ -19,14 +19,13 @@ from threading import Thread
 from typing import List, Self, Type
 
 from attr import Factory, define
-from click import clear
-from DepthFlow import DepthScene
-from DepthFlow.Motion import Animation, Components, Preset, Presets, Target
+from DepthFlow.Animation import Actions, Target
+from DepthFlow.Scene import DepthScene
 from DepthFlow.State import DepthState
 from dotmap import DotMap
 
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Upscayl
+from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
+from Broken.Externals.Upscaler import NoUpscaler, UpscalerBase, Upscayl
 
 
 def combinations(**options):
@@ -46,10 +45,10 @@ class YourScene(DepthScene):
 @define
 class DepthManager:
 
-    estimator: DepthEstimator = Factory(DepthAnythingV2)
+    estimator: BaseEstimator = Factory(DepthAnythingV2)
     """A **shared** estimator for all threads"""
 
-    upscaler: BrokenUpscaler = Factory(NoUpscaler)
+    upscaler: UpscalerBase = Factory(NoUpscaler)
     """The upscaler to use for all threads"""
 
     threads: List[Thread] = Factory(list)
@@ -102,13 +101,13 @@ class DepthManager:
     @abstractmethod
     def animate(self, data: DotMap) -> None:
         """Add preset system's animations to each export"""
-        data.scene.add_animation(DepthState(
+        data.scene.animation.add(Actions.State(
             vignette_enable=True,
-            dof_enable=True,
+            blur_enable=True,
         ))
-        data.scene.add_animation(Components.Set(target=Target.Isometric, value=0.4))
-        data.scene.add_animation(Components.Set(target=Target.Height, value=0.10))
-        data.scene.add_animation(Presets.Circle(
+        data.scene.animation.add(Actions.Set(target=Target.Isometric, value=0.4))
+        data.scene.animation.add(Actions.Set(target=Target.Height, value=0.10))
+        data.scene.animation.add(Actions.Circle(
             intensity=0.5,
         ))
 
@@ -138,7 +137,7 @@ class DepthManager:
 
             # Find or set common parameters
             output = self.filename(data)
-            scene.clear_animations()
+            scene.animation.clear()
             self.animate(data)
 
             # Make sure the output folder exists
@@ -172,10 +171,10 @@ class YourManager(DepthManager):
 
     def animate(self, data: DotMap):
         if (data.variation == 0):
-            data.scene.add_animation(Presets.Orbital())
+            data.scene.animation.add(Actions.Orbital())
         if (data.variation == 1):
-            data.scene.add_animation(Components.Set(target=Target.Isometric, value=0.4))
-            data.scene.add_animation(Presets.Circle(intensity=0.3))
+            data.scene.animation.add(Actions.Set(target=Target.Isometric, value=0.4))
+            data.scene.animation.add(Actions.Circle(intensity=0.3))
 
 # ------------------------------------------------------------------------------------------------ #
 

@@ -1,58 +1,171 @@
 from typing import Annotated, Iterable, Tuple
 
-import typer
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import Field
 from ShaderFlow.Variable import ShaderVariable, Uniform
+from typer import Option
 
+from Broken import BrokenBaseModel, BrokenTyper
 
-class DepthState(BaseModel):
+# ------------------------------------------------------------------------------------------------ #
+
+class VignetteState(BrokenBaseModel):
+    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+    """Enable this vignette (darken corners) effect"""
+
+    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=100)] = Field(30.0)
+    """The intensity of the effect (darken amount on edges)"""
+
+    decay: Annotated[float, Option("--decay", "-d", min=0, max=1)] = Field(0.1)
+    """A decay of one starts the effect in the middle of the screen"""
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield Uniform("bool",  "iVigEnable",    self.enable)
+        yield Uniform("float", "iVigIntensity", self.intensity)
+        yield Uniform("float", "iVigDecay",     self.decay)
+
+# ------------------------------------------------------------------------------------------------ #
+
+class LensState(BrokenBaseModel):
+    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+    """Enable this lens distortion effect"""
+
+    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=4)] = Field(0.3)
+    """The intensity of the effect (blur amount on edges)"""
+
+    decay: Annotated[float, Option("--decay", "-d", min=0, max=2)] = Field(0.4)
+    """A decay of one starts the effect in the middle of the screen"""
+
+    quality: Annotated[int, Option("--quality", "-q", min=0, max=50)] = Field(30)
+    """The quality of the effect (samples per pixel)"""
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield Uniform("bool",  "iLensEnable",    self.enable)
+        yield Uniform("float", "iLensIntensity", self.intensity)
+        yield Uniform("float", "iLensDecay",     self.decay)
+        yield Uniform("int",   "iLensQuality",   self.quality)
+
+# ------------------------------------------------------------------------------------------------ #
+
+class BlurState(BrokenBaseModel):
+    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+    """Enable this depth of field (blur) effect"""
+
+    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=2)] = Field(1.0)
+    """The intensity of the effect (blur radius)"""
+
+    start: Annotated[float, Option("--start", "-a", min=0, max=1)] = Field(0.6)
+    """The effect starts at this depth value"""
+
+    end: Annotated[float, Option("--end", "-b", min=0, max=1)] = Field(1.0)
+    """The effect ends at this depth value"""
+
+    exponent: Annotated[float, Option("--exponent", "-x", min=0, max=8)] = Field(2.0)
+    """Shaping exponent of the start and end interpolation"""
+
+    quality: Annotated[int, Option("--quality", "-q", min=1, max=16)] = Field(4)
+    """The quality of the effect (radial sampling steps)"""
+
+    directions: Annotated[int, Option("--directions", "-d", min=1, max=32)] = Field(16)
+    """The quality of the effect (radial sampling directions)"""
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield Uniform("bool",  "iBlurEnable",     self.enable)
+        yield Uniform("float", "iBlurIntensity",  self.intensity/100)
+        yield Uniform("float", "iBlurStart",      self.start)
+        yield Uniform("float", "iBlurEnd",        self.end)
+        yield Uniform("float", "iBlurExponent",   self.exponent)
+        yield Uniform("int",   "iBlurQuality",    self.quality)
+        yield Uniform("int",   "iBlurDirections", self.directions)
+
+# ------------------------------------------------------------------------------------------------ #
+
+class InpaintState(BrokenBaseModel):
+    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+    """Enable the inpainting effect (masks stretchy regions for advanced usage)"""
+
+    black: Annotated[bool, Option("--black", "-b")] = Field(False)
+    """Replace non-steep regions with black color instead of the base image"""
+
+    limit: Annotated[float, Option("--limit", "-l", min=0, max=20)] = Field(1.0)
+    """The threshold for the steepness of the regions (heuristic)"""
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield Uniform("bool",  "iInpaint",      self.enable)
+        yield Uniform("bool",  "iInpaintBlack", self.black)
+        yield Uniform("float", "iInpaintLimit", self.limit)
+
+# ------------------------------------------------------------------------------------------------ #
+
+class ColorState(BrokenBaseModel):
+    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+    """Enable color manipulation effects"""
+
+    saturation: Annotated[float, Option("--saturation", "-s", min=0, max=200)] = Field(100.0)
+    """Saturation of the image (0 is grayscale, 100 is original, makes colors more vibrant)"""
+
+    contrast: Annotated[float, Option("--contrast", "-c", min=0, max=200)] = Field(100.0)
+    """Contrast of the image (0 is full gray, 100 is original, increases difference between light and dark)"""
+
+    brightness: Annotated[float, Option("--brightness", "-b", min=0, max=200)] = Field(100.0)
+    """Brightness of the image (0 is black, 100 is original, increases overall lightness)"""
+
+    gamma: Annotated[float, Option("--gamma", "-g", min=0, max=400)] = Field(100.0)
+    """Gamma of the image (0 is black, 100 is original, increases brightness 'shaping' curve)"""
+
+    grayscale: Annotated[float, Option("--grayscale", "-x", min=0, max=100)] = Field(0.0)
+    """Grayscale effect of the image (0 is full color, 100 is grayscale)"""
+
+    sepia: Annotated[float, Option("--sepia", "-n", min=0, max=200)] = Field(0.0)
+    """Sepia effect of the image (0 is grayscale, 100 is full sepia, a brownish nostalgic tint)"""
+
+    def pipeline(self) -> Iterable[ShaderVariable]:
+        yield Uniform("float", "iColorsSaturation", self.saturation/100)
+        yield Uniform("float", "iColorsContrast",   self.contrast/100)
+        yield Uniform("float", "iColorsBrightness", self.brightness/100)
+        yield Uniform("float", "iColorsGamma",      self.gamma/100)
+        yield Uniform("float", "iColorsGrayscale",  self.grayscale/100)
+        yield Uniform("float", "iColorsSepia",      self.sepia/100)
+
+# ------------------------------------------------------------------------------------------------ #
+
+class DepthState(BrokenBaseModel):
     """Set effect parameters, animations might override them!"""
 
-    height: Annotated[float, typer.Option("--height", "-h", min=0, max=2,
-        help="[bold red](🔴 Basic   )[/] Depthmap's peak value, the effect [bold cyan]intensity[/] [medium_purple3](The camera is 1 distance away from depth=0 at the z=1 plane)[/]")] = \
-        Field(default=0.25)
+    height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.25)
+    """Depthmap's peak value, the parallax intensity"""
 
-    steady: Annotated[float, typer.Option("--steady", "-s", min=0, max=1,
-        help="[bold red](🔴 Basic   )[/] Focal depth plane of [bold cyan]offsets[/] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/]")] = \
-        Field(default=0.0)
+    steady: Annotated[float, Option("--steady", "-s", min=0, max=1)] = Field(0.0)
+    """Focal depth plane of offsets (A value of 0 makes the background stationary; and 1 for the foreground)"""
 
-    focus: Annotated[float, typer.Option("--focus", "-f", min=0, max=1,
-        help="[bold red](🔴 Basic   )[/] Focal depth plane of [bold cyan]perspective[/] [medium_purple3](A value of 0 makes the background stationary; and 1 for the foreground)[/]")] = \
-        Field(default=0.0)
+    focus: Annotated[float, Option("--focus", "-f", min=0, max=1)] = Field(0.0)
+    """Focal depth plane of perspective (A value of 0 makes the background stationary; and 1 for the foreground)"""
 
-    zoom: Annotated[float, typer.Option("--zoom", "-z", min=0, max=2,
-        help="[bold red](🔴 Basic   )[/] Camera [bold cyan]zoom factor[/] [medium_purple3](2 means a quarter of the image is visible)[/]")] = \
-        Field(default=1.0)
+    zoom: Annotated[float, Option("--zoom", "-z", min=0, max=2)] = Field(1.0)
+    """Camera zoom factor (0.25 means a quarter of the image is visible)"""
 
-    isometric: Annotated[float, typer.Option("--isometric", "-i", min=0, max=1,
-        help="[bold yellow](🟡 Medium  )[/] Isometric factor of [bold cyan]camera projections[/] [medium_purple3](0 is full perspective, 1 is orthographic)[/]")] = \
-        Field(default=0.0)
+    isometric: Annotated[float, Option("--isometric", "-i", min=0, max=1)] = Field(0.0)
+    """Isometric factor of camera projections (0 is full perspective, 1 is orthographic)"""
 
-    dolly: Annotated[float, typer.Option("--dolly", "-d", min=0, max=20,
-        help="[bold yellow](🟡 Medium  )[/] Same effect as --isometric, dolly zoom [medium_purple3](Move back ray projection origins by this amount)[/]")] = \
-        Field(default=0.0)
+    dolly: Annotated[float, Option("--dolly", "-d", min=0, max=20)] = Field(0.0)
+    """Natural isometric changes (Moves back ray projections origins by this amount)"""
 
-    invert: Annotated[float, typer.Option("--invert", "-v", min=0, max=1,
-        help="[bold yellow](🟡 Medium  )[/] Interpolate depth values between (0=far, 1=near) and vice-versa, as in [bold cyan]mix(height, 1-height, invert)[/]")] = \
-        Field(default=0.0)
+    invert: Annotated[float, Option("--invert", "-v", min=0, max=1)] = Field(0.0)
+    """Interpolate depth values between (0=far, 1=near) and vice-versa, as in mix(height, 1-height, invert)"""
 
-    mirror: Annotated[bool, typer.Option("--mirror", "-m", " /-n",
-        help="[bold yellow](🟡 Medium  )[/] Apply [bold cyan]GL_MIRRORED_REPEAT[/] to the image [medium_purple3](The image is mirrored out of bounds on the respective edge)[/]")] = \
-        Field(default=True)
+    mirror: Annotated[bool, Option("--mirror", "-m", " /-n")] = Field(True)
+    """Apply GL_MIRRORED_REPEAT to the image (The image is mirrored out of bounds on the respective edge)"""
 
     # # Offset
 
-    offset_x: Annotated[float, typer.Option("--offset-x", "--ofx", min=-4, max=4,
-        help="[bold green](🟢 Advanced)[/] Horizontal parallax displacement [medium_purple3](Change this over time for the 3D effect)[/]")] = \
-        Field(default=0)
+    offset_x: Annotated[float, Option("--offset-x", "--ofx", min=-4, max=4)] = Field(0.0)
+    """Horizontal parallax displacement, change this over time for the 3D effect"""
 
-    offset_y: Annotated[float, typer.Option("--offset-y", "--ofy", min=-1, max=1,
-        help="[bold green](🟢 Advanced)[/] Vertical   parallax displacement [medium_purple3](Change this over time for the 3D effect)[/]")] = \
-        Field(default=0)
+    offset_y: Annotated[float, Option("--offset-y", "--ofy", min=-1, max=1)] = Field(0.0)
+    """Vertical parallax displacement, change this over time for the 3D effect"""
 
     @property
     def offset(self) -> Tuple[float, float]:
-        """Parallax displacement, change this over time for the 3D effect"""
+        """Parallax displacement vector, change this over time for the 3D effect"""
         return (self.offset_x, self.offset_y)
 
     @offset.setter
@@ -61,17 +174,15 @@ class DepthState(BaseModel):
 
     # # Center
 
-    center_x: Annotated[float, typer.Option("--center-x", "--cex", min=-4, max=4,
-        help="[bold green](🟢 Advanced)[/] Horizontal 'true' offset of the camera [medium_purple3](The camera *is* above this point)[/]")] = \
-        Field(default=0)
+    center_x: Annotated[float, Option("--center-x", "--cex", min=-4, max=4)] = Field(0.0)
+    """Horizontal 'true' offset of the camera, the camera *is* above this point"""
 
-    center_y: Annotated[float, typer.Option("--center-y", "--cey", min=-1, max=1,
-        help="[bold green](🟢 Advanced)[/] Vertical   'true' offset of the camera [medium_purple3](The camera *is* above this point)[/]")] = \
-        Field(default=0)
+    center_y: Annotated[float, Option("--center-y", "--cey", min=-1, max=1)] = Field(0.0)
+    """Vertical 'true' offset of the camera, the camera *is* above this point"""
 
     @property
     def center(self) -> Tuple[float, float]:
-        """'True' offset of the camera, the camera *is* above this point"""
+        """'True' offset vector of the camera, the camera *is* above this point"""
         return (self.center_x, self.center_y)
 
     @center.setter
@@ -80,95 +191,37 @@ class DepthState(BaseModel):
 
     # # Origin
 
-    origin_x: float = Field(default=0)
-    """Hozirontal focal point of the offsets, *as if* the camera was above this point"""
+    origin_x: Annotated[float, Option("--origin-x", "--orx", min=-4, max=4)] = Field(0.0)
+    """Horizontal focal point of the offsets, *as if* the camera was above this point"""
 
-    origin_x: Annotated[float, typer.Option("--origin-x", "--orx", min=-4, max=4,
-        help="[bold green](🟢 Advanced)[/] Horizontal focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/]")] = \
-        Field(default=0)
-
-    origin_y: Annotated[float, typer.Option("--origin-y", "--ory", min=-1, max=1,
-        help="[bold green](🟢 Advanced)[/] Vertical   focal point of the offsets [medium_purple3](*As if* the camera was above this point)[/]")] = \
-        Field(default=0)
+    origin_y: Annotated[float, Option("--origin-y", "--ory", min=-1, max=1)] = Field(0.0)
+    """Vertical focal point of the offsets, *as if* the camera was above this point"""
 
     @property
     def origin(self) -> Tuple[float, float]:
-        """Focal point of the offsets, *as if* the camera was above this point"""
+        """Focal point vector of the offsets, *as if* the camera was above this point"""
         return (self.origin_x, self.origin_y)
 
     @origin.setter
     def origin(self, value: Tuple[float, float]):
         self.origin_x, self.origin_y = value
 
-    # # Special
-
-    def reset(self) -> None:
-        for name, field in self.model_fields.items():
-            setattr(self, name, field.default)
-
     # ---------------------------------------------------------------------------------------------|
 
-    vignette_enable: Annotated[bool, typer.Option("--vig-enable", "--ve",
-        help="[bold blue](🔵 Vignette)[/] Enable a Vignette effect [green](Darken the corners of the image)[/]")] = \
-        Field(default=False)
+    vignette: Annotated[VignetteState, BrokenTyper.exclude()] = \
+        Field(default_factory=VignetteState)
 
-    vignette_intensity: Annotated[float, typer.Option("--vig-intensity", "--vi", min=0, max=100,
-        help="[bold blue](🔵 Vignette)[/] • Intensity of the Vignette effect")] = \
-        Field(default=30)
+    lens: Annotated[LensState, BrokenTyper.exclude()] = \
+        Field(default_factory=LensState)
 
-    vignette_decay: Annotated[float, typer.Option("--vig-decay", "--vd", min=0, max=1,
-        help="[bold blue](🔵 Vignette)[/] • Decay of the Vignette effect")] = \
-        Field(default=0.1)
+    inpaint: Annotated[InpaintState, BrokenTyper.exclude()] = \
+        Field(default_factory=InpaintState)
 
-    # ---------------------------------------------------------------------------------------------|
+    colors: Annotated[ColorState, BrokenTyper.exclude()] = \
+        Field(default_factory=ColorState)
 
-    dof_enable: Annotated[bool, typer.Option("--dof-enable", "--de",
-        help="[bold blue](🔵 DoField )[/] Enable a Depth of field effect [green](Blur the image based on depth)[/]")] = \
-        Field(default=False)
-
-    dof_start: Annotated[float, typer.Option("--dof-start", "--da",
-        help="[bold blue](🔵 DoField )[/] • Blur starts at this depth value")] = \
-        Field(default=0.6)
-
-    dof_end: Annotated[float, typer.Option("--dof-end", "--db",
-        help="[bold blue](🔵 DoField )[/] • Blur ends at this depth value")] = \
-        Field(default=1.0)
-
-    dof_exponent: Annotated[float, typer.Option("--dof-exponent", "--dx", min=-10, max=10,
-        help="[bold blue](🔵 DoField )[/] • Shaping exponent")] = \
-        Field(default=2.0)
-
-    dof_intensity: Annotated[float, typer.Option("--dof-intensity", "--di", min=0, max=2,
-        help="[bold blue](🔵 DoField )[/] • Blur intensity (radius)")] = \
-        Field(default=1.0)
-
-    dof_quality: Annotated[int, typer.Option("--dof-quality", "--dq", min=1, max=16,
-        help="[bold blue](🔵 DoField )[/] • Blur quality (radial steps)")] = \
-        Field(default=4)
-
-    dof_directions: Annotated[int, typer.Option("--dof-directions", "--dd", min=1, max=32,
-        help="[bold blue](🔵 DoField )[/] • Blur quality (directions)")] = \
-        Field(default=16)
-
-    # ---------------------------------------------------------------------------------------------|
-
-    inpaint: Annotated[bool, typer.Option("--inpaint",
-        help="[bold blue](🔵 Inpaint )[/] Replace steep regions with green color")] = \
-        Field(default=False)
-
-    inpaint_black: Annotated[bool, typer.Option("--inpaint-black",
-        help="[bold blue](🔵 Inpaint )[/] Replace non-steep regions with black color")] = \
-        Field(default=False)
-
-    inpaint_limit: Annotated[float, typer.Option("--inpaint-limit", min=0,
-        help="[bold blue](🔵 Inpaint )[/] The threshold for the steepness of the regions")] = \
-        Field(default=1)
-
-    # ---------------------------------------------------------------------------------------------|
-
-    saturation: Annotated[float, typer.Option("--saturation", "--sat", min=0, max=400,
-        help="[bold blue](🔵 Saturate)[/] Saturation of the image [medium_purple3](0 is grayscale, 100 is full color)[/]")] = \
-        Field(default=100)
+    blur: Annotated[BlurState, BrokenTyper.exclude()] = \
+        Field(default_factory=BlurState)
 
     # ---------------------------------------------------------------------------------------------|
 
@@ -184,17 +237,8 @@ class DepthState(BaseModel):
         yield Uniform("vec2",  "iDepthCenter",    self.center)
         yield Uniform("vec2",  "iDepthOrigin",    self.origin)
         yield Uniform("bool",  "iDepthMirror",    self.mirror)
-        yield Uniform("bool",  "iVigEnable",      self.vignette_enable)
-        yield Uniform("float", "iVigIntensity",   self.vignette_intensity)
-        yield Uniform("float", "iVigDecay",       self.vignette_decay)
-        yield Uniform("bool",  "iDofEnable",      self.dof_enable)
-        yield Uniform("float", "iDofStart",       self.dof_start)
-        yield Uniform("float", "iDofEnd",         self.dof_end)
-        yield Uniform("float", "iDofExponent",    self.dof_exponent)
-        yield Uniform("float", "iDofIntensity",   self.dof_intensity/100)
-        yield Uniform("int",   "iDofQuality",     self.dof_quality)
-        yield Uniform("int",   "iDofDirections",  self.dof_directions)
-        yield Uniform("bool",  "iInpaint",        self.inpaint)
-        yield Uniform("bool",  "iInpaintBlack",   self.inpaint_black)
-        yield Uniform("float", "iInpaintLimit",   self.inpaint_limit)
-        yield Uniform("float", "iSaturation",     self.saturation/100)
+        yield from self.vignette.pipeline()
+        yield from self.lens.pipeline()
+        yield from self.inpaint.pipeline()
+        yield from self.colors.pipeline()
+        yield from self.blur.pipeline()

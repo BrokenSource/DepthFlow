@@ -183,18 +183,39 @@ void main() {
         return;
     }
 
-    // Depth of Field
-    if (iDofEnable) {
-        float intensity = iDofIntensity * pow(smoothstep(iDofStart, iDofEnd, 1.0 - depthflow.value), iDofExponent);
+    // Fixme: Ability to apply lens and blur on multi-pass (post-refactor and metaprograming overhaul)
+
+    // Lens distortion (Mutually exclusive with blur)
+    if (iLensEnable) {
+
+        // Define the base 'velocity' (intensity) of the effect
+        float decay = pow(0.62*length(agluv), (10 - 9*iLensDecay));
+        vec2 delta = (0.5*iLensIntensity) * normalize(agluv) * decay;
+        vec3 color = vec3(0);
+
+        // Integrate the color along the path, different speeds per channel
+        for (float i=0; i<1; i+=(1.0/iLensQuality)) {
+            color.r += gtexture(image, depthflow.gluv - (1*i*delta), depthflow.mirror).r;
+            color.g += gtexture(image, depthflow.gluv - (2*i*delta), depthflow.mirror).g;
+            color.b += gtexture(image, depthflow.gluv - (4*i*delta), depthflow.mirror).b;
+        }
+
+        // Normalize the color, as it grew with integration
+        fragColor.rgb = (color / iLensQuality);
+    }
+
+    // Depth of Field (Mutually exclusive with lens distortion)
+    else if (iBlurEnable) {
+        float intensity = iBlurIntensity * pow(smoothstep(iBlurStart, iBlurEnd, 1.0 - depthflow.value), iBlurExponent);
         vec4 color = fragColor;
 
-        for (float angle=0.0; angle<TAU; angle+=TAU/iDofDirections) {
-            for (float walk=1.0/iDofQuality; walk<=1.001; walk+=1.0/iDofQuality) {
+        for (float angle=0.0; angle<TAU; angle+=TAU/iBlurDirections) {
+            for (float walk=1.0/iBlurQuality; walk<=1.001; walk+=1.0/iBlurQuality) {
                 vec2 displacement = vec2(cos(angle), sin(angle)) * walk * intensity;
                 color += gtexture(image, depthflow.gluv + displacement, depthflow.mirror);
             }
         }
-        fragColor = color / (iDofDirections*iDofQuality);
+        fragColor = color / (iBlurDirections*iBlurQuality);
     }
 
     // Vignette post processing
@@ -205,7 +226,26 @@ void main() {
     }
 
     // Colors post processing
+    float luminance;
+
     // Saturation
-    float luminance = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
-    fragColor.rgb = mix(vec3(luminance), fragColor.rgb, iSaturation);
+    luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+    fragColor.rgb = mix(vec3(luminance), fragColor.rgb, iColorsSaturation);
+
+    // Contrast
+    fragColor.rgb = mix(vec3(0.5), fragColor.rgb, iColorsContrast);
+
+    // Brightness
+    fragColor.rgb += (iColorsBrightness - 1);
+
+    // Gamma
+    fragColor.rgb = pow(fragColor.rgb, vec3(1.0/iColorsGamma));
+
+    // Sepia
+    luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+    fragColor.rgb = mix(fragColor.rgb, luminance*vec3(1.2, 1.0, 0.8), iColorsSepia);
+
+    // Grayscale
+    luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+    fragColor.rgb = mix(fragColor.rgb, vec3(luminance), iColorsGrayscale);
 }

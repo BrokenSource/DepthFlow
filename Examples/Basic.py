@@ -10,7 +10,7 @@ Note: This file is the same as running `python -m DepthFlow` or just `depthflow`
 """
 import sys
 
-from DepthFlow import DepthScene
+from DepthFlow.Scene import DepthScene
 
 if __name__ == "__main__":
     scene = DepthScene()

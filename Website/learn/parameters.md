@@ -55,7 +55,7 @@ This section is about the **core parameters** of DepthFlow.
 
 ### Height
 
-> **Type:** `float`, **Range:** `[0, 1]`
+> **Type:** `float`, **Names:** `height`, **Range:** `[0, 1]`
 
 <b><span class="the">T</span>he</b> `height` parameter defines the **peak height of the projected surface** at `depth=1`. It can be thought as the {==**effect's global intensity**==} parameter.
 
@@ -73,7 +73,7 @@ This section is about the **core parameters** of DepthFlow.
 
 ### Offset
 
-> **Type:** `Tuple[float, float]`, **Alias:** `offset_x`, `offset_y`, **Range:** `[-2, 2]`
+> **Type:** `Tuple[float, float]`, **Names:** `offset_x`, `offset_y`, **Range:** `[-2, 2]`
 
 <b><span class="the">T</span>he</b> `offset` parameter defines the **parallax displacement** of the projected surface. It can be thought as the {==**camera's position**==} parameter.
 
@@ -97,7 +97,7 @@ As you might expect, setting $x=cos(t)$ and $y=sin(t)$ parameter to follow a cir
 
 ### Steady
 
-> **Type:** `float`, **Range:** `[-1, 1]`
+> **Type:** `float`, **Names:** `steady`, **Range:** `[-1, 1]`
 
 <b><span class="the">T</span>he</b> `steady` parameter defines the **depth at which no offsets happen**. It can be thought as the {==**offsets focal depth**==} parameter.
 
@@ -115,7 +115,7 @@ As you might expect, setting $x=cos(t)$ and $y=sin(t)$ parameter to follow a cir
 
 ### Isometric
 
-> **Type:** `float`, **Range:** `[0, 1]`
+> **Type:** `float`, **Names:** `isometric`, **Range:** `[0, 1]`
 
 <b><span class="the">T</span>he</b> `isometric` parameter defines **how much perspective is applied**. It can be thought as the {==**planification effect**==} parameter.
 
@@ -140,7 +140,7 @@ Notice how in the video below the offsets are _"flattened"_, as if there was one
 
 ### Dolly
 
-> **Type:** `float`, **Range:** `[0, 10]`
+> **Type:** `float`, **Names:** `dolly`, **Range:** `[0, 10]`
 
 <b><span class="the">T</span>he</b> `dolly` parameter defines the **camera's distance from the image**. It's basically the same as the {==**isometric effect**==} parameter, but with different _(natural)_ units.
 
@@ -169,7 +169,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Focus
 
-> **Type:** `float`, **Range:** `[-1, 1]`
+> **Type:** `float`, **Names:** `focus`, **Range:** `[-1, 1]`
 
 <b><span class="the">T</span>he</b> `focus` parameter defines the **steady depth on isometric changes**. It can be thought as the {==**isometric focal depth**==} parameter.
 
@@ -187,7 +187,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Zoom
 
-> **Type:** `float`, **Range:** `(0, 1]`
+> **Type:** `float`, **Names:** `zoom`, **Range:** `(0, 1]`
 
 <b><span class="the">T</span>he</b> `zoom` parameter defines the **camera's field of view**. It can be thought as the {==**you-know-it**==} parameter.
 
@@ -205,7 +205,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Invert
 
-> **Type:** `float`, **Range:** `[0, 1]`
+> **Type:** `float`, **Names:** `invert`, **Range:** `[0, 1]`
 
 <b><span class="the">T</span>he</b> `invert` parameter **interpolates between 0=far and 1=near and the opposite**. It can be thought as the {==**depth inversion**==} parameter.
 
@@ -223,7 +223,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Center
 
-> **Type:** `Tuple[float, float]`, **Range:** `([-ar, ar], [-1, 1])`
+> **Type:** `Tuple[float, float]`, **Names:** `center_x`, `center_y`, **Range:** `([-ar, ar], [-1, 1])`
 
 <b><span class="the">T</span>he</b> `center` parameter defines the **center of the image**. It can be thought as the {==**raw offset**==} parameter.
 
@@ -241,7 +241,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Origin
 
-> **Type:** `Tuple[float, float]`, **Range:** `([-ar, ar], [-1, 1])`
+> **Type:** `Tuple[float, float]`, **Names:** `origin_x`, `origin_y`, **Range:** `([-ar, ar], [-1, 1])`
 
 <b><span class="the">T</span>he</b> `origin` parameter defines the **center point of offsets**. It can be thought  {==**as if the camera was above this point**==} , without moving it.
 

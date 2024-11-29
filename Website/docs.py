@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Callable, Iterable
 
 from attr import Factory, define
 from DepthFlow import DepthScene
-from ShaderFlow.Imgui import imgui
+from imgui_bundle import imgui
 from ShaderFlow.Variable import ShaderVariable, Uniform
 
 from Broken import BROKEN, OnceTracker, install, log
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
+from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
 
 install("manim", "minio")
 
@@ -161,7 +161,7 @@ class DocScene(DepthScene):
 
 @define
 class DocsParameters:
-    estimator: DepthEstimator = Factory(DepthAnythingV2)
+    estimator: BaseEstimator = Factory(DepthAnythingV2)
     minio: BrokenMinio = Factory(BrokenMinio)
 
     def render(self, scene: DepthScene, name: str, *, time: float=10):

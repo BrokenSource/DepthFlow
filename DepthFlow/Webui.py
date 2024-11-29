@@ -5,24 +5,24 @@ from pathlib import Path
 from typing import Annotated, Callable, Dict, Tuple
 
 import gradio
-import typer
 from attr import Factory
 from attrs import define
 from dotmap import DotMap
 from gradio.themes.utils import colors, fonts, sizes
+from typer import Option
 
 from Broken import BrokenPath, BrokenResolution, iter_dict
 from Broken.Externals.Depthmap import (
+    BaseEstimator,
     DepthAnythingV1,
     DepthAnythingV2,
-    DepthEstimator,
     DepthPro,
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
+from Broken.Externals.Upscaler import Realesr, UpscalerBase, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
-from DepthFlow.Motion import Presets
+from DepthFlow.Animation import Actions, FilterBase, PresetBase
 
 WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"DepthFlow"/"WebUI")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
@@ -58,10 +58,10 @@ class DepthGradio:
             **options,
         )
 
-    def _estimator(self, user: Dict) -> DepthEstimator:
+    def _estimator(self, user: Dict) -> BaseEstimator:
         return self.estimators[user[self.fields.estimator]]()
 
-    def _upscaler(self, user: Dict) -> BrokenUpscaler:
+    def _upscaler(self, user: Dict) -> UpscalerBase:
         return self.upscalers[user[self.fields.upscaler]]()
 
     def estimate(self, user: Dict):
@@ -100,19 +100,21 @@ class DepthGradio:
             return gradio.Warning("The input depthmap is empty")
 
         def _thread():
-            from DepthFlow import DepthScene
+            from DepthFlow.Scene import DepthScene
             scene = DepthScene(backend="headless")
             scene.set_estimator(self._estimator(user))
             scene.input(image=user[self.fields.image], depth=user[self.fields.depth])
             scene.aspect_ratio = None
 
             # Build and add any enabled preset class
-            for preset in Presets.members():
+            for preset in Actions.members():
                 preset_name = preset.__name__
                 preset_dict = self.fields.animation[preset_name]
-                if (not user[preset_dict.enabled]):
+                if (not preset_dict.enable):
                     continue
-                scene.add_animation(preset(**{
+                if (not user[preset_dict.enable]):
+                    continue
+                scene.animation.add(preset(**{
                     key: user[item] for (key, item) in preset_dict.options.items()
                 }))
 
@@ -133,21 +135,21 @@ class DepthGradio:
             os.remove(task.result())
 
     def launch(self,
-        port: Annotated[int, typer.Option("--port", "-p",
+        port: Annotated[int, Option("--port", "-p",
             help="Port to run the WebUI on")]=None,
-        server: Annotated[str, typer.Option("--server",
+        server: Annotated[str, Option("--server",
             help="Server to run the WebUI on")]="0.0.0.0",
-        share: Annotated[bool, typer.Option("--share", "-s",
+        share: Annotated[bool, Option("--share", "-s",
             help="Share the WebUI on the network")]=False,
-        threads: Annotated[int,  typer.Option("--threads", "-t",
+        threads: Annotated[int,  Option("--threads", "-t",
             help="Number of maximum concurrent renders")]=4,
-        browser: Annotated[bool, typer.Option("--open", " /--no-open",
+        browser: Annotated[bool, Option("--open", " /--no-open",
             help="Open the WebUI in the browser")]=True,
-        block: Annotated[bool, typer.Option("--block", "-b", " /--no-block",
+        block: Annotated[bool, Option("--block", "-b", " /--no-block",
             help="Holds the main thread until the WebUI is closed")]=True,
     ) -> gradio.Blocks:
         with gradio.Blocks(
-            theme=gradio.themes.Default(
+            theme=gradio.themes.Ocean(
                 font=(fonts.GoogleFont("Roboto Slab"),),
                 font_mono=(fonts.GoogleFont("Fira Code"),),
                 primary_hue=colors.emerald,
@@ -164,14 +166,14 @@ class DepthGradio:
             gradio.Markdown("# 🌊 DepthFlow")
 
             with gradio.Tab("Application"):
-                with gradio.Row():
+                with gradio.Row(equal_height=True):
                     with gradio.Column(variant="panel"):
                         self.fields.image = gradio.Image(scale=1,
                             sources=["upload", "clipboard"],
                             type="pil", label="Input image",
                             interactive=True,
                         )
-                        with gradio.Row():
+                        with gradio.Row(equal_height=True):
                             self.fields.upscaler = gradio.Dropdown(
                                 choices=list(self.upscalers.keys()),
                                 value=list(self.upscalers.keys())[0],
@@ -184,7 +186,7 @@ class DepthGradio:
                             sources=["upload", "clipboard"],
                             type="pil", label="Depthmap"
                         )
-                        with gradio.Row():
+                        with gradio.Row(equal_height=True):
                             self.fields.estimator = gradio.Dropdown(
                                 choices=list(self.estimators.keys()),
                                 value=list(self.estimators.keys())[0],
@@ -201,54 +203,65 @@ class DepthGradio:
                         self.fields.render = gradio.Button(
                             value="🔥 Render 🔥",
                             variant="primary",
-                            size="lg",
                         )
 
-                with gradio.Row(variant="panel"):
+                with gradio.Row(equal_height=True, variant="panel"):
                     with gradio.Accordion("Animation (WIP)", open=False):
-                        for preset in Presets.members():
-                            preset_name = preset.__name__
-                            preset_dict = self.fields.animation[preset_name]
+                        def animation_type(type):
+                            for preset in Actions.members():
+                                if not issubclass(preset, type):
+                                    continue
+                                preset_name = preset.__name__
+                                preset_dict = self.fields.animation[preset_name]
 
-                            with gradio.Tab(preset_name):
-                                preset_dict.enabled = gradio.Checkbox(
-                                    value=False, label="Enabled", info=preset.__doc__)
+                                with gradio.Tab(preset_name):
+                                    preset_dict.enable = gradio.Checkbox(
+                                        value=False, label="Enable", info=preset.__doc__)
 
-                                for attr, field in preset.model_fields.items():
-                                    if (field.annotation is bool):
-                                        preset_dict.options[attr] = gradio.Checkbox(
-                                            value=field.default,
-                                            label=attr.capitalize(),
-                                            info=field.description,
-                                        )
-                                    elif (field.annotation is float):
-                                        preset_dict.options[attr] = gradio.Slider(
-                                            minimum=field.metadata[0].min,
-                                            maximum=field.metadata[0].max,
-                                            step=0.01, label=attr.capitalize(),
-                                            value=field.default,
-                                            info=field.description,
-                                        )
-                                    elif (isinstance(field.annotation, Tuple)):
-                                        print(attr, field, field.annotation)
+                                    for attr, field in preset.model_fields.items():
+                                        if (attr.lower() == "enable"):
+                                            continue
+                                        if (field.annotation is bool):
+                                            preset_dict.options[attr] = gradio.Checkbox(
+                                                value=field.default,
+                                                label=attr.capitalize(),
+                                                info=field.description,
+                                            )
+                                        elif (field.annotation is float):
+                                            preset_dict.options[attr] = gradio.Slider(
+                                                minimum=field.metadata[0].min,
+                                                maximum=field.metadata[0].max,
+                                                step=0.01, label=attr.capitalize(),
+                                                value=field.default,
+                                                info=field.description,
+                                            )
+                                        elif (isinstance(field.annotation, Tuple)):
+                                            print(attr, field, field.annotation)
 
-                with gradio.Row():
-                    with gradio.Row(variant="panel"):
+                        with gradio.Tab("Presets"):
+                            animation_type(PresetBase)
+                        with gradio.Tab("Filters"):
+                            animation_type(FilterBase)
+
+                with gradio.Row(equal_height=True):
+                    with gradio.Row(equal_height=True, variant="panel"):
                         self.fields.width = gradio.Number(label="Width",
                             minimum=1, precision=0, scale=10, value=1920)
-                        self.fields.fit_height = gradio.Button(value="➡️ Fit height", scale=1)
+                        self.fields.fit_height = gradio.Button(
+                            value="➡️ Fit height", scale=1)
 
-                    with gradio.Row(variant="panel"):
+                    with gradio.Row(equal_height=True, variant="panel"):
                         self.fields.height = gradio.Number(label="Height",
                             minimum=1, precision=0, scale=10, value=1080)
-                        self.fields.fit_width = gradio.Button(value="⬅️ Fit width", scale=1)
+                        self.fields.fit_width = gradio.Button(
+                            value="⬅️ Fit width", scale=1)
 
-                    with gradio.Row(variant="panel"):
+                    with gradio.Row(equal_height=True, variant="panel"):
                         self.fields.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
                             info="Renders at a higher resolution for smoother edges",
                             value=1.5, minimum=1, maximum=2, step=0.1)
 
-                    with gradio.Row(variant="panel"):
+                    with gradio.Row(equal_height=True, variant="panel"):
                         self.fields.quality = gradio.Slider(label="Shader quality",
                             info="Reduces internal step size for better quality",
                             value=50, minimum=0, maximum=100, step=10)
@@ -256,7 +269,7 @@ class DepthGradio:
                     self.fields.fit_height.click(**self.simple(self.fit_width))
                     self.fields.fit_width.click(**self.simple(self.fit_height))
 
-                with gradio.Row(variant="panel"):
+                with gradio.Row(equal_height=True, variant="panel"):
                     self.fields.time = gradio.Slider(label="Duration (seconds)",
                         info="How long the animation or its loop lasts",
                         minimum=0, maximum=30, step=0.5, value=5)

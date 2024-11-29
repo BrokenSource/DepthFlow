@@ -34,6 +34,7 @@
   <b>
     Links:
     <a href="https://brokensrc.dev/depthflow/">Quick Start</a> •
+    <a href="https://brokensrc.dev/depthflow/api">API</a> •
     <a href="https://brokensrc.dev/get/releases/">Releases</a> •
     <a href="https://brokensrc.dev/get/pypi/">PyPI</a> •
     <a href="https://brokensrc.dev/get/docker/">Cloud/Docker</a> •

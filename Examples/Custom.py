@@ -9,7 +9,7 @@ it via CLI or a code managing it for automation
 import math
 import sys
 
-from DepthFlow import DepthScene
+from DepthFlow.Scene import DepthScene
 from ShaderFlow.Message import ShaderMessage
 
 # Note: DepthScene.method(self) is preferred over super().method(self) for clarity
