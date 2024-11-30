@@ -1,19 +1,15 @@
 import asyncio
-import contextlib
 import itertools
 import json
-import math
 import os
 import tempfile
 import time
-from asyncio import Lock
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from queue import PriorityQueue
 from threading import Thread
 from typing import (
     Annotated,
-    AsyncGenerator,
     Optional,
     Self,
     Union,
@@ -42,13 +38,7 @@ from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler
 from DepthFlow import DEPTHFLOW
-from DepthFlow.Animation import (
-    Actions,
-    AnimationBase,
-    AnimationType,
-    DepthAnimation,
-    Target,
-)
+from DepthFlow.Animation import Actions, DepthAnimation
 from DepthFlow.Scene import DepthScene
 
 # ------------------------------------------------------------------------------------------------ #
@@ -121,9 +111,6 @@ class DepthServer:
     @property
     def url(self) -> str:
         return f"http://{self.host}:{self.port}"
-
-    active: int = 0
-    """Current number of requests being processed"""
 
     concurrency: int = None
     """Maximum number of concurrent rendering workers"""
@@ -289,7 +276,7 @@ class DepthServer:
 
             # Debug print the payload
             from rich.pretty import pprint
-            pprint("JSON: ", config.json())
+            pprint("JSON: " + config.json())
 
             # Actually send the job request
             response = requests.post(
@@ -309,21 +296,5 @@ class DepthServer:
         with ThreadPoolExecutor(max_workers=jobs) as pool:
             for worker in range(jobs):
                 pool.submit(request, worker)
-
-    # -------------------------------------------|
-    # Legacy but useful
-
-    _lock: Lock = Factory(Lock)
-
-    @contextlib.contextmanager
-    async def concurrency_limit(self) -> AsyncGenerator:
-        try:
-            async with self._lock:
-                while (self.active >= self.concurrency):
-                    await asyncio.sleep(0.05)
-                self.active += 1
-            yield None
-        finally:
-            self.active -= 1
 
 # ------------------------------------------------------------------------------------------------ #
