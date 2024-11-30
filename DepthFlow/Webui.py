@@ -51,8 +51,8 @@ class DepthGradio:
     def simple(self, method: Callable, **options: Dict) -> Dict:
         """An ugly hack to avoid manually listing inputs and outputs"""
         show_progress = bool(options.get("outputs"))
-        outputs = options.pop(key="outputs", default=set(iter_dict(self.fields)))
-        inputs = options.pop(key="inputs", default=set(iter_dict(self.fields)))
+        outputs = options.pop("outputs", set(iter_dict(self.fields)))
+        inputs = options.pop("inputs", set(iter_dict(self.fields)))
         return dict(
             fn=method,
             inputs=inputs,
