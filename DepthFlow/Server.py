@@ -126,7 +126,7 @@ class DepthServer:
             help="Target Hostname to run the server on")]=DEFAULT_HOST,
         port: Annotated[int, Option("--port", "-p",
             help="Target Port to run the server on")]=DEFAULT_PORT,
-        concurrency: Annotated[int, Option("--concurrency", "-c",
+        workers: Annotated[int, Option("--workers", "-s",
             help="Maximum number of simultaneous renders")]=3,
         queue: Annotated[int, Option("--queue", "-q",
             help="Maximum number of requests until 503 (back-pressure)")]=20,
@@ -138,7 +138,7 @@ class DepthServer:
             setattr(self, key, value)
 
         # Create the pool and the workers
-        for _ in range(concurrency):
+        for _ in range(workers):
             Thread(target=self.worker, daemon=True).start()
 
         # Proxy async converter
@@ -164,7 +164,7 @@ class DepthServer:
     def worker(self) -> None:
         scene = DepthScene(backend="headless")
 
-        while True:
+        for total in itertools.count(1):
             config = self.render_jobs.get(block=True)
             print("Rendering payload:", config.json())
 
