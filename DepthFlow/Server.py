@@ -112,7 +112,7 @@ class DepthServer:
     def url(self) -> str:
         return f"http://{self.host}:{self.port}"
 
-    concurrency: int = None
+    workers: int = None
     """Maximum number of concurrent rendering workers"""
 
     queue: int = None
