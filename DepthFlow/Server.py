@@ -37,6 +37,7 @@ from Broken import (
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler
+from Broken.Types import MiB
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Animation import Actions, DepthAnimation
 from DepthFlow.Scene import DepthScene
@@ -157,8 +158,8 @@ class DepthServer:
 
     render_jobs: PriorityQueue = Factory(PriorityQueue)
     render_data: DiskCache = Factory(lambda: DiskCache(
+        size_limit=int(float(os.getenv("DEPTHSERVER_CACHE_SIZE_MB", 1))*MiB),
         directory=(DEPTHFLOW.DIRECTORIES.CACHE/"ServerRender"),
-        size_limit=int((2**20)*float(os.getenv("DEPTHSERVER_CACHE_SIZE_MB", 500))),
     ))
 
     def worker(self) -> None:
