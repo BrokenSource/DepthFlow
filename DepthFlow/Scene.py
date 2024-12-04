@@ -66,10 +66,13 @@ class DepthScene(ShaderScene):
 
     def commands(self):
         self.cli.description = DEPTHFLOW_ABOUT
-        self.cli.command(self.load_model, hidden=True)
 
         with self.cli.panel(self.scene_panel):
             self.cli.command(self.input)
+
+        with self.cli.panel("🔧 Preloading"):
+            self.cli.command(self.load_estimator, hidden=True)
+            self.cli.command(self.load_upscaler,  hidden=True)
 
         with self.cli.panel("🌊 Depth estimator"):
             self.cli.command(DepthAnythingV1, post=self.set_estimator, name="any1")
@@ -149,6 +152,8 @@ class DepthScene(ShaderScene):
         return self.upscaler
     def clear_upscaler(self) -> None:
         self.upscaler = NoUpscaler()
+    def load_upscaler(self) -> None:
+        self.upscaler.download()
 
     # Options
     def realesr(self, **options) -> Realesr:
@@ -163,7 +168,7 @@ class DepthScene(ShaderScene):
     def set_estimator(self, estimator: BaseEstimator) -> BaseEstimator:
         self.estimator = estimator
         return self.estimator
-    def load_model(self) -> None:
+    def load_estimator(self) -> None:
         self.estimator.load_model()
 
     # Options
