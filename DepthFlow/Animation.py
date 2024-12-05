@@ -21,7 +21,7 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from Broken import BrokenAttribute, BrokenBaseModel, BrokenTyper, MultiEnum
+from Broken import BrokenAttribute, BrokenModel, BrokenTyper, MultiEnum
 from Broken.Loaders import LoaderString
 from DepthFlow.State import (
     BlurState,
@@ -226,17 +226,19 @@ class Actions(ClassEnum):
         value: Annotated[float, Option("--value", "-v")] = Field(0.0)
 
     class Set(_ConstantBase):
+        """Set a constant value to some component's animation"""
         type: Annotated[Literal["set"], BrokenTyper.exclude()] = "set"
-        cumulative: CumulativeType = Field(False)
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
+            self.cumulative = False
             return self.value
 
     class Add(_ConstantBase):
+        """Add a constant value to some component's animation"""
         type: Annotated[Literal["add"], BrokenTyper.exclude()] = "add"
-        cumulative: CumulativeType = Field(True)
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
+            self.cumulative = True
             return self.value
 
     # ----------------------------------------------|
@@ -551,7 +553,7 @@ AnimationType: TypeAlias = Union[
 
 # ------------------------------------------------------------------------------------------------ #
 
-class DepthAnimation(BrokenBaseModel):
+class DepthAnimation(BrokenModel):
     steps: List[AnimationType] = Field(default_factory=list)
 
     def add(self, animation: AnimationBase) -> AnimationBase:

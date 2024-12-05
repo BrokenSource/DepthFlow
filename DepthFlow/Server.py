@@ -37,12 +37,12 @@ from ShaderFlow.Scene import RenderConfig
 from typer import Option
 
 from Broken import (
-    BrokenBaseModel,
+    BrokenModel,
     BrokenPlatform,
     BrokenTyper,
+    DictUtils,
     Runtime,
     log,
-    selfless,
 )
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
@@ -64,11 +64,11 @@ DEFAULT_PORT: int = 8000
 
 # ------------------------------------------------------------------------------------------------ #
 
-class DepthInput(BrokenBaseModel):
+class DepthInput(BrokenModel):
     image: Union[str, Path, HttpUrl] = DepthScene.DEFAULT_IMAGE
     depth: Optional[Union[str, Path, HttpUrl]] = None
 
-class DepthPayload(BrokenBaseModel):
+class DepthPayload(BrokenModel):
     input:     DepthInput     = Field(default_factory=DepthInput)
     estimator: DepthEstimator = Field(default_factory=DepthAnythingV2)
     animation: DepthAnimation = Field(default_factory=DepthAnimation)
@@ -145,7 +145,7 @@ class DepthServer:
         log.info("Launching DepthFlow Server")
 
         # Update the server's attributes
-        for key, value in selfless(locals()).items():
+        for key, value in DictUtils.selfless(locals()).items():
             setattr(self, key, value)
 
         # Create the pool and the workers

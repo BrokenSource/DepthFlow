@@ -4,11 +4,11 @@ from pydantic import Field
 from ShaderFlow.Variable import ShaderVariable, Uniform
 from typer import Option
 
-from Broken import BrokenBaseModel, BrokenTyper
+from Broken import BrokenModel, BrokenTyper
 
 # ------------------------------------------------------------------------------------------------ #
 
-class VignetteState(BrokenBaseModel):
+class VignetteState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable this vignette (darken corners) effect"""
 
@@ -25,7 +25,7 @@ class VignetteState(BrokenBaseModel):
 
 # ------------------------------------------------------------------------------------------------ #
 
-class LensState(BrokenBaseModel):
+class LensState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable this lens distortion effect"""
 
@@ -46,7 +46,7 @@ class LensState(BrokenBaseModel):
 
 # ------------------------------------------------------------------------------------------------ #
 
-class BlurState(BrokenBaseModel):
+class BlurState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable this depth of field (blur) effect"""
 
@@ -79,7 +79,7 @@ class BlurState(BrokenBaseModel):
 
 # ------------------------------------------------------------------------------------------------ #
 
-class InpaintState(BrokenBaseModel):
+class InpaintState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable the inpainting effect (masks stretchy regions for advanced usage)"""
 
@@ -96,7 +96,7 @@ class InpaintState(BrokenBaseModel):
 
 # ------------------------------------------------------------------------------------------------ #
 
-class ColorState(BrokenBaseModel):
+class ColorState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable color manipulation effects"""
 
@@ -128,7 +128,7 @@ class ColorState(BrokenBaseModel):
 
 # ------------------------------------------------------------------------------------------------ #
 
-class DepthState(BrokenBaseModel):
+class DepthState(BrokenModel):
     """Set effect parameters, animations might override them!"""
 
     height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.18)
