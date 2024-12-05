@@ -21,7 +21,7 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from Broken import BrokenBaseModel, BrokenTyper, MultiEnum
+from Broken import BrokenAttribute, BrokenBaseModel, BrokenTyper, MultiEnum
 from Broken.Loaders import LoaderString
 from DepthFlow.State import (
     BlurState,
@@ -51,31 +51,45 @@ class ClassEnum:
 # ------------------------------------------------------------------------------------------------ #
 
 class Target(MultiEnum):
-    Nothing           = ("nothing")
-    Height            = ("height")
-    Steady            = ("steady")
-    Focus             = ("focus")
-    Zoom              = ("zoom")
-    Isometric         = ("isometric")
-    Dolly             = ("dolly")
-    Invert            = ("invert")
-    Mirror            = ("mirror")
-    CenterX           = ("center_x",           "center-x")
-    CenterY           = ("center_y",           "center-y")
-    OriginX           = ("origin_x",           "origin-x")
-    OriginY           = ("origin_y",           "origin-y")
-    OffsetX           = ("offset_x",           "offset-x")
-    OffsetY           = ("offset_y",           "offset-y")
-    BlurEnable        = ("blur_enable",        "blur-enable")
-    BlurStart         = ("blur_start",         "blur-start")
-    BlurEnd           = ("blur_end",           "blur-end")
-    BlurExponent      = ("blur_exponent",      "blur-exponent")
-    BlurIntensity     = ("blur_intensity",     "blur-intensity")
-    BlurQuality       = ("blur_quality",       "blur-quality")
-    BlurDirections    = ("blur_directions",    "blur-directions")
-    VignetteEnable    = ("vignette_enable",    "vignette-enable")
-    VignetteIntensity = ("vignette_intensity", "vignette-intensity")
-    VignetteDecay     = ("vignette_decay",     "vignette-decay")
+    Nothing           = "nothing"
+    Height            = "height"
+    Steady            = "steady"
+    Focus             = "focus"
+    Zoom              = "zoom"
+    Isometric         = "isometric"
+    Dolly             = "dolly"
+    Invert            = "invert"
+    Mirror            = "mirror"
+    CenterX           = "center-x"
+    CenterY           = "center-y"
+    OriginX           = "origin-x"
+    OriginY           = "origin-y"
+    OffsetX           = "offset-x"
+    OffsetY           = "offset-y"
+    VignetteEnable    = "vignette.enable"
+    VignetteIntensity = "vignette.intensity"
+    VignetteDecay     = "vignette.decay"
+    LensEnable        = "lens.enable"
+    LensIntensity     = "lens.intensity"
+    LensDecay         = "lens.decay"
+    LensQuality       = "lens.quality"
+    BlurEnable        = "blur.enable"
+    BlurStart         = "blur.start"
+    BlurEnd           = "blur.end"
+    BlurExponent      = "blur.exponent"
+    BlurIntensity     = "blur.intensity"
+    BlurQuality       = "blur.quality"
+    BlurDirections    = "blur.directions"
+    InpaintEnable     = "inpaint.enable"
+    InpaintBlack      = "inpaint.black"
+    InpaintLimit      = "inpaint.limit"
+    ColorEnable       = "colors.enable"
+    ColorSaturation   = "colors.saturation"
+    ColorContrast     = "colors.contrast"
+    ColorBrightness   = "colors.brightness"
+    ColorGamma        = "colors.gamma"
+    ColorGrayscale    = "colors.grayscale"
+    ColorSepia        = "colors.sepia"
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -141,15 +155,17 @@ class ComponentBase(AnimationBase):
     target:     TargetType     = Field(Target.Nothing)
     cumulative: CumulativeType = Field(False)
 
-    @property
-    def current(self) -> Optional[Any]:
-        return getattr(self, self.target.value, None)
+    def current(self, scene: DepthScene) -> Optional[Any]:
+        return BrokenAttribute.get(
+            root=scene.state,
+            key=self.target.value
+        )
 
     def apply(self, scene: DepthScene) -> None:
         if (self.target != Target.Nothing):
-            setattr(scene.state, self.target.value, sum((
+            BrokenAttribute.set(scene.state, self.target.value, sum((
                 (self.compute(scene, *self.get_time(scene))),
-                (self.cumulative * (self.current or 0)),
+                (self.cumulative * (self.current(scene) or 0)),
             )))
 
     @abstractmethod
@@ -187,7 +203,7 @@ class Actions(ClassEnum):
     class Custom(AnimationBase):
         type: Annotated[Literal["custom"], BrokenTyper.exclude()] = "custom"
 
-        code: Annotated[str, Option("-c", "--code",
+        code: Annotated[str, Option("--code", "-c",
             help=f"{hint} Custom code to run for the animation [yellow](be sure to trust it)[/]")] = \
             Field("")
 
@@ -207,7 +223,7 @@ class Actions(ClassEnum):
     # Constant components
 
     class _ConstantBase(ComponentBase):
-        value: Annotated[float, Option("-v", "--value")] = Field(0.0)
+        value: Annotated[float, Option("--value", "-v")] = Field(0.0)
 
     class Set(_ConstantBase):
         type: Annotated[Literal["set"], BrokenTyper.exclude()] = "set"
@@ -259,15 +275,19 @@ class Actions(ClassEnum):
     # Wave functions
 
     class _WaveBase(ReversibleComponentBase):
-        amplitude: Annotated[float, Option("-a", "--amplitude",
+        amplitude: Annotated[float, Option("--amplitude", "-a",
             help=f"{hint} Amplitude of the wave")] = \
             Field(1.0)
 
-        cycles: Annotated[float, Option("-c", "--cycles",
+        bias: Annotated[float, Option("--bias", "-b",
+            help=f"{hint} Bias of the wave")] = \
+            Field(0.0)
+
+        cycles: Annotated[float, Option("--cycles", "-c",
             help=f"{hint} Number of cycles of the wave")] = \
             Field(1.0)
 
-        phase: Annotated[float, Option("-p", "--phase",
+        phase: Annotated[float, Option("--phase", "-p",
             help=f"{hint} Phase shift of the wave")] = \
             Field(0.0)
 
@@ -276,14 +296,14 @@ class Actions(ClassEnum):
         type: Annotated[Literal["sine"], BrokenTyper.exclude()] = "sine"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            return self.amplitude * math.sin((cycle * self.cycles) + (self.phase * math.tau))
+            return self.amplitude * math.sin((cycle * self.cycles) + (self.phase * math.tau)) + self.bias
 
     class Cosine(_WaveBase):
         """Add a Cosine wave to some component's animation [green](See 'cosine --help' for options)[/]"""
         type: Annotated[Literal["cosine"], BrokenTyper.exclude()] = "cosine"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            return self.amplitude * math.cos((cycle * self.cycles) + (self.phase * math.tau))
+            return self.amplitude * math.cos((cycle * self.cycles) + (self.phase * math.tau)) + self.bias
 
     class Triangle(_WaveBase):
         """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[/]"""
@@ -291,7 +311,7 @@ class Actions(ClassEnum):
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             tau = (tau * self.cycles + self.phase + 0.25) % 1
-            return self.amplitude * (1 - 4 * abs(tau - 0.5))
+            return self.amplitude * (1 - 4 * abs(tau - 0.5)) + self.bias
 
     # ----------------------------------------------|
     # Post processing

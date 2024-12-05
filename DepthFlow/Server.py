@@ -1,3 +1,13 @@
+# ------------------------------------------------------------------------------------------------ #
+#
+# (c) Tremeschin, all rights reserved.
+#
+# The DepthFlow API is made available for self-hosting, strictly for personal use. You're welcome to
+# use it for developing plugins, integrations, or tools that would connect to an official service in
+# the future (no barriers to get started). However, sharing, redistributing, selling or offering the
+# service to others is not allowed without the author's explicit consent and permission.
+#
+# ------------------------------------------------------------------------------------------------ #
 import asyncio
 import itertools
 import json
@@ -127,7 +137,7 @@ class DepthServer:
             help="Target Hostname to run the server on")]=DEFAULT_HOST,
         port: Annotated[int, Option("--port", "-p",
             help="Target Port to run the server on")]=DEFAULT_PORT,
-        workers: Annotated[int, Option("--workers", "-s",
+        workers: Annotated[int, Option("--workers", "-w",
             help="Maximum number of simultaneous renders")]=3,
         queue: Annotated[int, Option("--queue", "-q",
             help="Maximum number of requests until 503 (back-pressure)")]=20,
