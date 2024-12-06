@@ -131,8 +131,3 @@ Check out amazing community work built on top of DepthFlow:
   <h3>✨ Check out my <a href="https://brokensrc.dev/get/"><b>Awesome Website</b></a> instead of a boring Readme ✨</h3>
   <h5>Installation Guides, Usage, Tips, Code Reference and More!</h5>
 </div>
-
-<!-- License -->
-<br><br><div align="center"><sup>
-This project is dual-licensed under an [Open Source](license-oss.txt) (AGPLv3) or [Commercial](license-com.txt) (MIT) license. Refer to the [Website](https://brokensrc.dev/about/license/) for information.
-</sup></div>
