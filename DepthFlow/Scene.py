@@ -1,7 +1,6 @@
-import functools
 import os
 from pathlib import Path
-from typing import Annotated, Generator, Iterable, List, Optional, Set, Tuple, Union
+from typing import Annotated, Generator, Iterable, List, Optional, Set, Tuple
 
 import numpy
 import validators

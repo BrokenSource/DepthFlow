@@ -414,10 +414,10 @@ class Actions(ClassEnum):
 
     class Zoom(PresetBase):
         """Add a Zoom motion to the camera"""
-        type:    Annotated[Literal["zoom"], BrokenTyper.exclude()] = "zoom"
-        smooth:  SmoothType  = Field(True)
-        loop:    LoopType    = Field(True)
-        phase:   PhaseType   = Field(0.0)
+        type:   Annotated[Literal["zoom"], BrokenTyper.exclude()] = "zoom"
+        smooth: SmoothType = Field(True)
+        loop:   LoopType   = Field(True)
+        phase:  PhaseType  = Field(0.0)
 
         def apply(self, scene: DepthScene) -> None:
             if self.loop:
@@ -465,13 +465,6 @@ class Actions(ClassEnum):
                 reverse   = self.reverse,
             ).apply(scene)
 
-            (Actions.Sine if self.smooth else Actions.Triangle)(
-                target    = Target.Isometric,
-                amplitude = (self.intensity*self.amplitude[2]*0.2),
-                phase     = self.phase[2],
-                reverse   = self.reverse,
-            ).apply(scene)
-
     class Dolly(PresetBase):
         """Add a Dolly zoom to the camera"""
         type:    Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
@@ -491,17 +484,17 @@ class Actions(ClassEnum):
 
             (Actions.Sine if self.smooth else Actions.Triangle)(
                 target    = Target.Isometric,
-                amplitude = self.intensity,
+                amplitude = 2*self.intensity,
                 phase     = self.phase + phase,
                 cycles    = cycles,
-                bias      = 1,
                 reverse   = self.reverse,
+                bias      = 1,
             ).apply(scene)
 
     class Orbital(PresetBase):
         """Orbit the camera around a fixed point"""
         type:  Annotated[Literal["orbital"], BrokenTyper.exclude()] = "orbital"
-        depth: DepthType = Field(0.5)
+        depth: DepthType = Field(0.0)
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.steady = self.depth
@@ -509,14 +502,14 @@ class Actions(ClassEnum):
 
             Actions.Cosine(
                 target    = Target.Isometric,
-                amplitude = self.intensity/2,
-                bias      = self.intensity/2,
+                amplitude = self.intensity,
+                bias      = self.intensity,
                 reverse   = self.reverse,
             ).apply(scene)
 
             Actions.Sine(
                 target    = Target.OffsetX,
-                amplitude = self.intensity/2,
+                amplitude = self.intensity,
                 reverse   = self.reverse,
             ).apply(scene)
 

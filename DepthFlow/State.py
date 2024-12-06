@@ -131,7 +131,7 @@ class ColorState(BrokenModel):
 class DepthState(BrokenModel):
     """Set effect parameters, animations might override them!"""
 
-    height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.18)
+    height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.10)
     """Depthmap's peak value, the parallax intensity"""
 
     steady: Annotated[float, Option("--steady", "-s", min=0, max=1)] = Field(0.0)

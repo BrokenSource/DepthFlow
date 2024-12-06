@@ -44,7 +44,7 @@ DepthFlow DepthMake(
 
     // Inject parallax options on the camera
     camera.position.xy += depth.offset;
-    camera.isometric   += depth.isometric;
+    camera.isometric   += mix(0.5, 1.0, depth.isometric);
     camera.dolly       += depth.dolly;
     camera.zoom        += (depth.zoom - 1.0) + ((1/depth.away) - 1.0);
     camera.plane_point  = vec3(0.0, 0.0, depth.away);
