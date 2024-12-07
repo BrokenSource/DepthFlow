@@ -14,11 +14,13 @@ import json
 import os
 import tempfile
 import time
+from base64 import b64decode, b64encode
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from queue import PriorityQueue
 from typing import (
     Annotated,
+    Dict,
     Optional,
     Self,
     Union,
@@ -186,9 +188,22 @@ class DepthServer:
         # Use features of local server
         self.launch(block=False)
 
+        # Convert video to base64 for transport
+        async def wrapper(config: dict) -> Dict:
+            response = (await self.render(config))
+
+            if ("video" in response.media_type) and (response.status_code == 200):
+                response.body = b64encode(response.body).decode("utf-8")
+
+            return dict(
+                status_code=response.status_code,
+                media_type=response.media_type,
+                content=response.body,
+            )
+
         # Call the render route directly
         runpod.serverless.start(dict(
-            handler=self.render,
+            handler=wrapper
         ))
 
     # -------------------------------------------|
@@ -224,7 +239,7 @@ class DepthServer:
                     suffix=("."+config.render.format),
                     delete=False,
                 ) as temp:
-                    video = scene.main(
+                    video: bytes = scene.main(
                         **config.render.dict(),
                         output=Path(temp.name),
                     )[0].read_bytes()
@@ -253,12 +268,12 @@ class DepthServer:
 
             # Video is already cached or finished
             if (video := self.render_data.get(config.hash)):
-                if isinstance(video, Exception):
+                if isinstance((error := video), Exception):
                     self.render_data.pop(config.hash)
                     return Response(
                         status_code=500,
                         media_type="text/plain",
-                        content=str(video),
+                        content=str(error),
                     )
 
                 return Response(
@@ -298,7 +313,7 @@ class DepthServer:
                 input=DepthInput(
                     image="https://w.wallhaven.cc/full/ex/wallhaven-ex1yxk.jpg"
                 ),
-                # ffmpeg=BrokenFFmpeg().h264_nvenc(),
+                ffmpeg=BrokenFFmpeg().h264_nvenc(),
                 render=RenderConfig(
                     ssaa=1.0,
                     width=1920,
@@ -316,7 +331,7 @@ class DepthServer:
 
             # Debug print the payload
             from rich.pretty import pprint
-            pprint("JSON: " + config.json())
+            pprint(config.dict())
 
             # Actually send the job request
             response = requests.post(
