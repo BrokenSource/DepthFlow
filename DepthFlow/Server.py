@@ -190,7 +190,7 @@ class DepthServer:
 
         # Convert video to base64 for transport
         async def wrapper(config: dict) -> Dict:
-            response = (await self.render(DepthPayload(**config)))
+            response = (await self.render(DepthPayload(**config["input"])))
 
             if ("video" in response.media_type) and (response.status_code == 200):
                 response.body = b64encode(response.body).decode("utf-8")
