@@ -190,7 +190,7 @@ class DepthServer:
 
         # Convert video to base64 for transport
         async def wrapper(config: dict) -> Dict:
-            response = (await self.render(config))
+            response = (await self.render(DepthPayload(**config)))
 
             if ("video" in response.media_type) and (response.status_code == 200):
                 response.body = b64encode(response.body).decode("utf-8")
@@ -218,7 +218,7 @@ class DepthServer:
     def worker(self) -> None:
         scene = DepthScene(backend="headless")
 
-        for total in itertools.count(1):
+        for endurance in itertools.count(1):
             config = self.render_jobs.get(block=True)
             print("Rendering payload:", config.json())
 
