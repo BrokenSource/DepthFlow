@@ -49,7 +49,7 @@ from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler
 from Broken.Types import MiB
-from DepthFlow import DEPTHFLOW
+from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Animation import Actions, DepthAnimation
 from DepthFlow.Scene import DepthScene
 
@@ -99,9 +99,15 @@ class DepthServer:
     ))
 
     def __attrs_post_init__(self):
-        self.cli.command(self.launch)
-        self.cli.command(self.runpod)
-        self.cli.command(self.test)
+        self.cli.description = DEPTHFLOW_ABOUT
+
+        with self.cli.panel("📦 Server endpoints"):
+            self.cli.command(self.launch)
+            self.cli.command(self.runpod)
+
+        with self.cli.panel("🔥 Testing"):
+            self.cli.command(self.test)
+
         self.app.post("/render")(self.render)
 
     @property
@@ -146,6 +152,7 @@ class DepthServer:
         block: Annotated[bool, Option("--block", "-b", " /--free", " /-f",
             help="Block the current thread until the server stops")]=True,
     ) -> None:
+        """Serve an instance of the DepthFlow API endpoint"""
         log.info("Launching DepthFlow Server")
 
         # Update the server's attributes
@@ -174,9 +181,13 @@ class DepthServer:
             time.sleep(1)
 
     def runpod(self) -> None:
+        """Run a serverless instance at runpod.io"""
         import runpod
+
+        # Use features of local server
         self.launch(block=False)
 
+        # Call the render route directly
         runpod.serverless.start(dict(
             handler=self.render,
         ))
