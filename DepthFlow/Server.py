@@ -19,7 +19,6 @@ from pathlib import Path
 from queue import PriorityQueue
 from typing import (
     Annotated,
-    Dict,
     Optional,
     Self,
     Union,
@@ -246,12 +245,7 @@ class DepthServer:
             )
 
     async def render(self, config: DepthPayload) -> Response:
-
-        # Ensure 'config' is a DepthPayload instance
-        if (not isinstance(config, DepthPayload)):
-            config = DepthPayload(**config)
-
-        # Metrics and calculate presistent hash
+        config = DepthPayload.load(config)
         start: float = time.perf_counter()
         config.hash = hash(config)
 
