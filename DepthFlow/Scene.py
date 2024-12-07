@@ -54,9 +54,11 @@ class DepthScene(ShaderScene):
 
     # DepthFlow objects
     animation: DepthAnimation = Factory(DepthAnimation)
-    estimator: BaseEstimator = Factory(DepthAnythingV2)
-    upscaler: BrokenUpscaler = Factory(NoUpscaler)
-    state: DepthState = Factory(DepthState)
+    estimator: BaseEstimator  = Factory(DepthAnythingV2)
+    upscaler:  BrokenUpscaler = Factory(NoUpscaler)
+    state:     DepthState     = Factory(DepthState)
+
+    # Internal control
     _image: Iterable[LoadableImage] = DEFAULT_IMAGE
     _depth: Iterable[Iterable] = None
 

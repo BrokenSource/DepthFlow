@@ -17,9 +17,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from queue import PriorityQueue
-from threading import Thread
 from typing import (
     Annotated,
+    Dict,
     Optional,
     Self,
     Union,
@@ -39,6 +39,7 @@ from typer import Option
 from Broken import (
     BrokenModel,
     BrokenPlatform,
+    BrokenThread,
     BrokenTyper,
     DictUtils,
     Runtime,
@@ -99,6 +100,7 @@ class DepthServer:
 
     def __attrs_post_init__(self):
         self.cli.command(self.launch)
+        self.cli.command(self.runpod)
         self.cli.command(self.test)
         self.app.post("/render")(self.render)
 
@@ -141,6 +143,8 @@ class DepthServer:
             help="Maximum number of simultaneous renders")]=3,
         queue: Annotated[int, Option("--queue", "-q",
             help="Maximum number of requests until 503 (back-pressure)")]=20,
+        block: Annotated[bool, Option("--block", "-b", " /--free", " /-f",
+            help="Block the current thread until the server stops")]=True,
     ) -> None:
         log.info("Launching DepthFlow Server")
 
@@ -150,7 +154,7 @@ class DepthServer:
 
         # Create the pool and the workers
         for _ in range(workers):
-            Thread(target=self.worker, daemon=True).start()
+            BrokenThread.new(self.worker)
 
         # Proxy async converter
         async def serve():
@@ -161,14 +165,28 @@ class DepthServer:
             )).serve()
 
         # Start the server
-        asyncio.run(serve())
+        BrokenThread.new(asyncio.run, serve())
+
+        # Optionally hold main thread
+        for _ in itertools.count(1):
+            if (not block):
+                break
+            time.sleep(1)
+
+    def runpod(self) -> None:
+        import runpod
+        self.launch(block=False)
+
+        runpod.serverless.start(dict(
+            handler=self.render,
+        ))
 
     # -------------------------------------------|
     # Routes
 
     render_jobs: PriorityQueue = Factory(PriorityQueue)
     render_data: DiskCache = Factory(lambda: DiskCache(
-        size_limit=int(float(os.getenv("DEPTHSERVER_CACHE_SIZE_MB", 1))*MiB),
+        size_limit=int(float(os.getenv("DEPTHSERVER_CACHE_SIZE_MB", 500))*MiB),
         directory=(DEPTHFLOW.DIRECTORIES.CACHE/"ServerRender"),
     ))
 
@@ -216,7 +234,13 @@ class DepthServer:
                 value=video,
             )
 
-    async def render(self, config: DepthPayload) -> dict:
+    async def render(self, config: DepthPayload) -> Response:
+
+        # Ensure 'config' is a DepthPayload instance
+        if (not isinstance(config, DepthPayload)):
+            config = DepthPayload(**config)
+
+        # Metrics and calculate presistent hash
         start: float = time.perf_counter()
         config.hash = hash(config)
 
@@ -224,16 +248,7 @@ class DepthServer:
 
             # Video is already cached or finished
             if (video := self.render_data.get(config.hash)):
-                if not isinstance(video, Exception):
-                    return Response(
-                        media_type=f"video/{config.render.format}",
-                        content=video,
-                        headers=dict(
-                            took=f"{time.perf_counter() - start:.2f}",
-                            cached=str(index == 1).lower(),
-                        ),
-                    )
-                else:
+                if isinstance(video, Exception):
                     self.render_data.pop(config.hash)
                     return Response(
                         status_code=500,
@@ -241,8 +256,17 @@ class DepthServer:
                         content=str(video),
                     )
 
+                return Response(
+                    media_type=f"video/{config.render.format}",
+                    content=video,
+                    headers=dict(
+                        took=f"{time.perf_counter() - start:.2f}",
+                        cached=str(index == 1).lower(),
+                    ),
+                )
+
             # Queue the job if not already in progress
-            if (config.hash not in self.render_data):
+            elif (config.hash not in self.render_data):
                 self.render_data.set(config.hash, None, expire=30)
                 self.render_jobs.put(config)
 
@@ -295,12 +319,11 @@ class DepthServer:
                 json=config.dict()
             )
 
-            headers = DotMap(response.headers)
-
             # Save the video to disk
             Path(path := f"/tmp/video-{client}.mp4") \
                 .write_bytes(response.content)
 
+            headers = DotMap(response.headers)
             log.success(f"Saved video to {path}, cached: {headers.cached}")
 
         # Stress test parallel requests
