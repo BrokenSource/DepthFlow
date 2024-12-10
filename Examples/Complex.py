@@ -21,17 +21,11 @@ from typing import List, Self, Type
 from attr import Factory, define
 from DepthFlow.Animation import Actions, Target
 from DepthFlow.Scene import DepthScene
-from DepthFlow.State import DepthState
 from dotmap import DotMap
 
+from Broken import combinations
 from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
 from Broken.Externals.Upscaler import NoUpscaler, UpscalerBase, Upscayl
-
-
-def combinations(**options):
-    """Returns a dictionary of key='this' of itertools.product"""
-    for combination in itertools.product(*options.values()):
-        yield DotMap(zip(options.keys(), combination))
 
 
 # Note: You can also use your own subclassing like Custom.py!
