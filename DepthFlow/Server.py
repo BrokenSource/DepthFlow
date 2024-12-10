@@ -93,6 +93,23 @@ class DepthPayload(BrokenModel):
 
 # ------------------------------------------------------------------------------------------------ #
 
+HostType = Annotated[str, Option("--host", "-h",
+    help="Target Hostname to run the server on")]
+
+PortType = Annotated[int, Option("--port", "-p",
+    help="Target Port to run the server on")]
+
+WorkersType = Annotated[int, Option("--workers", "-w",
+    help="Maximum number of simultaneous renders")]
+
+QueueType = Annotated[int, Option("--queue", "-q",
+    help="Maximum number of requests until 503 (back-pressure)")]
+
+BlockType = Annotated[bool, Option("--block", "-b", " /--free", " /-f",
+    help="Block the current thread until the server stops")]
+
+# ------------------------------------------------------------------------------------------------ #
+
 @define(slots=False)
 class DepthServer:
     cli: BrokenTyper = Factory(lambda: BrokenTyper(chain=True))
@@ -146,16 +163,11 @@ class DepthServer:
     # Routes
 
     def launch(self,
-        host: Annotated[str, Option("--host", "-h",
-            help="Target Hostname to run the server on")]=DEFAULT_HOST,
-        port: Annotated[int, Option("--port", "-p",
-            help="Target Port to run the server on")]=DEFAULT_PORT,
-        workers: Annotated[int, Option("--workers", "-w",
-            help="Maximum number of simultaneous renders")]=3,
-        queue: Annotated[int, Option("--queue", "-q",
-            help="Maximum number of requests until 503 (back-pressure)")]=20,
-        block: Annotated[bool, Option("--block", "-b", " /--free", " /-f",
-            help="Block the current thread until the server stops")]=True,
+        host: HostType=DEFAULT_HOST,
+        port: PortType=DEFAULT_PORT,
+        workers: WorkersType=3,
+        queue: QueueType=20,
+        block: BlockType=True,
     ) -> None:
         """Serve an instance of the DepthFlow API endpoint"""
         log.info("Launching DepthFlow Server")
@@ -185,12 +197,14 @@ class DepthServer:
                 break
             time.sleep(1)
 
-    def runpod(self) -> None:
+    def runpod(self,
+        workers: WorkersType=3,
+        queue: QueueType=20,
+    ) -> None:
         """Run a serverless instance at runpod.io"""
-        import runpod
 
-        # Use features of local server
-        self.launch(block=False)
+        # Use the cool features of the local server
+        DepthServer.launch(**locals(), block=False)
 
         # Convert video to base64 for transport
         async def wrapper(config: dict) -> Dict:
@@ -204,6 +218,8 @@ class DepthServer:
                 media_type=response.media_type,
                 content=response.body,
             )
+
+        import runpod
 
         # Call the render route directly
         runpod.serverless.start(dict(
