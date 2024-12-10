@@ -1,14 +1,13 @@
 # ------------------------------------------------------------------------------------------------ #
-#
 # (c) Tremeschin, all rights reserved.
 #
 # The DepthFlow API is made available for self-hosting, strictly for personal use. You're welcome to
 # use it for developing plugins, integrations, or tools that would connect to an official service in
 # the future (no barriers to get started). However, sharing, redistributing, selling or offering the
 # service to others is not allowed without the author's explicit consent and permission.
-#
 # ------------------------------------------------------------------------------------------------ #
 import asyncio
+import contextlib
 import itertools
 import json
 import os
@@ -33,7 +32,7 @@ from diskcache import Cache as DiskCache
 from dotmap import DotMap
 from fastapi import FastAPI
 from fastapi.responses import Response
-from pydantic import Field, HttpUrl
+from pydantic import Field, FilePath, HttpUrl
 from ShaderFlow.Scene import RenderConfig
 from typer import Option
 
@@ -49,6 +48,7 @@ from Broken import (
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.FFmpeg import BrokenFFmpeg
 from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler
+from Broken.Loaders import LoaderImage
 from Broken.Types import MiB
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Animation import Actions, DepthAnimation
@@ -66,9 +66,11 @@ DEFAULT_PORT: int = 8000
 
 # ------------------------------------------------------------------------------------------------ #
 
+PydanticImage = Union[FilePath, HttpUrl]
+
 class DepthInput(BrokenModel):
-    image: Union[str, Path, HttpUrl] = DepthScene.DEFAULT_IMAGE
-    depth: Optional[Union[str, Path, HttpUrl]] = None
+    image: PydanticImage = DepthScene.DEFAULT_IMAGE
+    depth: Optional[PydanticImage] = None
 
 class DepthPayload(BrokenModel):
     input:     DepthInput     = Field(default_factory=DepthInput)
@@ -109,6 +111,8 @@ class DepthServer:
         with self.cli.panel("🔥 Testing"):
             self.cli.command(self.test)
 
+        self.app.post("/estimate")(self.estimate)
+        self.app.post("/upscale")(self.upscale)
         self.app.post("/render")(self.render)
 
     @property
@@ -249,7 +253,8 @@ class DepthServer:
                 video: Exception = error
 
             finally:
-                os.unlink(temp.name)
+                with contextlib.suppress(FileNotFoundError):
+                    os.unlink(temp.name)
 
             # Return the video to the main thread
             self.render_jobs.task_done()
@@ -258,6 +263,24 @@ class DepthServer:
                 key=config.hash,
                 value=video,
             )
+
+    async def estimate(self,
+        image: PydanticImage,
+        estimator: DepthEstimator=DepthAnythingV2(),
+    ) -> Response:
+        return Response(
+            media_type="image/png",
+            content=estimator.estimate(LoaderImage(image)).tobytes()
+        )
+
+    async def upscale(self,
+        image: PydanticImage,
+        upscaler: BrokenUpscaler=NoUpscaler(),
+    ) -> Response:
+        return Response(
+            media_type="image/png",
+            content=upscaler.upscale(LoaderImage(image)).tobytes()
+        )
 
     async def render(self, config: DepthPayload) -> Response:
         config = DepthPayload.load(config)
