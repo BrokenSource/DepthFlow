@@ -66,7 +66,7 @@ DEFAULT_PORT: int = 8000
 
 # ------------------------------------------------------------------------------------------------ #
 
-PydanticImage = Union[FilePath, HttpUrl]
+PydanticImage = Union[str, Path, FilePath, HttpUrl]
 
 class DepthInput(BrokenModel):
     image: PydanticImage = DepthScene.DEFAULT_IMAGE
@@ -336,13 +336,13 @@ class DepthServer:
                 input=DepthInput(
                     image="https://w.wallhaven.cc/full/ex/wallhaven-ex1yxk.jpg"
                 ),
-                ffmpeg=BrokenFFmpeg().h264_nvenc(),
+                # ffmpeg=BrokenFFmpeg().h264_nvenc(),
                 render=RenderConfig(
                     ssaa=1.0,
                     width=1920,
                     fps=60,
                     loop=1,
-                    time=5,
+                    time=2 + (client/5),
                 ),
                 animation=DepthAnimation(
                     steps=[
@@ -354,7 +354,7 @@ class DepthServer:
 
             # Debug print the payload
             from rich.pretty import pprint
-            pprint(config.dict())
+            pprint(f"POST: {config.json()}")
 
             # Actually send the job request
             response = requests.post(
