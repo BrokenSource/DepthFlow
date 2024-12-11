@@ -17,13 +17,7 @@ from base64 import b64decode, b64encode
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from queue import PriorityQueue
-from typing import (
-    Annotated,
-    Dict,
-    Optional,
-    Self,
-    Union,
-)
+from typing import Annotated, Optional, Self, Union
 
 import requests
 import uvicorn
@@ -207,7 +201,7 @@ class DepthServer:
         DepthServer.launch(**locals(), block=False)
 
         # Convert video to base64 for transport
-        async def wrapper(config: dict) -> Dict:
+        async def wrapper(config: dict) -> dict:
             response = (await self.render(DepthPayload(**config["input"])))
 
             if ("video" in response.media_type) and (response.status_code == 200):

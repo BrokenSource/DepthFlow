@@ -16,7 +16,7 @@ import time
 from abc import abstractmethod
 from pathlib import Path
 from threading import Thread
-from typing import List, Self, Type
+from typing import Self
 
 from attr import Factory, define
 from DepthFlow.Animation import Actions, Target
@@ -45,13 +45,13 @@ class DepthManager:
     upscaler: UpscalerBase = Factory(NoUpscaler)
     """The upscaler to use for all threads"""
 
-    threads: List[Thread] = Factory(list)
+    threads: list[Thread] = Factory(list)
     """List of running threads"""
 
     concurrency: int = int(os.getenv("WORKERS", 4))
     """Maximum concurrent render workers (high memory usage)"""
 
-    outputs: List[Path] = Factory(list)
+    outputs: list[Path] = Factory(list)
     """List of all rendered videos on this session"""
 
     def __attrs_post_init__(self):
@@ -69,7 +69,7 @@ class DepthManager:
 
     # # User methods
 
-    def parallax(self, scene: Type[DepthScene], image: Path) -> None:
+    def parallax(self, scene: type[DepthScene], image: Path) -> None:
         self.estimator.estimate(image)
 
         # Limit the maximum concurrent threads, nice pattern 😉
@@ -117,7 +117,7 @@ class DepthManager:
 
     # # Internal methods
 
-    def _worker(self, scene: Type[DepthScene], image: Path):
+    def _worker(self, scene: type[DepthScene], image: Path):
         # Note: Share an estimator between threads to avoid memory leaks
         scene = scene(backend="headless")
         scene.estimator = self.estimator

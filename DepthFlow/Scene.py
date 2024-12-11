@@ -1,6 +1,7 @@
 import os
+from collections.abc import Generator, Iterable
 from pathlib import Path
-from typing import Annotated, Generator, Iterable, List, Optional, Set, Tuple
+from typing import Annotated, Optional
 
 import numpy
 import validators
@@ -104,10 +105,10 @@ class DepthScene(ShaderScene):
                     self.cli.command(post, post=self.animation.add)
 
     def input(self,
-        image: Annotated[List[str], Option("--image", "-i",
+        image: Annotated[list[str], Option("--image", "-i",
             help="[bold green](🟢 Basic)[/] Background Image [green](Path, URL, NumPy, PIL)[/]"
         )],
-        depth: Annotated[List[str], Option("--depth", "-d",
+        depth: Annotated[list[str], Option("--depth", "-d",
             help="[bold green](🟢 Basic)[/] Depthmap of the Image [medium_purple3](None to estimate)[/]"
         )]=None,
     ) -> None:
@@ -274,7 +275,7 @@ class DepthScene(ShaderScene):
             return None
 
         # Recurse on multiple inputs
-        if isinstance(item, (List, Tuple, Set)):
+        if isinstance(item, (list, tuple, set)):
             for part in item:
                 yield from self._itr_batch_input(part)
 

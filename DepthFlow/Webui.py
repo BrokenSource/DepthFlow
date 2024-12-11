@@ -1,8 +1,9 @@
 import os
 import uuid
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor as ThreadPool
 from pathlib import Path
-from typing import Annotated, Callable, Dict, Tuple
+from typing import Annotated
 
 import gradio
 from attr import Factory
@@ -48,7 +49,7 @@ class DepthGradio:
         "Waifu2x": Waifu2x,
     }
 
-    def simple(self, method: Callable, **options: Dict) -> Dict:
+    def simple(self, method: Callable, **options: dict) -> dict:
         """An ugly hack to avoid manually listing inputs and outputs"""
         show_progress = bool(options.get("outputs"))
         outputs = options.pop("outputs", set(DictUtils.rvalues(self.fields)))
@@ -61,13 +62,13 @@ class DepthGradio:
             **options,
         )
 
-    def _estimator(self, user: Dict) -> BaseEstimator:
+    def _estimator(self, user: dict) -> BaseEstimator:
         return self.estimators[user[self.fields.estimator]]()
 
-    def _upscaler(self, user: Dict) -> UpscalerBase:
+    def _upscaler(self, user: dict) -> UpscalerBase:
         return self.upscalers[user[self.fields.upscaler]]()
 
-    def estimate(self, user: Dict):
+    def estimate(self, user: dict):
         if ((image := user[self.fields.image]) is None):
             return None
         yield {
@@ -76,12 +77,12 @@ class DepthGradio:
             self.fields.height: image.size[1]
         }
 
-    def upscale(self, user: Dict):
+    def upscale(self, user: dict):
         if ((image := user[self.fields.image]) is None):
             return gradio.Warning("The input image is empty")
         yield {self.fields.image: self._upscaler(user).upscale(image)}
 
-    def _fit_resolution(self, user: Dict, target: Tuple[int, int]) -> Tuple[int, int]:
+    def _fit_resolution(self, user: dict, target: tuple[int, int]) -> tuple[int, int]:
         if (user[self.fields.image] is None):
             raise GeneratorExit()
         width, height = user[self.fields.image].size
@@ -90,13 +91,13 @@ class DepthGradio:
             ar=(width/height), multiple=1,
         )
 
-    def fit_width(self, user: Dict):
+    def fit_width(self, user: dict):
         yield {self.fields.height: self._fit_resolution(user, (user[self.fields.width], None))[1]}
 
-    def fit_height(self, user: Dict):
+    def fit_height(self, user: dict):
         yield {self.fields.width: self._fit_resolution(user, (None, user[self.fields.height]))[0]}
 
-    def render(self, user: Dict):
+    def render(self, user: dict):
         if (user[self.fields.image] is None):
             return gradio.Warning("The input image is empty")
         if (user[self.fields.depth] is None):
@@ -238,7 +239,7 @@ class DepthGradio:
                                                 value=field.default,
                                                 info=field.description,
                                             )
-                                        elif (isinstance(field.annotation, Tuple)):
+                                        elif (isinstance(field.annotation, tuple)):
                                             print(attr, field, field.annotation)
 
                         with gradio.Tab("Presets"):

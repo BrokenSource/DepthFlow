@@ -164,12 +164,12 @@ class DepthState(BrokenModel):
     """Vertical parallax displacement, change this over time for the 3D effect"""
 
     @property
-    def offset(self) -> Tuple[float, float]:
+    def offset(self) -> tuple[float, float]:
         """Parallax displacement vector, change this over time for the 3D effect"""
         return (self.offset_x, self.offset_y)
 
     @offset.setter
-    def offset(self, value: Tuple[float, float]):
+    def offset(self, value: tuple[float, float]):
         self.offset_x, self.offset_y = value
 
     # # Center
@@ -181,12 +181,12 @@ class DepthState(BrokenModel):
     """Vertical 'true' offset of the camera, the camera *is* above this point"""
 
     @property
-    def center(self) -> Tuple[float, float]:
+    def center(self) -> tuple[float, float]:
         """'True' offset vector of the camera, the camera *is* above this point"""
         return (self.center_x, self.center_y)
 
     @center.setter
-    def center(self, value: Tuple[float, float]):
+    def center(self, value: tuple[float, float]):
         self.center_x, self.center_y = value
 
     # # Origin
@@ -198,12 +198,12 @@ class DepthState(BrokenModel):
     """Vertical focal point of the offsets, *as if* the camera was above this point"""
 
     @property
-    def origin(self) -> Tuple[float, float]:
+    def origin(self) -> tuple[float, float]:
         """Focal point vector of the offsets, *as if* the camera was above this point"""
         return (self.origin_x, self.origin_y)
 
     @origin.setter
-    def origin(self, value: Tuple[float, float]):
+    def origin(self, value: tuple[float, float]):
         self.origin_x, self.origin_y = value
 
     # ---------------------------------------------------------------------------------------------|

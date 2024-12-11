@@ -4,16 +4,13 @@ import copy
 import math
 import os
 from abc import ABC, abstractmethod
+from collections.abc import Generator
 from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Generator,
-    List,
     Literal,
     Optional,
-    Tuple,
-    Type,
     TypeAlias,
     Union,
 )
@@ -40,7 +37,7 @@ if TYPE_CHECKING:
 class ClassEnum:
 
     @classmethod
-    def members(cls) -> Generator[Type, None, None]:
+    def members(cls) -> Generator[type, None, None]:
         for name in dir(cls):
             if name.startswith("_"):
                 continue
@@ -119,10 +116,10 @@ IsometricType: TypeAlias = Annotated[float, Option("--isometric", "-I", min=0, m
 PhaseType: TypeAlias = Annotated[float, Option("--phase", "-p", min=0, max=1,
     help=f"{hint} Phase shift of the main animation's wave")]
 
-PhaseXYZType: TypeAlias = Annotated[Tuple[float, float, float], Option("--phase", "-p", min=0, max=1,
+PhaseXYZType: TypeAlias = Annotated[tuple[float, float, float], Option("--phase", "-p", min=0, max=1,
     help=f"{hint} Phase shift of the horizontal, vertical and depth waves")]
 
-AmplitudeXYZType: TypeAlias = Annotated[Tuple[float, float, float], Option("--amplitude", "-a", min=-2, max=2,
+AmplitudeXYZType: TypeAlias = Annotated[tuple[float, float, float], Option("--amplitude", "-a", min=-2, max=2,
     help=f"{hint} Amplitude of the horizontal, vertical and depth waves")]
 
 DepthType = Annotated[float, Option("--depth", "-d", min=-1, max=2,
@@ -136,7 +133,7 @@ CumulativeType = Annotated[bool, Option("--cumulative", "-c", " /--force", " /-f
 class AnimationBase(BaseModel, ABC):
     """The simplest animation meta-type, applies anything to the scene"""
 
-    def get_time(self, scene: DepthScene) -> Tuple[float, float]:
+    def get_time(self, scene: DepthScene) -> tuple[float, float]:
         (tau, cycle) = (scene.tau, scene.cycle)
 
         # Fixme: Is setting phase and reversing non intuitive?
@@ -547,7 +544,7 @@ AnimationType: TypeAlias = Union[
 # ------------------------------------------------------------------------------------------------ #
 
 class DepthAnimation(BrokenModel):
-    steps: List[AnimationType] = Field(default_factory=list)
+    steps: list[AnimationType] = Field(default_factory=list)
 
     def add(self, animation: AnimationBase) -> AnimationBase:
         self.steps.append(animation := copy.deepcopy(animation))

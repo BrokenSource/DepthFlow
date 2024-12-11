@@ -73,7 +73,7 @@ This section is about the **core parameters** of DepthFlow.
 
 ### Offset
 
-> **Type:** `Tuple[float, float]`, **Names:** `offset_x`, `offset_y`, **Range:** `[-2, 2]`
+> **Type:** `tuple[float, float]`, **Names:** `offset_x`, `offset_y`, **Range:** `[-2, 2]`
 
 <b><span class="the">T</span>he</b> `offset` parameter defines the **parallax displacement** of the projected surface. It can be thought as the {==**camera's position**==} parameter.
 
@@ -223,7 +223,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Center
 
-> **Type:** `Tuple[float, float]`, **Names:** `center_x`, `center_y`, **Range:** `([-ar, ar], [-1, 1])`
+> **Type:** `tuple[float, float]`, **Names:** `center_x`, `center_y`, **Range:** `([-ar, ar], [-1, 1])`
 
 <b><span class="the">T</span>he</b> `center` parameter defines the **center of the image**. It can be thought as the {==**raw offset**==} parameter.
 
@@ -241,7 +241,7 @@ For the traditional 'dolly zoom' effect, combine it with the [**`focus`**](#focu
 
 ### Origin
 
-> **Type:** `Tuple[float, float]`, **Names:** `origin_x`, `origin_y`, **Range:** `([-ar, ar], [-1, 1])`
+> **Type:** `tuple[float, float]`, **Names:** `origin_x`, `origin_y`, **Range:** `([-ar, ar], [-1, 1])`
 
 <b><span class="the">T</span>he</b> `origin` parameter defines the **center point of offsets**. It can be thought  {==**as if the camera was above this point**==} , without moving it.
 

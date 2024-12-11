@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     import manim
     import minio
 
-os.environ["IMGUI_FONT_SCALE"] = "1.21"
+os.setenv("IMGUI_FONT_SCALE", "1.21")
 
 def _dir(path: str) -> str:
     return f"[bold blue]{path}[/]"
