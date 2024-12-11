@@ -1,5 +1,5 @@
 import os
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -270,7 +270,7 @@ class DepthScene(ShaderScene):
         # Build the batch filename: 'file' + -'custom stem'
         return path.with_stem(original + "-" + path.stem)
 
-    def _itr_batch_input(self, item: Optional[LoadableImage]) -> Generator[LoadableImage, None, None]:
+    def _itr_batch_input(self, item: Optional[LoadableImage]) -> Iterable[LoadableImage]:
         if (item is None):
             return None
 

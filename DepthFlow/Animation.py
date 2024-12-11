@@ -4,7 +4,7 @@ import copy
 import math
 import os
 from abc import ABC, abstractmethod
-from collections.abc import Generator
+from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 class ClassEnum:
 
     @classmethod
-    def members(cls) -> Generator[type, None, None]:
+    def members(cls) -> Iterable[type]:
         for name in dir(cls):
             if name.startswith("_"):
                 continue
