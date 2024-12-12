@@ -256,6 +256,7 @@ class DepthServer:
                     video: bytes = scene.main(
                         **config.render.dict(),
                         output=Path(temp.name),
+                        progress=False
                     )[0].read_bytes()
 
             except Exception as error:

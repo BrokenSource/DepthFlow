@@ -47,11 +47,11 @@ from DepthFlow.State import DepthState
 
 @define
 class DepthScene(ShaderScene):
-    __name__ = "DepthFlow"
+    __name__: str = "DepthScene"
 
     # Constants
-    DEFAULT_IMAGE = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-    DEPTH_SHADER  = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
+    DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
+    DEPTH_SHADER: Path = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
 
     # DepthFlow objects
     animation: DepthAnimation = Factory(DepthAnimation)
@@ -233,14 +233,22 @@ class DepthScene(ShaderScene):
 
     def _load_inputs(self) -> None:
         """Load inputs: single or batch exporting"""
+
+        # Batch exporting implementation
         image = self._get_batch_input(self._image)
         depth = self._get_batch_input(self._depth)
+
         if (image is None):
             raise ShaderBatchStop()
+
         self.log_info(f"Loading image: {image}")
         self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
+
+        # Load, estimate, upscale input image
         image = self.upscaler.upscale(LoaderImage(image))
         depth = LoaderImage(depth) or self.estimator.estimate(image)
+
+        # Match rendering resolution to image
         self.resolution   = (image.width,image.height)
         self.aspect_ratio = (image.width/image.height)
         self.image.from_image(image)
@@ -253,7 +261,7 @@ class DepthScene(ShaderScene):
 
     def export_name(self, path: Path) -> Path:
         """Modifies the output path if on batch exporting mode"""
-        options = list(self._itr_batch_input(self._image))
+        options = list(self._iter_batch_input(self._image))
 
         # Single file mode, return as-is
         if (len(options) == 1):
@@ -270,14 +278,14 @@ class DepthScene(ShaderScene):
         # Build the batch filename: 'file' + -'custom stem'
         return path.with_stem(original + "-" + path.stem)
 
-    def _itr_batch_input(self, item: Optional[LoadableImage]) -> Iterable[LoadableImage]:
+    def _iter_batch_input(self, item: Optional[LoadableImage]) -> Iterable[LoadableImage]:
         if (item is None):
             return None
 
         # Recurse on multiple inputs
         if isinstance(item, (list, tuple, set)):
             for part in item:
-                yield from self._itr_batch_input(part)
+                yield from self._iter_batch_input(part)
 
         # Return known valid inputs as is
         elif isinstance(item, (bytes, Image, numpy.ndarray)):
@@ -301,7 +309,7 @@ class DepthScene(ShaderScene):
             yield from item
 
     def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:
-        return list_get(list(self._itr_batch_input(item)), self.index)
+        return list_get(list(self._iter_batch_input(item)), self.index)
 
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:
