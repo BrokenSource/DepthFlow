@@ -47,7 +47,7 @@ body:
     options:
       - PyPI Wheels (pip, poetry, pdm, rye, uv, etc)
       - Source Code (Install scripts or manual)
-      - PyAPP Executables (experimental)
+      - PyApp Executables (experimental)
       - N/A
     default: 0
   validations:

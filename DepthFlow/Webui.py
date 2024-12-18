@@ -303,9 +303,9 @@ class DepthGradio:
             gradio.Markdown(''.join((
                 "Made with ❤️ by [**Tremeschin**](https://github.com/Tremeschin) | ",
                 f"**Alpha** WebUI v{DEPTHFLOW.VERSION} | ",
-                "[**Website**](https://brokensrc.dev/depthflow) | "
+                "[**Website**](https://brokensrc.dev/) | "
                 "[**Discord**](https://discord.com/invite/KjqvcYwRHm/) | ",
-                "[**Telegram**](https://t.me/brokensource/) | ",
+                "[**Telegram**](https://t.me/BrokenSource/) | ",
                 "[**GitHub**](https://github.com/BrokenSource/DepthFlow)"
             )))
 

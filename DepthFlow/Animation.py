@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 from typer import Option
 
 from Broken import BrokenAttribute, BrokenModel, BrokenTyper, MultiEnum
-from Broken.Loaders import LoaderString
+from Broken.Loaders import LoadString
 from DepthFlow.State import (
     BlurState,
     ColorState,
@@ -206,7 +206,7 @@ class Actions(ClassEnum):
 
         def apply(self, scene: DepthScene, tau: float, cycle: float) -> float:
             if (os.getenv("CUSTOM_CODE", "0") == "1"):
-                return exec(LoaderString(self.code))
+                return exec(LoadString(self.code))
             else:
                 raise RuntimeError("Custom code execution is disabled")
 

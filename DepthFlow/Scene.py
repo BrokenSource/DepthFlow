@@ -31,7 +31,7 @@ from Broken.Externals.Upscaler import (
     Upscayl,
     Waifu2x,
 )
-from Broken.Loaders import LoadableImage, LoaderImage
+from Broken.Loaders import LoadableImage, LoadImage
 from Broken.Types import FileExtensions
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Animation import (
@@ -245,8 +245,8 @@ class DepthScene(ShaderScene):
         self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
 
         # Load, estimate, upscale input image
-        image = self.upscaler.upscale(LoaderImage(image))
-        depth = LoaderImage(depth) or self.estimator.estimate(image)
+        image = self.upscaler.upscale(LoadImage(image))
+        depth = LoadImage(depth) or self.estimator.estimate(image)
 
         # Match rendering resolution to image
         self.resolution   = (image.width,image.height)
@@ -294,7 +294,7 @@ class DepthScene(ShaderScene):
             yield item
 
         # Valid directory on disk
-        elif (path := BrokenPath.get(item)).exists():
+        elif (path := BrokenPath.get(item, exists=True)):
             if (path.is_dir()):
                 files = (path.glob("*" + x) for x in FileExtensions.Image)
                 yield from sorted(flatten(files))
