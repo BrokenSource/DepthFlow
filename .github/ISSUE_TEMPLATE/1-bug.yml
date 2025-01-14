@@ -10,7 +10,7 @@ body:
       > [!IMPORTANT]
       > - Only the [**latest versions**](https://brokensrc.dev/get/) of the projects are **supported**<sup>*1</sup>
       > - **Consider** getting in touch on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first!
-      <sub><i>*1: I can still help you, please try latest first, or say what version you're on!</i></sub>
+      <sub><i>*1: I can still help you, but please try latest first!</i></sub>
 
 - type: markdown
   attributes:
@@ -45,28 +45,45 @@ body:
     description: |
       - Where are you running the projects from?
     options:
+      - PyApp Executables (experimental)
       - PyPI Wheels (pip, poetry, pdm, rye, uv, etc)
       - Source Code (Install scripts or manual)
-      - PyApp Executables (experimental)
+      - Docker containers (Docker, Podman, etc)
+      - Cloud services (AWS, GCP, Azure, etc)
       - N/A
+    multiple: true
     default: 0
   validations:
     required: true
+
+- type: input
+  id: project-version
+  attributes:
+    label: 🔘 Project version
+    description: |
+      - **You can find the version** in the executable name or by running `project --version`
+      - **Examples are**: 0.9.0, latest, 0.8.0.dev0, stable, pre-release, etc.
+  validations:
+    required: false
 
 - type: dropdown
   id: python-version
   attributes:
     label: 🔘 Python version
     description: |
-      - **If running from Source Code**: uv will use the `.python-version` (default below)
+      - **If running from Source Code**: Keep (Auto-managed) or find in `.python-version` file
       - **If running from PyPI Wheels**: Check the Python version with `python --version`
+      - **If running from Executables**: Keep the default (Auto-managed) option
     options:
+      - Auto-managed
+      - Python 3.9
       - Python 3.10
       - Python 3.11
       - Python 3.12
       - Python 3.13
+      - Python 3.14
       - N/A
-    default: 1
+    default: 0
   validations:
     required: true
 
@@ -75,21 +92,29 @@ body:
   attributes:
     label: 🔘 GPU Vendor
     description: |
-      - **⚠️ Select all that apply**; Feel free to leave it blank if the issue/project isn't GPU related
+      - **Select all that apply**; Feel free to leave it blank if the issue/project isn't GPU related
       - **Hybrid systems:** See in logs the GPU being used, switch on your OS if wrong one
     options:
       - N/A
       - Apple Silicon
       - NVIDIA Desktop
       - NVIDIA Laptop
-      - AMD Integrated
       - AMD Desktop
       - AMD Laptop
-      - Intel HD Graphics/Iris
-      - Intel Desktop Arc
-      - Intel Laptop Arc
+      - Intel Desktop
+      - Intel Laptop
     multiple: true
     default: 0
+  validations:
+    required: false
+
+- type: input
+  id: gpu-model
+  attributes:
+    label: 🔘 GPU Model
+    description: |
+      - **If applicable**, provide the model of the GPU(s) you're using
+      - **Examples are**: RTX 3090, RX 6800 XT, Arc B580, Iris Xe, etc.
   validations:
     required: false
 

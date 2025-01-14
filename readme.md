@@ -42,8 +42,9 @@
     <a href="https://brokensrc.dev/depthflow/">Documentation</a>
     <br>
     <sub>
-      Community:
-      <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a>
+      Extras:
+      <a target="_blank" href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
+      <a target="_blank" href="https://www.youtube.com/@Tremeschin">YouTube</a>
     </sub>
   </b>
   <br>
