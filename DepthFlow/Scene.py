@@ -1,4 +1,3 @@
-import os
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Annotated, Optional
@@ -15,7 +14,7 @@ from ShaderFlow.Texture import ShaderTexture
 from ShaderFlow.Variable import ShaderVariable
 from typer import Option
 
-from Broken import BrokenPath, flatten, list_get
+from Broken import BrokenPath, Environment, flatten, list_get
 from Broken.Externals.Depthmap import (
     BaseEstimator,
     DepthAnythingV1,
@@ -89,7 +88,7 @@ class DepthScene(ShaderScene):
             self.cli.command(Waifu2x, post=self.set_upscaler)
 
         with self.cli.panel("🚀 Animation components"):
-            _hidden = (not eval(os.getenv("ADVANCED", "0")))
+            _hidden = Environment.flag("ADVANCED", 0)
             for animation in Actions.members():
                 if issubclass(animation, ComponentBase):
                     self.cli.command(animation, post=self.animation.add, hidden=_hidden)

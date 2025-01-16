@@ -9,7 +9,6 @@ Warning: This WILL use A LOT OF CPU for the video encoding, if enough GPU
 
 • For more information, visit https://brokensrc.dev/depthflow
 """
-import itertools
 import math
 import os
 import time
@@ -23,7 +22,7 @@ from DepthFlow.Animation import Actions, Target
 from DepthFlow.Scene import DepthScene
 from dotmap import DotMap
 
-from Broken import combinations
+from Broken import Environment, combinations
 from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
 from Broken.Externals.Upscaler import NoUpscaler, UpscalerBase, Upscayl
 
@@ -48,7 +47,7 @@ class DepthManager:
     threads: list[Thread] = Factory(list)
     """List of running threads"""
 
-    concurrency: int = int(os.getenv("WORKERS", 4))
+    concurrency: int = Environment.int("WORKERS", 4)
     """Maximum concurrent render workers (high memory usage)"""
 
     outputs: list[Path] = Factory(list)

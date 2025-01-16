@@ -8,7 +8,7 @@ from DepthFlow import DepthScene
 from imgui_bundle import imgui
 from ShaderFlow.Variable import ShaderVariable, Uniform
 
-from Broken import BROKEN, OnceTracker, install, log
+from Broken import BROKEN, Environment, OnceTracker, install, log
 from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
 
 install("manim", "minio")
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     import manim
     import minio
 
-os.setenv("IMGUI_FONT_SCALE", "1.21")
+Environment.set("IMGUI_FONT_SCALE", "1.21")
 
 def _dir(path: str) -> str:
     return f"[bold blue]{path}[/]"

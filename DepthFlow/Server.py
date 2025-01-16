@@ -29,8 +29,9 @@ from typer import Option
 from Broken import (
     BrokenModel,
     BrokenTyper,
-    Runtime,
+    Environment,
     ParallelQueue,
+    Runtime,
     log,
 )
 from Broken.Core.BrokenFastAPI import BrokenFastAPI, WorkersType
@@ -142,8 +143,8 @@ class DepthServer(BrokenFastAPI):
         # Processing
         self.queue = DepthWorker(
             cache_path=(DEPTHFLOW.DIRECTORIES.CACHE/"ServerRender"),
-            cache_size=float(os.getenv("DEPTHSERVER_CACHE_SIZE_MB", 500)),
-            size=int(os.getenv("DEPTHSERVER_WORKERS", 3)),
+            cache_size=Environment.float("DEPTHSERVER_CACHE_SIZE_MB", 500),
+            size=Environment.int("DEPTHSERVER_WORKERS", 3),
         ).start()
 
     def config(self,

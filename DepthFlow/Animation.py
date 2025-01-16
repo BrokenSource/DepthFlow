@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import copy
 import math
-import os
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import (
@@ -18,7 +17,7 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from Broken import BrokenAttribute, BrokenModel, BrokenTyper, MultiEnum
+from Broken import BrokenAttribute, BrokenModel, BrokenTyper, Environment, MultiEnum
 from Broken.Loaders import LoadString
 from DepthFlow.State import (
     BlurState,
@@ -205,7 +204,7 @@ class Actions(ClassEnum):
             Field("")
 
         def apply(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            if (os.getenv("CUSTOM_CODE", "0") == "1"):
+            if Environment.flag("CUSTOM_CODE", 0):
                 return exec(LoadString(self.code))
             else:
                 raise RuntimeError("Custom code execution is disabled")
