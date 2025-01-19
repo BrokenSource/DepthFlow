@@ -119,7 +119,7 @@ class DepthManager:
     def _worker(self, scene: type[DepthScene], image: Path):
         # Note: Share an estimator between threads to avoid memory leaks
         scene = scene(backend="headless")
-        scene.estimator = self.estimator
+        scene.config.estimator = self.estimator
         scene.set_upscaler(self.upscaler)
         scene.input(image=image)
 
@@ -130,7 +130,7 @@ class DepthManager:
 
             # Find or set common parameters
             output = self.filename(data)
-            scene.animation.clear()
+            scene.config.animation.clear()
             self.animate(data)
 
             # Make sure the output folder exists

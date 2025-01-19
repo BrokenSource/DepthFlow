@@ -118,7 +118,7 @@ class DepthGradio:
                     continue
                 if (not user[preset_dict.enable]):
                     continue
-                scene.animation.add(preset(**{
+                scene.config.animation.add(preset(**{
                     key: user[item] for (key, item) in preset_dict.options.items()
                 }))
 

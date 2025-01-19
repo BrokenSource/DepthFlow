@@ -7,6 +7,7 @@ import validators
 from attr import Factory, define
 from imgui_bundle import imgui
 from PIL.Image import Image
+from pydantic import Field
 from ShaderFlow.Exceptions import ShaderBatchStop
 from ShaderFlow.Message import ShaderMessage
 from ShaderFlow.Scene import ShaderScene
@@ -19,6 +20,7 @@ from Broken.Externals.Depthmap import (
     BaseEstimator,
     DepthAnythingV1,
     DepthAnythingV2,
+    DepthEstimator,
     DepthPro,
     Marigold,
     ZoeDepth,
@@ -31,7 +33,7 @@ from Broken.Externals.Upscaler import (
     Waifu2x,
 )
 from Broken.Loaders import LoadableImage, LoadImage
-from Broken.Types import FileExtensions
+from Broken.Types import FileExtensions, PydanticImage
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Animation import (
     Actions,
@@ -44,23 +46,19 @@ from DepthFlow.State import DepthState
 
 # -------------------------------------------------------------------------------------------------|
 
+DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
+DEPTH_SHADER: Path = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
+
 @define
 class DepthScene(ShaderScene):
-    __name__: str = "DepthScene"
+    state: DepthState = Factory(DepthState)
 
-    # Constants
-    DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-    DEPTH_SHADER: Path = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
-
-    # DepthFlow objects
-    animation: DepthAnimation = Factory(DepthAnimation)
-    estimator: BaseEstimator  = Factory(DepthAnythingV2)
-    upscaler:  BrokenUpscaler = Factory(NoUpscaler)
-    state:     DepthState     = Factory(DepthState)
-
-    # Internal control
-    _image: Iterable[LoadableImage] = DEFAULT_IMAGE
-    _depth: Iterable[Iterable] = None
+    class Config(ShaderScene.Config):
+        image:     Iterable[PydanticImage] = DEFAULT_IMAGE
+        depth:     Iterable[PydanticImage] = None
+        estimator: DepthEstimator = Field(default_factory=DepthAnythingV2)
+        animation: DepthAnimation = Field(default_factory=DepthAnimation)
+        upscaler:  BrokenUpscaler = Field(default_factory=NoUpscaler)
 
     # -------------------------------------------------------------------------------------------- #
     # User commands
@@ -91,17 +89,17 @@ class DepthScene(ShaderScene):
             _hidden = Environment.flag("ADVANCED", 0)
             for animation in Actions.members():
                 if issubclass(animation, ComponentBase):
-                    self.cli.command(animation, post=self.animation.add, hidden=_hidden)
+                    self.cli.command(animation, post=self.config.animation.add, hidden=_hidden)
 
         with self.cli.panel("🔮 Animation presets"):
             for preset in Actions.members():
                 if issubclass(preset, PresetBase):
-                    self.cli.command(preset, post=self.animation.add)
+                    self.cli.command(preset, post=self.config.animation.add)
 
         with self.cli.panel("🎨 Post-processing"):
             for post in Actions.members():
                 if issubclass(post, FilterBase):
-                    self.cli.command(post, post=self.animation.add)
+                    self.cli.command(post, post=self.config.animation.add)
 
     def input(self,
         image: Annotated[list[str], Option("--image", "-i",
@@ -112,8 +110,8 @@ class DepthScene(ShaderScene):
         )]=None,
     ) -> None:
         """Input images from Path, URL, Directories and its estimated Depthmap (Lazy load)"""
-        self._image = image
-        self._depth = depth
+        self.config.image = image
+        self.config.depth = depth
 
     # -------------------------------------------------------------------------------------------- #
     # ShaderFlow Scene implementation
@@ -121,17 +119,17 @@ class DepthScene(ShaderScene):
     def build(self) -> None:
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
-        self.shader.fragment = self.DEPTH_SHADER
+        self.shader.fragment = DEPTH_SHADER
         self.base_duration = 5.0
         self.ssaa = 1.2
 
     def setup(self) -> None:
-        if (not self.animation):
-            self.animation.add(Actions.Orbital())
+        if (not self.config.animation):
+            self.config.animation.add(Actions.Orbital())
         self._load_inputs()
 
     def update(self) -> None:
-        self.animation.apply(self)
+        self.config.animation.apply(self)
 
     def handle(self, message: ShaderMessage) -> None:
         ShaderScene.handle(self, message)
@@ -150,14 +148,13 @@ class DepthScene(ShaderScene):
     # # Upscalers
 
     def set_upscaler(self, upscaler: Optional[BrokenUpscaler]=None) -> BrokenUpscaler:
-        self.upscaler = (upscaler or NoUpscaler())
-        return self.upscaler
+        self.config.upscaler = (upscaler or NoUpscaler())
+        return self.config.upscaler
     def clear_upscaler(self) -> None:
-        self.upscaler = NoUpscaler()
+        self.config.upscaler = NoUpscaler()
     def load_upscaler(self) -> None:
-        self.upscaler.download()
+        self.config.upscaler.download()
 
-    # Options
     def realesr(self, **options) -> Realesr:
         return self.set_upscaler(Realesr(**options))
     def upscayl(self, **options) -> Upscayl:
@@ -168,12 +165,11 @@ class DepthScene(ShaderScene):
     # # Estimators
 
     def set_estimator(self, estimator: BaseEstimator) -> BaseEstimator:
-        self.estimator = estimator
-        return self.estimator
+        self.config.estimator = estimator
+        return self.config.estimator
     def load_estimator(self) -> None:
-        self.estimator.load_model()
+        self.config.estimator.load_model()
 
-    # Options
     def depth_anything1(self, **options) -> DepthAnythingV1:
         return self.set_estimator(DepthAnythingV1(**options))
     def depth_anything2(self, **options) -> DepthAnythingV2:
@@ -189,43 +185,43 @@ class DepthScene(ShaderScene):
 
     # Constant
     def set(self, **options) -> Actions.Set:
-        return self.animation.add(Actions.Set(**options))
+        return self.config.animation.add(Actions.Set(**options))
     def add(self, **options) -> Actions.Add:
-        return self.animation.add(Actions.Add(**options))
+        return self.config.animation.add(Actions.Add(**options))
 
     # Basic
     def linear(self, **options) -> Actions.Linear:
-        return self.animation.add(Actions.Linear(**options))
+        return self.config.animation.add(Actions.Linear(**options))
     def sine(self, **options) -> Actions.Sine:
-        return self.animation.add(Actions.Sine(**options))
+        return self.config.animation.add(Actions.Sine(**options))
     def cosine(self, **options) -> Actions.Cosine:
-        return self.animation.add(Actions.Cosine(**options))
+        return self.config.animation.add(Actions.Cosine(**options))
     def triangle(self, **options) -> Actions.Triangle:
-        return self.animation.add(Actions.Triangle(**options))
+        return self.config.animation.add(Actions.Triangle(**options))
 
     # Presets
     def vertical(self, **options) -> Actions.Vertical:
-        return self.animation.add(Actions.Vertical(**options))
+        return self.config.animation.add(Actions.Vertical(**options))
     def horizontal(self, **options) -> Actions.Horizontal:
-        return self.animation.add(Actions.Horizontal(**options))
+        return self.config.animation.add(Actions.Horizontal(**options))
     def zoom(self, **options) -> Actions.Zoom:
-        return self.animation.add(Actions.Zoom(**options))
+        return self.config.animation.add(Actions.Zoom(**options))
     def circle(self, **options) -> Actions.Circle:
-        return self.animation.add(Actions.Circle(**options))
+        return self.config.animation.add(Actions.Circle(**options))
     def dolly(self, **options) -> Actions.Dolly:
-        return self.animation.add(Actions.Dolly(**options))
+        return self.config.animation.add(Actions.Dolly(**options))
     def orbital(self, **options) -> Actions.Orbital:
-        return self.animation.add(Actions.Orbital(**options))
+        return self.config.animation.add(Actions.Orbital(**options))
 
     # Post-processing
     def vignette(self, **options) -> Actions.Vignette:
-        return self.animation.add(Actions.Vignette(**options))
+        return self.config.animation.add(Actions.Vignette(**options))
     def blur(self, **options) -> Actions.Blur:
-        return self.animation.add(Actions.Blur(**options))
+        return self.config.animation.add(Actions.Blur(**options))
     def inpaint(self, **options) -> Actions.Inpaint:
-        return self.animation.add(Actions.Inpaint(**options))
+        return self.config.animation.add(Actions.Inpaint(**options))
     def colors(self, **options) -> Actions.Colors:
-        return self.animation.add(Actions.Colors(**options))
+        return self.config.animation.add(Actions.Colors(**options))
 
     # -------------------------------------------------------------------------------------------- #
     # Internal batch exporting
@@ -234,8 +230,8 @@ class DepthScene(ShaderScene):
         """Load inputs: single or batch exporting"""
 
         # Batch exporting implementation
-        image = self._get_batch_input(self._image)
-        depth = self._get_batch_input(self._depth)
+        image = self._get_batch_input(self.config.image)
+        depth = self._get_batch_input(self.config.depth)
 
         if (image is None):
             raise ShaderBatchStop()
@@ -244,8 +240,8 @@ class DepthScene(ShaderScene):
         self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
 
         # Load, estimate, upscale input image
-        image = self.upscaler.upscale(LoadImage(image))
-        depth = LoadImage(depth) or self.estimator.estimate(image)
+        image = self.config.upscaler.upscale(LoadImage(image))
+        depth = LoadImage(depth) or self.config.estimator.estimate(image)
 
         # Match rendering resolution to image
         self.resolution   = (image.width,image.height)
@@ -254,13 +250,13 @@ class DepthScene(ShaderScene):
         self.depth.from_image(depth)
 
         # Default to 1920x1080 on base image
-        if (self._image is self.DEFAULT_IMAGE):
+        if (self.config.image is DEFAULT_IMAGE):
             self.resolution   = (1920, 1080)
             self.aspect_ratio = (16/9)
 
     def export_name(self, path: Path) -> Path:
         """Modifies the output path if on batch exporting mode"""
-        options = list(self._iter_batch_input(self._image))
+        options = list(self._iter_batch_input(self.config.image))
 
         # Single file mode, return as-is
         if (len(options) == 1):
