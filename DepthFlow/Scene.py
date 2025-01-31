@@ -61,7 +61,7 @@ class DepthScene(ShaderScene):
         upscaler:  BrokenUpscaler = Field(default_factory=NoUpscaler)
 
     # -------------------------------------------------------------------------------------------- #
-    # User commands
+    # Command line interface
 
     def commands(self):
         self.cli.description = DEPTHFLOW_ABOUT
@@ -114,7 +114,7 @@ class DepthScene(ShaderScene):
         self.config.depth = depth
 
     # -------------------------------------------------------------------------------------------- #
-    # ShaderFlow Scene implementation
+    # Module implementation
 
     def build(self) -> None:
         self.image = ShaderTexture(scene=self, name="image").repeat(False)

@@ -9,7 +9,7 @@ Homepage  = "https://brokensrc.dev"
 
 [project]
 name        = "depthflow"
-description = "🌊 Images to → 2.5D Parallax Effect Video. A Free and Open Source ImmersityAI alternative"
+description = "🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative"
 version     = "0.0.0" # Part of a monorepo, managed on final builds
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
 dynamic     = ["readme"]

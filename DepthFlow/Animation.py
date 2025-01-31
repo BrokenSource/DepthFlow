@@ -199,15 +199,13 @@ class Actions(ClassEnum):
     class Custom(AnimationBase):
         type: Annotated[Literal["custom"], BrokenTyper.exclude()] = "custom"
 
-        code: Annotated[str, Option("--code", "-c",
-            help=f"{hint} Custom code to run for the animation [yellow](be sure to trust it)[/]")] = \
-            Field("")
+        code: Annotated[str, Option("--code", "-c")] = Field("")
+        """Custom code to run for the animation [yellow](be sure to trust it)[/]"""
 
         def apply(self, scene: DepthScene, tau: float, cycle: float) -> float:
             if Environment.flag("CUSTOM_CODE", 0):
                 return exec(LoadString(self.code))
-            else:
-                raise RuntimeError("Custom code execution is disabled")
+            raise RuntimeError("Custom code execution is disabled")
 
     class Reset(AnimationBase):
         type: Annotated[Literal["reset"], BrokenTyper.exclude()] = "reset"
@@ -244,25 +242,20 @@ class Actions(ClassEnum):
         """Add a Linear interpolation to some component's animation"""
         type: Annotated[Literal["linear"], BrokenTyper.exclude()] = "linear"
 
-        start: Annotated[float, Option("--start", "-t0",
-            help=f"{hint} Normalized start time")] = \
-            Field(0.0)
+        start: Annotated[float, Option("--start", "-t0")] = Field(0.0)
+        """Normalized start time"""
 
-        end: Annotated[float, Option("--end", "-t1",
-            help=f"{hint} Normalized end time")] = \
-            Field(1.0)
+        end: Annotated[float, Option("--end", "-t1")] = Field(1.0)
+        """Normalized end time"""
 
-        low: Annotated[float, Option("--low", "-v0",
-            help=f"{hint} Start value")] = \
-            Field(0.0)
+        low: Annotated[float, Option("--low", "-v0")] = Field(0.0)
+        """Start value"""
 
-        hight: Annotated[float, Option("--high", "-v1",
-            help=f"{hint} End value")] = \
-            Field(1.0)
+        hight: Annotated[float, Option("--high", "-v1")] = Field(1.0)
+        """End value"""
 
-        exponent: Annotated[float, Option("-e", "--exponent",
-            help=f"{hint} Exponent for shaping the interpolation")] = \
-            Field(1.0)
+        exponent: Annotated[float, Option("-e", "--exponent")] = Field(1.0)
+        """Exponent for shaping the interpolation"""
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             normal = (tau - self.start) / (self.end - self.start)
@@ -273,21 +266,17 @@ class Actions(ClassEnum):
     # Wave functions
 
     class _WaveBase(ReversibleComponentBase):
-        amplitude: Annotated[float, Option("--amplitude", "-a",
-            help=f"{hint} Amplitude of the wave")] = \
-            Field(1.0)
+        amplitude: Annotated[float, Option("--amplitude", "-a")] = Field(1.0)
+        """Amplitude of the wave"""
 
-        bias: Annotated[float, Option("--bias", "-b",
-            help=f"{hint} Bias of the wave")] = \
-            Field(0.0)
+        bias: Annotated[float, Option("--bias", "-b")] = Field(0.0)
+        """Bias of the wave"""
 
-        cycles: Annotated[float, Option("--cycles", "-c",
-            help=f"{hint} Number of cycles of the wave")] = \
-            Field(1.0)
+        cycles: Annotated[float, Option("--cycles", "-c")] = Field(1.0)
+        """Number of cycles of the wave"""
 
-        phase: Annotated[float, Option("--phase", "-p",
-            help=f"{hint} Phase shift of the wave")] = \
-            Field(0.0)
+        phase: Annotated[float, Option("--phase", "-p")] = Field(0.0)
+        """Phase shift of the wave"""
 
     class Sine(_WaveBase):
         """Add a Sine wave to some component's animation [green](See 'sine --help' for options)[/]"""
@@ -463,11 +452,11 @@ class Actions(ClassEnum):
 
     class Dolly(PresetBase):
         """Add a Dolly zoom to the camera"""
-        type:    Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
-        smooth:  SmoothType  = Field(True)
-        loop:    LoopType    = Field(True)
-        depth:   DepthType   = Field(0.5)
-        phase:   PhaseType   = Field(0.0)
+        type:   Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
+        smooth: SmoothType  = Field(True)
+        loop:   LoopType    = Field(True)
+        depth:  DepthType   = Field(0.5)
+        phase:  PhaseType   = Field(0.0)
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.steady = self.depth

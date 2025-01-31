@@ -1,10 +1,8 @@
 import DepthFlow.Resources as DepthFlowResources
 from Broken import BrokenProject, __version__
 
-__version__ = __version__
-
 DEPTHFLOW_ABOUT = """
-🌊 Images to → 2.5D Parallax Effect Video. A Free and Open Source ImmersityAI alternative.\n\n
+🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative.\n\n
 → See the [blue link=https://brokensrc.dev/depthflow/]Website[/] for examples and more information!\n
 """
 

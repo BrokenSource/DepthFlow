@@ -19,7 +19,7 @@ This page describes _in depth_[^pun] the DepthFlow project in a paper-like forma
 
 ## Introduction
 
-<b><span class="the">D</span>epthFlow</b> is a software that generates 2.5D parallax effect videos from images and their depthmaps. This is done by projecting the image in 3D space and rendering from a camera's perspective, with many different parameters that can vary over time.
+<b><span class="the">D</span>epthFlow</b> is a software that generates 3D parallax effect videos from images and their depthmaps. This is done by projecting the image in 3D space and rendering from a camera's perspective, with many different parameters that can vary over time.
 
 The code heavily relies on the [**ShaderFlow**](site:/shaderflow){:target="_blank"} engine, providing high level abstractions and utilities such as exporting videos, camera modeling, and more. Technically speaking, DepthFlow is a ShaderFlow spin-off, so does other projects like [**Pianola**](site:/pianola){:target="_blank"} and [**SpectroNote**](site:/spectronote){:target="_blank"}, where the [**main implementation**](https://github.com/BrokenSource/DepthFlow/blob/main/DepthFlow/Resources/Shaders/DepthFlow.glsl){:target="_blank"} is a feature simple, not-so-long but dense [**GLSL**](https://en.wikipedia.org/wiki/OpenGL_Shading_Language){:target="_blank"} shader[^glsl].
 

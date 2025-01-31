@@ -5,7 +5,7 @@ template: home.html
 
 # ⚡️ Quick start
 
-<b><span class="the">T</span>his section</b> focus on getting started with DepthFlow, demonstrating basic usage, commands, and features. The main goal is to help you create your first 2.5D parallax effect videos quickly and easily, from the command line, web interface, or custom scripts.
+<b><span class="the">T</span>his section</b> focus on getting started with DepthFlow, demonstrating basic usage, commands, and features. The main goal is to help you create your first 3D parallax effect videos quickly and easily, from the command line, web interface, or custom scripts.
 
 :material-arrow-left: Go to any section in the left sidebar to get started!
 
