@@ -56,6 +56,8 @@
 
 ❤️ **Loving it?** Your [**support**](https://brokensrc.dev/about/sponsors/) is essential!
 
+<br>
+
 ## 📦 Installation
 
 Head out to the [**Official Website**](https://brokensrc.dev/get) for the latest installation instructions and more!
