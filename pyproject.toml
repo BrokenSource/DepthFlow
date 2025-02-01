@@ -10,8 +10,8 @@ Homepage  = "https://brokensrc.dev"
 [project]
 name        = "depthflow"
 description = "🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative"
-version     = "0.0.0" # Part of a monorepo, managed on final builds
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
+version     = "0.0.0" # Managed by a hatchling metadata hook
 dynamic     = ["readme"]
 license     = "AGPL-3.0"
 requires-python = ">=3.10"
@@ -29,12 +29,19 @@ depthflow = "DepthFlow.__main__:main"
 depth     = "DepthFlow.__main__:main"
 depthdocs = "Website.docs:main"
 
-[tool.hatch.build.targets.wheel]
-packages = ["DepthFlow"]
-
 [build-system]
 requires = ["hatchling", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["DepthFlow"]
+only-packages = true
+
+[tool.hatch.metadata.hooks.custom]
+path = ".github/hatch_build.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["*"]
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"
