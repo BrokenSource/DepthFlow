@@ -23,7 +23,7 @@ def main() -> None:
         BrokenTyper.complex(
             main=depthflow,
             nested=(depthflow, gradio, server),
-            direct=BrokenTorch.install,
+            simple=BrokenTorch.install,
         )
 
 if __name__ == "__main__":
