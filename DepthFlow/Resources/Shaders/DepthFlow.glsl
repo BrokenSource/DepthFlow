@@ -5,6 +5,9 @@
 
 /* ---------------------------------------------------------------------------------------------- */
 
+#ifndef DEPTHFLOW
+#define DEPTHFLOW
+
 struct DepthFlow {
 
     // Camera
@@ -27,6 +30,7 @@ struct DepthFlow {
     float invert;
     float quality;
     float away;
+    bool fixed;
 
     // Output
     float value;
@@ -46,7 +50,7 @@ DepthFlow DepthMake(
     camera.position.xy += depth.offset;
     camera.isometric   += mix(0.5, 1.0, depth.isometric);
     camera.dolly       += depth.dolly;
-    camera.zoom        += (depth.zoom - 1.0) + ((1/depth.away) - 1.0);
+    camera.zoom        += (depth.zoom - 1.0) + (1.0/depth.away - 1.0);
     camera.plane_point  = vec3(0.0, 0.0, depth.away);
     camera              = iCameraProject(camera);
     depth.oob           = camera.out_of_bounds;
@@ -56,36 +60,17 @@ DepthFlow DepthMake(
 
     // Point where the ray intersects with the infinity plane, with a fixed point
     // pivoting around depth=steady. I do not know how the math works.
-    vec2 intersect = (depth.center + camera.gluv)
-        - camera.position.xy * (1 + depth.steady * depth.height / depth.away);
-
-    depth.gluv = intersect;
-
-    // The direction to converge to the ray's origin from the intersection
-    vec2 displacement = (camera.origin.xy - intersect) + depth.origin;
-    vec2 walk = normalize(displacement);
-
-    // Angle between the ray vector and the XY plane
-    float tan_theta = length(displacement) / abs(depth.away - camera.origin.z);
-    float cot_theta = (1.0/tan_theta);
-
-    // Note: Edge case on parallel rays
-    if (abs(tan_theta) < 1e-6)
-        return depth;
-
-    // The util distance the 'projection ceiling' is always above the surface
-    float edge = tan_theta * (depth.away - camera.origin.z - depth.height);
-    float util = (length(displacement) - edge);
+    vec3 intersect = vec3(depth.center + camera.gluv, 1.0)
+        - vec3(camera.position.xy, 0.0) * (1.0 + depth.steady * depth.height / depth.away) * int(depth.fixed);
 
     // The quality of the parallax effect is how tiny the steps are
-    float side = max(iResolution.x, iResolution.y);
-    float quality = 1.0 / mix((side*0.05), (side*0.50), depth.quality);
-
     // Optimization: Low quality overshoot, high quality reverse
-    float probe = (-1.0) / mix(50.0, 100.0, depth.quality);
-    float i = 1.0;
+    float quality = (1.0 / mix(200, 1000, depth.quality));
+    float probe   = (1.0 / mix( 50,  100, depth.quality));
 
-    // Utilities
+    // The guaranteed relative distance to not hit the surface
+    float safe = (1.0 - (depth.height / depth.away));
+    float walk = 0.0;
     float last_value = 0.0;
 
     /* Main loop: Find the intersection with the scene */
@@ -93,28 +78,30 @@ DepthFlow DepthMake(
         bool FORWARD  = (stage == 0);
         bool BACKWARD = (stage == 1);
 
-        while (true) {
-            if (FORWARD && i < 0.0)
-                break;
-            if (BACKWARD && 1.0 < i)
+        // Safety max iterations
+        for (int it=0; it<1000; it++) {
+            if (FORWARD && walk > 1.0)
                 break;
 
-            i += (FORWARD ? probe : quality);
+            walk += (FORWARD ? probe : -quality);
 
-            // The checking point 'walks' on the util distance
-            last_value  = depth.value;
-            depth.gluv  = intersect + (i*util*walk);
+            // Interpolate origin and intersect, starting at minimum safe distance
+            vec3 point = mix(camera.origin, intersect, mix(safe, 1.0, walk));
+            depth.gluv = point.xy;
+
+            // Sample next depth value
+            last_value = depth.value;
             depth.value = gtexture(depthmap, depth.gluv, depth.mirror).r;
 
             // Fixme optimization (+8%): Avoid recalculating 'invert'
             float surface = depth.height * mix(depth.value, 1.0-depth.value, depth.invert);
-            float ceiling = cot_theta * (i*util);
+            float ceiling = (1.0 - point.z);
 
             // Stop the first moment we're inside the surface
-            if (surface >= ceiling) {
+            if (ceiling < surface) {
                 if (FORWARD) break;
 
-            // Finish when we're outside at smaller steps
+            // Finish when outside at smaller steps
             } else if (BACKWARD) {
                 depth.derivative = (last_value - depth.value) / quality;
                 break;
@@ -136,8 +123,6 @@ DepthFlow DepthMake(
     return depth;
 }
 
-/* ---------------------------------------------------------------------------------------------- */
-
 DepthFlow depthflow;
 
 void iDepthInit() {
@@ -154,10 +139,13 @@ void iDepthInit() {
     depthflow.invert    = iDepthInvert;
     depthflow.quality   = iQuality;
     depthflow.away      = 1.0;
+    depthflow.fixed     = true;
     depthflow.value     = 0.0;
     depthflow.gluv      = vec2(0.0);
     depthflow.oob       = false;
 }
+
+#endif
 
 /* ---------------------------------------------------------------------------------------------- */
 
