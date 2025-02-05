@@ -52,7 +52,7 @@ DepthFlow DepthMake(
     camera.dolly       += depth.dolly;
     camera.zoom        += (depth.zoom - 1.0) + (1.0/depth.away - 1.0);
     camera.plane_point  = vec3(0.0, 0.0, depth.away);
-    camera              = iCameraProject(camera);
+    camera              = CameraProject(camera);
     depth.oob           = camera.out_of_bounds;
 
     if (depth.oob)
