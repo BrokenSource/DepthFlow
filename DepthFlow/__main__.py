@@ -1,6 +1,6 @@
 import sys
 
-from Broken import BrokenProfiler, BrokenTorch, BrokenTyper
+from Broken import BrokenProfiler, BrokenTorch, BrokenTyper, log
 
 
 def depthflow() -> None:
@@ -10,11 +10,13 @@ def depthflow() -> None:
 
 def gradio() -> None:
     """🎓 Run DepthFlow's [bold green]Gradio user interface[/]"""
+    log.minor("Launching the DepthFlow WebUI")
     from DepthFlow.Webui import DepthGradio
     BrokenTyper.simple(DepthGradio().launch)
 
 def server() -> None:
     """🌐 Run DepthFlow's [bold green]API Server[/]"""
+    log.minor("Launching the DepthFlow API Server")
     from DepthFlow.Server import DepthServer
     DepthServer().cli(*sys.argv[1:])
 

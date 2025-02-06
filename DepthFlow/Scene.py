@@ -6,7 +6,7 @@ import numpy
 import validators
 from attr import Factory, define
 from imgui_bundle import imgui
-from PIL.Image import Image
+from PIL.Image import Image as ImageType
 from pydantic import Field
 from ShaderFlow.Exceptions import ShaderBatchStop
 from ShaderFlow.Message import ShaderMessage
@@ -284,7 +284,7 @@ class DepthScene(ShaderScene):
                 yield from self._iter_batch_input(part)
 
         # Return known valid inputs as is
-        elif isinstance(item, (bytes, Image, numpy.ndarray)):
+        elif isinstance(item, (bytes, ImageType, numpy.ndarray)):
             yield item
         elif validators.url(item):
             yield item
