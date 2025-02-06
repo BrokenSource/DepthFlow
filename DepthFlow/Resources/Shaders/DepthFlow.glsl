@@ -123,36 +123,37 @@ DepthFlow DepthMake(
     return depth;
 }
 
-DepthFlow depthflow;
-
-void iDepthInit() {
-    depthflow.isometric = iDepthIsometric;
-    depthflow.dolly     = iDepthDolly;
-    depthflow.zoom      = iDepthZoom;
-    depthflow.offset    = iDepthOffset;
-    depthflow.height    = iDepthHeight;
-    depthflow.focus     = iDepthFocus;
-    depthflow.center    = iDepthCenter;
-    depthflow.steady    = iDepthSteady;
-    depthflow.origin    = iDepthOrigin;
-    depthflow.mirror    = iDepthMirror;
-    depthflow.invert    = iDepthInvert;
-    depthflow.quality   = iQuality;
-    depthflow.away      = 1.0;
-    depthflow.fixed     = true;
-    depthflow.value     = 0.0;
-    depthflow.gluv      = vec2(0.0);
-    depthflow.oob       = false;
-}
+#define GetDepthFlow(name) \
+    DepthFlow name; \
+    { \
+        name.isometric = name##Isometric; \
+        name.dolly     = name##Dolly; \
+        name.zoom      = name##Zoom; \
+        name.offset    = name##Offset; \
+        name.height    = name##Height; \
+        name.focus     = name##Focus; \
+        name.center    = name##Center; \
+        name.steady    = name##Steady; \
+        name.origin    = name##Origin; \
+        name.mirror    = name##Mirror; \
+        name.invert    = name##Invert; \
+        name.quality   = iQuality; \
+        name.away      = 1.0; \
+        name.fixed     = true; \
+        name.value     = 0.0; \
+        name.gluv      = vec2(0.0); \
+        name.oob       = false; \
+    }
 
 #endif
 
 /* ---------------------------------------------------------------------------------------------- */
 
+
 void main() {
-    iCameraInit();
-    iDepthInit();
-    depthflow = DepthMake(iCamera, depthflow, depth);
+    GetCamera(iCamera);
+    GetDepthFlow(iDepth)
+    DepthFlow depthflow = DepthMake(iCamera, iDepth, depth);
     fragColor = gtexture(image, depthflow.gluv, depthflow.mirror);
 
     if (depthflow.oob) {
