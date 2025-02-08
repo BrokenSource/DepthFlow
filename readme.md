@@ -1,4 +1,3 @@
-<!-- PyPI Start -->
 <div align="center">
   <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="210">
   <h1 style="margin-top: 0">DepthFlow</h1>
