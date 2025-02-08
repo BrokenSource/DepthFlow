@@ -185,7 +185,6 @@ class DocsParameters:
         class Example(DocScene):
             def update(self):
                 self.state.height = 1
-                self.state.isometric = -1
                 self.state.dolly = 3*(1 - math.cos(self.cycle))
 
         self.render(scene=Example(), time=5,
@@ -195,7 +194,6 @@ class DocsParameters:
             def update(self):
                 self.state.height = 1
                 self.state.focus = 0.32
-                self.state.isometric = -1
                 self.state.dolly = 1.5*(1 - math.cos(self.cycle))
 
         self.render(scene=Example(focus_plane=True), time=5,
