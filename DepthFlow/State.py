@@ -131,7 +131,7 @@ class ColorState(BrokenModel):
 class DepthState(BrokenModel):
     """Set effect parameters, animations might override them!"""
 
-    height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.10)
+    height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.20)
     """Depthmap's peak value, the parallax intensity"""
 
     steady: Annotated[float, Option("--steady", "-s", min=0, max=1)] = Field(0.0)
@@ -143,7 +143,7 @@ class DepthState(BrokenModel):
     zoom: Annotated[float, Option("--zoom", "-z", min=0, max=2)] = Field(1.0)
     """Camera zoom factor (0.25 means a quarter of the image is visible)"""
 
-    isometric: Annotated[float, Option("--isometric", "-i", min=0, max=1)] = Field(0.0)
+    isometric: Annotated[float, Option("--isometric", "-i", min=0, max=1)] = Field(0.5)
     """Isometric factor of camera projections (0 is full perspective, 1 is orthographic)"""
 
     dolly: Annotated[float, Option("--dolly", "-d", min=0, max=20)] = Field(0.0)

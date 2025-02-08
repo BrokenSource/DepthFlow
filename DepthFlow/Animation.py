@@ -357,7 +357,7 @@ class Actions(ClassEnum):
             if self.loop:
                 (Actions.Sine if self.smooth else Actions.Triangle)(
                     target    = Target.OffsetY,
-                    amplitude = 0.5*self.intensity,
+                    amplitude = 0.8*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
                 ).apply(scene)
@@ -385,7 +385,7 @@ class Actions(ClassEnum):
             if self.loop:
                 (Actions.Sine if self.smooth else Actions.Triangle)(
                     target    = Target.OffsetX,
-                    amplitude = 0.5*self.intensity,
+                    amplitude = 0.8*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
                 ).apply(scene)
@@ -408,8 +408,8 @@ class Actions(ClassEnum):
             if self.loop:
                 (Actions.Sine if self.smooth else Actions.Triangle)(
                     target    = Target.Height,
-                    amplitude = 0.50 * (self.intensity/2),
-                    bias      = 0.50 * (self.intensity/2),
+                    amplitude = (self.intensity/2),
+                    bias      = (self.intensity/2),
                     phase     = self.phase,
                     cycles    = 1.00,
                     reverse   = self.reverse,
@@ -455,10 +455,11 @@ class Actions(ClassEnum):
         type:   Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
         smooth: SmoothType  = Field(True)
         loop:   LoopType    = Field(True)
-        depth:  DepthType   = Field(0.5)
+        depth:  DepthType   = Field(0.35)
         phase:  PhaseType   = Field(0.0)
 
         def apply(self, scene: DepthScene) -> None:
+            scene.state.height = 0.5*self.intensity
             scene.state.steady = self.depth
             scene.state.focus  = self.depth
 
@@ -469,17 +470,17 @@ class Actions(ClassEnum):
 
             (Actions.Sine if self.smooth else Actions.Triangle)(
                 target    = Target.Isometric,
-                amplitude = 2*self.intensity,
+                amplitude = self.intensity/2,
+                bias      = self.intensity/2,
                 phase     = self.phase + phase,
+                reverse   = (not self.reverse),
                 cycles    = cycles,
-                reverse   = self.reverse,
-                bias      = 1,
             ).apply(scene)
 
     class Orbital(PresetBase):
         """Orbit the camera around a fixed point"""
         type:  Annotated[Literal["orbital"], BrokenTyper.exclude()] = "orbital"
-        depth: DepthType = Field(0.0)
+        depth: DepthType = Field(0.3)
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.steady = self.depth
@@ -487,14 +488,14 @@ class Actions(ClassEnum):
 
             Actions.Cosine(
                 target    = Target.Isometric,
-                amplitude = self.intensity,
-                bias      = self.intensity,
+                amplitude = self.intensity/2,
+                bias      = self.intensity/2,
                 reverse   = self.reverse,
             ).apply(scene)
 
             Actions.Sine(
                 target    = Target.OffsetX,
-                amplitude = self.intensity,
+                amplitude = 0.5*self.intensity,
                 reverse   = self.reverse,
             ).apply(scene)
 

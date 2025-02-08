@@ -29,7 +29,6 @@ struct DepthFlow {
     bool mirror;
     float invert;
     float quality;
-    float away;
     bool fixed;
 
     // Output
@@ -43,25 +42,26 @@ DepthFlow DepthMake(
     DepthFlow depth,
     sampler2D depthmap
 ) {
-    // The infinity projection plane's distance from the camera
-    depth.away = 1.0 + mix(0.0, depth.height, depth.focus);
+    // Convert absolute values to relative values
+    float rel_focus  = (depth.focus  * depth.height);
+    float rel_steady = (depth.steady * depth.height);
 
     // Inject parallax options on the camera
     camera.position.xy += depth.offset;
-    camera.isometric   += mix(0.5, 1.0, depth.isometric);
+    camera.isometric   += depth.isometric;
     camera.dolly       += depth.dolly;
-    camera.zoom        += (depth.zoom - 1.0) + (1.0/depth.away - 1.0);
-    camera.plane_point  = vec3(0.0, 0.0, depth.away);
+    camera.zoom        += (depth.zoom - 1.0);
+    camera.focal_length = (1.0 - rel_focus);
+    camera.plane_point  = vec3(0.0, 0.0, 1.0);
     camera              = CameraProject(camera);
     depth.oob           = camera.out_of_bounds;
 
     if (depth.oob)
         return depth;
 
-    // Point where the ray intersects with the infinity plane, with a fixed point
-    // pivoting around depth=steady. I do not know how the math works.
+    // Point where the ray intersects with a fixed point pivoting around depth=steady
     vec3 intersect = vec3(depth.center + camera.gluv, 1.0)
-        - vec3(camera.position.xy, 0.0) * (1.0 + depth.steady * depth.height / depth.away) * int(depth.fixed);
+        - vec3(camera.position.xy, 0.0) * (1.0/(1.0 - rel_steady)) * int(depth.fixed);
 
     // The quality of the parallax effect is how tiny the steps are
     // Optimization: Low quality overshoot, high quality reverse
@@ -69,7 +69,7 @@ DepthFlow DepthMake(
     float probe   = (1.0 / mix( 50,  100, depth.quality));
 
     // The guaranteed relative distance to not hit the surface
-    float safe = (1.0 - (depth.height / depth.away));
+    float safe = (1.0 - depth.height);
     float walk = 0.0;
     float last_value = 0.0;
 
@@ -94,7 +94,7 @@ DepthFlow DepthMake(
             depth.value = gtexture(depthmap, depth.gluv, depth.mirror).r;
 
             // Fixme optimization (+8%): Avoid recalculating 'invert'
-            float surface = depth.height * mix(depth.value, 1.0-depth.value, depth.invert);
+            float surface = depth.height * mix(depth.value, 1.0 - depth.value, depth.invert);
             float ceiling = (1.0 - point.z);
 
             // Stop the first moment we're inside the surface
@@ -138,13 +138,11 @@ DepthFlow DepthMake(
         name.mirror    = name##Mirror; \
         name.invert    = name##Invert; \
         name.quality   = iQuality; \
-        name.away      = 1.0; \
         name.fixed     = true; \
         name.value     = 0.0; \
         name.gluv      = vec2(0.0); \
         name.oob       = false; \
     }
-
 #endif
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -152,7 +150,7 @@ DepthFlow DepthMake(
 
 void main() {
     GetCamera(iCamera);
-    GetDepthFlow(iDepth)
+    GetDepthFlow(iDepth);
     DepthFlow depthflow = DepthMake(iCamera, iDepth, depth);
     fragColor = gtexture(image, depthflow.gluv, depthflow.mirror);
 

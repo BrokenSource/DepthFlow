@@ -4,92 +4,20 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable
 
 from attr import Factory, define
-from DepthFlow import DepthScene
+from DepthFlow import DEPTHFLOW
+from DepthFlow.Scene import DEPTH_SHADER, DepthScene
 from imgui_bundle import imgui
 from ShaderFlow.Variable import ShaderVariable, Uniform
 
 from Broken import BROKEN, Environment, OnceTracker, install, log
 from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
 
-install("manim", "minio")
+install(packages="manim")
 
 if TYPE_CHECKING:
     import manim
-    import minio
 
 Environment.set("IMGUI_FONT_SCALE", "1.21")
-
-def _dir(path: str) -> str:
-    return f"[bold blue]{path}[/]"
-
-# ------------------------------------------------------------------------------------------------ #
-# Todo: Move Minio and Manim common classes to a DocsFabric module
-
-@define
-class BrokenMinio:
-
-    # Authentication
-    access_key: str = os.getenv("MINIO_ACCESS_KEY")
-    secret_key: str = os.getenv("MINIO_SECRET_KEY")
-    endpoint:   str = os.getenv("MINIO_ENDPOINT")
-    bucket:     str = os.getenv("MINIO_BUCKET")
-
-    authenticated: bool = False
-    client: minio.Minio = None
-
-    def __attrs_post_init__(self):
-        try:
-            self.client = minio.Minio(
-                endpoint=self.endpoint,
-                access_key=self.access_key,
-                secret_key=self.secret_key,
-                secure=True
-            )
-            self.authenticated = True
-            log.success(f"Connected to Minio instance at ({self.endpoint})")
-            self.make_bucket(self.bucket)
-        except Exception:
-            log.warning(f"Failed to connect to Minio instance at ({self.endpoint})")
-
-    def guarded(method: Callable) -> Callable:
-        def wrapper(self, *args, **kwargs):
-            if self.authenticated:
-                return method(self, *args, **kwargs)
-            log.warning("Minio instance is not authenticated")
-        return wrapper
-
-    @guarded
-    def make_bucket(self, bucket: str):
-        if not self.client.bucket_exists(bucket):
-            self.client.make_bucket(bucket)
-
-    @guarded
-    def upload(self, local: Path, remote: Path) -> None:
-        log.info(f"Uploading Minio file {_dir(local)} → {_dir(f'/{remote}@{self.bucket}')}")
-        self.client.fput_object(self.bucket, str(remote), str(local))
-
-    @guarded
-    def download(self, remote: Path, local: Path) -> Path:
-        log.info(f"Downloading Minio file {_dir(f'/{remote}@{self.bucket}')} → {_dir(local)}")
-        self.client.fget_object(
-            bucket_name=self.bucket,
-            object_name=str(remote),
-            file_path=str(local),
-        )
-        return local
-
-    @guarded
-    def remove(self, remote: Path) -> None:
-        log.info(f"Removing Minio file {_dir(f'/{remote}@{self.bucket}')}")
-        self.client.remove_object(self.bucket, str(remote))
-
-    @guarded
-    def rmdir(self, remote: Path) -> None:
-        log.info(f"Removing Minio directory {_dir(f'/{remote}@{self.bucket}')}")
-
-        for object in self.client.list_objects(self.bucket, prefix=f"{remote}/", recursive=True):
-            log.info(f"• Deleted {_dir(f'/{object.object_name}@{self.bucket}')}")
-            self.client.remove_object(self.bucket, object.object_name)
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -99,7 +27,7 @@ if (iSteadyPlane && abs(depthflow.value - iDepthSteady) < 0.002) {
     return;
 }
 if (iFocusPlane && abs(depthflow.value - iDepthFocus) < 0.002) {
-    fragColor = vec4(255.0, 79.0, 0, 255.0)/255.0;
+    fragColor = vec4(79.0, 255.0, 0, 255.0)/255.0;
     return;
 }"""
 
@@ -112,7 +40,7 @@ class DocScene(DepthScene):
 
     def build(self):
         DepthScene.build(self)
-        self.shader.fragment = self.DEPTH_SHADER.read_text().replace(
+        self.shader.fragment = DEPTH_SHADER.read_text().replace(
             "if (depthflow.oob) {", (SHADER_PATCH + "if (depthflow.oob) {")
         )
 
@@ -162,13 +90,9 @@ class DocScene(DepthScene):
 @define
 class DocsParameters:
     estimator: BaseEstimator = Factory(DepthAnythingV2)
-    minio: BrokenMinio = Factory(BrokenMinio)
 
-    def render(self, scene: DepthScene, name: str, *, time: float=10):
-        # Find local and remote paths for the asset video
-        base = BROKEN.DIRECTORIES.SYSTEM_TEMP/"mkdocs"
-        file = Path(name).with_suffix(".mp4")
-        output = (base/file)
+    def render(self, scene: DepthScene, file: str, *, time: float=10):
+        output = Path(Environment.get("ASSETS") or DEPTHFLOW.DIRECTORIES.DATA)/file
 
         # Initialize and configure the scene
         scene.estimator = self.estimator
@@ -193,56 +117,39 @@ class DocsParameters:
                 "aq-strength=1.0",
             ),
         )
-
-        # Render variations, upload
-        for _ in range(1):
-            video = scene.main(
-                output=output,
-                width=1920,
-                height=1080,
-                quality=100,
-                time=time,
-                ssaa=2,
-            )[0]
-            self.minio.upload(
-                remote=Path("depthflow")/output.relative_to(base),
-                local=video,
-            )
-
-        # Cleanup
-        scene.window.destroy()
+        scene.main(
+            output=output,
+            time=time,
+            width=1920,
+            height=1080,
+            quality=100,
+            subsample=4,
+            ssaa=4,
+        )
 
     def make_height(self):
         class Example(DocScene):
             def update(self):
                 self.state.height = (1 - math.cos(self.cycle))/2
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/height-varying.mp4",
-        )
+        self.render(scene=Example(),
+            file="learn/parameters/height-varying.mp4")
 
     def make_offset(self):
         class Example(DocScene):
             def update(self):
                 self.state.offset_x = 1.5*math.sin(self.cycle)
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/offset-x-varying.mp4",
-            time=5,
-        )
+        self.render(scene=Example(), time=5,
+            file="learn/parameters/offset-x-varying.mp4")
 
         class Example(DocScene):
             def update(self):
                 self.state.offset_x = math.cos(self.cycle)
                 self.state.offset_y = math.sin(self.cycle)
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/offset-xy-varying.mp4",
-            time=5,
-        )
+        self.render(scene=Example(), time=5,
+            file="learn/parameters/offset-xy-varying.mp4")
 
     def make_steady(self):
         class Example(DocScene):
@@ -250,11 +157,8 @@ class DocsParameters:
                 self.state.offset_x = 1.5*math.sin(self.cycle)
                 self.state.steady = 0.32
 
-        self.render(
-            scene=Example(steady_plane=True),
-            name="learn/parameters/steady-varying.mp4",
-            time=5,
-        )
+        self.render(scene=Example(steady_plane=True), time=5,
+            file="learn/parameters/steady-varying.mp4")
 
     def make_isometric(self):
         class Example(DocScene):
@@ -264,10 +168,8 @@ class DocsParameters:
                 self.state.offset_x = 0.3*math.cos(3*self.cycle)
                 self.state.offset_y = 0.3*math.sin(3*self.cycle)
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/isometric-varying.mp4",
-        )
+        self.render(scene=Example(), time=10,
+            file="learn/parameters/isometric-varying.mp4",)
 
         class Example(DocScene):
             def update(self):
@@ -276,35 +178,28 @@ class DocsParameters:
                 self.state.offset_x = 0.3*math.cos(self.cycle)
                 self.state.offset_y = 0.3*math.sin(self.cycle)
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/isometric-flat.mp4",
-            time=5,
-        )
+        self.render(scene=Example(), time=5,
+            file="learn/parameters/isometric-flat.mp4")
 
     def make_dolly(self):
         class Example(DocScene):
             def update(self):
                 self.state.height = 1
-                self.state.dolly = 1.5*(1 - math.cos(self.cycle))
+                self.state.isometric = -1
+                self.state.dolly = 3*(1 - math.cos(self.cycle))
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/dolly-varying.mp4",
-            time=5,
-        )
+        self.render(scene=Example(), time=5,
+            file="learn/parameters/dolly-varying.mp4")
 
         class Example(DocScene):
             def update(self):
                 self.state.height = 1
                 self.state.focus = 0.32
+                self.state.isometric = -1
                 self.state.dolly = 1.5*(1 - math.cos(self.cycle))
 
-        self.render(
-            scene=Example(focus_plane=True),
-            name="learn/parameters/dolly-focus-varying.mp4",
-            time=5,
-        )
+        self.render(scene=Example(focus_plane=True), time=5,
+            file="learn/parameters/dolly-focus-varying.mp4")
 
     def make_focus(self):
         class Example(DocScene):
@@ -313,21 +208,16 @@ class DocsParameters:
                 self.state.focus = 0.32
                 self.state.isometric = 0.999*(1 - math.cos(self.cycle))/2
 
-        self.render(
-            scene=Example(focus_plane=True),
-            name="learn/parameters/focus-varying.mp4",
-            time=5,
-        )
+        self.render(scene=Example(focus_plane=True), time=5,
+            file="learn/parameters/focus-varying.mp4")
 
     def make_zoom(self):
         class Example(DocScene):
             def update(self):
                 self.state.zoom = 1 - 0.5*(1 - math.cos(self.cycle))/2
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/zoom-varying.mp4",
-        )
+        self.render(scene=Example(), time=10,
+            file="learn/parameters/zoom-varying.mp4")
 
     def make_invert(self):
         class Example(DocScene):
@@ -336,20 +226,16 @@ class DocsParameters:
                 self.state.invert = (1 - math.cos(self.cycle))/2
                 self.state.offset_x = 1.5*math.sin(self.cycle)
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/invert-varying.mp4",
-        )
+        self.render(scene=Example(), time=10,
+            file="learn/parameters/invert-varying.mp4")
 
     def make_center(self):
         class Example(DocScene):
             def update(self):
                 self.state.center_x = math.sin(self.cycle)
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/center-varying.mp4",
-        )
+        self.render(scene=Example(), time=10,
+            file="learn/parameters/center-varying.mp4")
 
     def make_origin(self):
         class Example(DocScene):
@@ -357,11 +243,8 @@ class DocsParameters:
                 self.state.origin_x = 1
                 self.state.height = (1 - math.cos(self.cycle))/2
 
-        self.render(
-            scene=Example(),
-            name="learn/parameters/origin-varying.mp4",
-            time=5
-        )
+        self.render(scene=Example(), time=5,
+            file="learn/parameters/origin-varying.mp4")
 
 # ------------------------------------------------------------------------------------------------ #
 
