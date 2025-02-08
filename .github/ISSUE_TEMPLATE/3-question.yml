@@ -1,19 +1,19 @@
 name: ❓ Create a new question ticket
-description: Have a question about the project? Let me guide you! •
+description: Have a question about the project?
 
 body:
 - type: markdown
   attributes:
     value: |
       > [!IMPORTANT]
-      > - **Consider** asking your question on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first!
       > - ⚠️ Please use the Discussions tab above for questions!
+      > - You can also ask your question on [**Discord or Telegram**](https://brokensrc.dev/about/contact/)
 
 - type: dropdown
   attributes:
     label: "Please read the message above!"
     options:
-      - I understand it
+      - Ok!
     default: 0
 
 - type: markdown

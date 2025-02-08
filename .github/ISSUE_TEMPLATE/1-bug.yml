@@ -1,5 +1,5 @@
 name: 🐞 Create a new bug report ticket
-description: Facing some unexpected behavior or error? Let me help you! •
+description: Facing some unexpected behavior or error?
 labels:
   - bug
 
@@ -8,9 +8,8 @@ body:
   attributes:
     value: |
       > [!IMPORTANT]
-      > - Only the [**latest versions**](https://brokensrc.dev/get/) of the projects are **supported**<sup>*1</sup>
-      > - **Consider** getting in touch on [**Discord or Telegram**](https://brokensrc.dev/about/contact/) first!
-      <sub><i>*1: I can still help you, but please try latest first!</i></sub>
+      > - Only the [latest versions](https://brokensrc.dev/get/) of the projects are supported
+      > - You can also get help on [Discord or Telegram](https://brokensrc.dev/about/contact/)
 
 - type: markdown
   attributes:
@@ -23,15 +22,15 @@ body:
     description: |
       - Where are you experiencing the problem?
     options:
-      - Windows 11
-      - Windows 10
-      - macOS (Apple Silicon)
-      - macOS (Intel)
-      - Linux (Ubuntu-like)
-      - Linux (Fedora-like)
-      - Linux (Arch-like)
-      - Linux (Specify)
-      - BSD (Specify)
+      - 💠 Windows 11
+      - 💠 Windows 10
+      - 🍎 macOS (Apple Silicon)
+      - 🍎 macOS (Intel)
+      - 🐧 Linux (Ubuntu-like)
+      - 🐧 Linux (Fedora-like)
+      - 🐧 Linux (Arch-like)
+      - 🐧 Linux (Specify)
+      - Others (Specify)
       - N/A
     multiple: true
     default: 0
@@ -39,17 +38,17 @@ body:
     required: true
 
 - type: dropdown
-  id: runtime
+  id: runtime-method
   attributes:
-    label: 🔘 Runtime enviroment
+    label: 🔘 Runtime method
     description: |
       - Where are you running the projects from?
     options:
-      - PyApp Executables (experimental)
-      - PyPI Wheels (pip, poetry, pdm, rye, uv, etc)
-      - Source Code (Install scripts or manual)
-      - Docker containers (Docker, Podman, etc)
-      - Cloud services (AWS, GCP, Azure, etc)
+      - 📦 PyApp Executables (experimental)
+      - 🧀 PyPI Wheels (pip, poetry, pdm, uv)
+      - 🔥 Source Code (Install scripts)
+      - 🐳 Docker containers
+      - ☁️ Cloud services
       - N/A
     multiple: true
     default: 0
@@ -61,8 +60,8 @@ body:
   attributes:
     label: 🔘 Project version
     description: |
-      - **You can find the version** in the executable name or by running `project --version`
-      - **Examples are**: 0.9.0, latest, 0.8.0.dev0, stable, pre-release, etc.
+      - **Check** the file name, console logs, or run `project --version`
+      - **Examples**: 0.9.0, latest, 0.8.0.dev0, etc.
   validations:
     required: false
 
@@ -71,9 +70,9 @@ body:
   attributes:
     label: 🔘 Python version
     description: |
-      - **If running from Source Code**: Keep (Auto-managed) or find in `.python-version` file
-      - **If running from PyPI Wheels**: Check the Python version with `python --version`
-      - **If running from Executables**: Keep the default (Auto-managed) option
+      - **📦 Executables**: Keep the default (Auto-managed) option
+      - **🧀 PyPI Wheels**: Check the Python version with `python --version`
+      - **🔥 Source Code**: Keep (Auto-managed) or find in `.python-version` file
     options:
       - Auto-managed
       - Python 3.9
@@ -95,16 +94,14 @@ body:
       - **Select all that apply**; Feel free to leave it blank if the issue/project isn't GPU related
       - **Hybrid systems:** See in logs the GPU being used, switch on your OS if wrong one
     options:
-      - N/A
-      - Apple Silicon
-      - NVIDIA Desktop
-      - NVIDIA Laptop
-      - AMD Desktop
-      - AMD Laptop
-      - Intel Desktop
-      - Intel Laptop
+      - 🍎 Apple Silicon
+      - 🟢 NVIDIA Desktop
+      - 🟢 NVIDIA Laptop
+      - 🔴 AMD Desktop
+      - 🔴 AMD Laptop
+      - 🔵 Intel Desktop
+      - 🔵 Intel Laptop
     multiple: true
-    default: 0
   validations:
     required: false
 
@@ -114,7 +111,7 @@ body:
     label: 🔘 GPU Model
     description: |
       - **If applicable**, provide the model of the GPU(s) you're using
-      - **Examples are**: RTX 3090, RX 6800 XT, Arc B580, Iris Xe, etc.
+      - **Examples**: RTX 3090, RX 6800 XT, Arc B580, Iris Xe, etc.
   validations:
     required: false
 

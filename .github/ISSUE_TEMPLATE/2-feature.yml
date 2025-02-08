@@ -1,5 +1,5 @@
 name: 💡 Create a new feedback ticket
-description: Have an idea or feedback to improve the project? Let me hear it! •
+description: Have an idea or feedback to improve the project?
 labels:
   - enhancement
 
@@ -20,7 +20,7 @@ body:
   attributes:
     label: 🔘 Request type
     description: |
-      - What kind of report are you proposing?
+      - What kind of feedback are you providing?
     options:
       - General feedback
       - New functionality
