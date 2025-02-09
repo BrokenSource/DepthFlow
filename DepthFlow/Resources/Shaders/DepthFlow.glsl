@@ -9,30 +9,24 @@
 #define DEPTHFLOW
 
 struct DepthFlow {
-
-    // Camera
+    float quality;
+    float height;
+    float steady;
+    float focus;
+    float zoom;
     float isometric;
     float dolly;
-    float zoom;
-    vec3 plane;
-
-    // Parallax
+    float invert;
+    bool mirror;
+    vec2 offset;
+    vec2 center;
+    vec2 origin;
+    bool fixed;
+    // Output
     float derivative;
     float steep;
-    vec3 normal;
-    vec2 offset;
-    float height;
-    float focus;
-    vec2 center;
-    float steady;
-    vec2 origin;
-    bool mirror;
-    float invert;
-    float quality;
-    bool fixed;
-
-    // Output
     float value;
+    vec3 normal;
     vec2 gluv;
     bool oob;
 };
@@ -70,8 +64,8 @@ DepthFlow DepthMake(
 
     // The guaranteed relative distance to not hit the surface
     float safe = (1.0 - depth.height);
-    float walk = 0.0;
     float last_value = 0.0;
+    float walk = 0.0;
 
     /* Main loop: Find the intersection with the scene */
     for (int stage=0; stage<2; stage++) {
