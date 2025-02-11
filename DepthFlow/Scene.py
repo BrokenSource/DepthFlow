@@ -120,8 +120,8 @@ class DepthScene(ShaderScene):
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
         self.shader.fragment = DEPTH_SHADER
-        self.base_duration = 5.0
         self.subsample = 2
+        self.runtime = 5.0
         self.ssaa = 1.2
 
     def setup(self) -> None:
