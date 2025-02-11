@@ -10,7 +10,7 @@ from imgui_bundle import imgui
 from ShaderFlow.Variable import ShaderVariable, Uniform
 
 from Broken import BROKEN, Environment, OnceTracker, install, log
-from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
+from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 
 install(packages="manim")
 
@@ -89,7 +89,7 @@ class DocScene(DepthScene):
 
 @define
 class DocsParameters:
-    estimator: BaseEstimator = Factory(DepthAnythingV2)
+    estimator: DepthEstimator = Factory(DepthAnythingV2)
 
     def render(self, scene: DepthScene, file: str, *, time: float=10):
         output = Path(Environment.get("ASSETS") or DEPTHFLOW.DIRECTORIES.DATA)/file

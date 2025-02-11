@@ -17,7 +17,6 @@ from typer import Option
 
 from Broken import BrokenPath, Environment, flatten, list_get
 from Broken.Externals.Depthmap import (
-    BaseEstimator,
     DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
@@ -102,12 +101,10 @@ class DepthScene(ShaderScene):
                     self.cli.command(post, post=self.config.animation.add)
 
     def input(self,
-        image: Annotated[list[str],
-            Option("--image", "-i",
+        image: Annotated[list[str], Option("--image", "-i",
             help="[bold green](🟢 Basic)[/] Input image from Path, URL or Directory"
         )],
-        depth: Annotated[list[str],
-            Option("--depth", "-d",
+        depth: Annotated[list[str], Option("--depth", "-d",
             help="[bold green](🟢 Basic)[/] Input depthmap of the image [medium_purple3](None to estimate)[/]"
         )]=None,
     ) -> None:
@@ -167,7 +164,7 @@ class DepthScene(ShaderScene):
 
     # # Estimators
 
-    def set_estimator(self, estimator: BaseEstimator) -> BaseEstimator:
+    def set_estimator(self, estimator: DepthEstimator) -> DepthEstimator:
         self.config.estimator = estimator
         return self.config.estimator
     def load_estimator(self) -> None:

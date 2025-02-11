@@ -13,20 +13,26 @@ from gradio.themes.utils import colors, fonts, sizes
 from typer import Option
 
 from Broken import BrokenPath, BrokenResolution, DictUtils
-from Broken.Externals.Depthmap import (
-    BaseEstimator,
-    DepthAnythingV1,
-    DepthAnythingV2,
-    DepthPro,
-    Marigold,
-    ZoeDepth,
-)
-from Broken.Externals.Upscaler import Realesr, UpscalerBase, Upscayl, Waifu2x
+from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
+from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Animation import Actions, FilterBase, PresetBase
 
 WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebUI")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
+
+ESTIMATORS: dict[str, DepthEstimator] = {
+    "DepthAnything Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
+    "DepthAnything Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
+    "DepthAnything Large": DepthAnythingV2(model=DepthAnythingV2.Model.Large),
+}
+
+UPSCALERS: dict[str, BrokenUpscaler] = {
+    "Upscayl Digital Art":   Upscayl(model=Upscayl.Model.DigitalArt),
+    "Upscayl High Fidelity": Upscayl(model=Upscayl.Model.HighFidelity),
+    "Real-ESRGAN":           Realesr(),
+    "Waifu2x":               Waifu2x(),
+}
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -34,19 +40,6 @@ WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebU
 class DepthGradio:
     interface: gradio.Blocks = None
     fields: DotMap = Factory(DotMap)
-
-    estimators = {
-        "DepthAnything Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
-        "DepthAnything Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
-        "DepthAnything Large": DepthAnythingV2(model=DepthAnythingV2.Model.Large),
-    }
-
-    upscalers = {
-        "Upscayl Digital Art":   Upscayl(model=Upscayl.Model.DigitalArt),
-        "Upscayl High Fidelity": Upscayl(model=Upscayl.Model.HighFidelity),
-        "Real-ESRGAN":           Realesr(),
-        "Waifu2x":               Waifu2x(),
-    }
 
     def simple(self, method: Callable, **options: dict) -> dict:
         """An ugly hack to avoid manually listing inputs and outputs"""
@@ -61,11 +54,11 @@ class DepthGradio:
             **options,
         )
 
-    def _estimator(self, user: dict) -> BaseEstimator:
-        return self.estimators[user[self.fields.estimator]]
+    def _estimator(self, user: dict) -> DepthEstimator:
+        return ESTIMATORS[user[self.fields.estimator]]
 
-    def _upscaler(self, user: dict) -> UpscalerBase:
-        return self.upscalers[user[self.fields.upscaler]]
+    def _upscaler(self, user: dict) -> BrokenUpscaler:
+        return UPSCALERS[user[self.fields.upscaler]]
 
     def estimate(self, user: dict):
         if ((image := user[self.fields.image]) is None):

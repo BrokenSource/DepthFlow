@@ -23,8 +23,8 @@ from DepthFlow.Scene import DepthScene
 from dotmap import DotMap
 
 from Broken import Environment, combinations
-from Broken.Externals.Depthmap import BaseEstimator, DepthAnythingV2
-from Broken.Externals.Upscaler import NoUpscaler, UpscalerBase, Upscayl
+from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
+from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Upscayl
 
 
 # Note: You can also use your own subclassing like Custom.py!
@@ -38,10 +38,10 @@ class YourScene(DepthScene):
 @define
 class DepthManager:
 
-    estimator: BaseEstimator = Factory(DepthAnythingV2)
+    estimator: DepthEstimator = Factory(DepthAnythingV2)
     """A **shared** estimator for all threads"""
 
-    upscaler: UpscalerBase = Factory(NoUpscaler)
+    upscaler: BrokenUpscaler = Factory(NoUpscaler)
     """The upscaler to use for all threads"""
 
     threads: list[Thread] = Factory(list)
