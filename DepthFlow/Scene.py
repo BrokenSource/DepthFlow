@@ -73,8 +73,8 @@ class DepthScene(ShaderScene):
             self.cli.command(self.load_upscaler,  hidden=True)
 
         with self.cli.panel("🌊 Depth estimator"):
-            self.cli.command(DepthAnythingV1, post=self.set_estimator, name="any1")
-            self.cli.command(DepthAnythingV2, post=self.set_estimator, name="any2")
+            self.cli.command(DepthAnythingV1, post=self.set_estimator, name="da1")
+            self.cli.command(DepthAnythingV2, post=self.set_estimator, name="da2")
             self.cli.command(DepthPro, post=self.set_estimator)
             self.cli.command(ZoeDepth, post=self.set_estimator)
             self.cli.command(Marigold, post=self.set_estimator)

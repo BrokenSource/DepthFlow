@@ -36,16 +36,16 @@ UPSCALERS: dict[str, BrokenUpscaler] = {
 
 # ------------------------------------------------------------------------------------------------ #
 
-@define(slots=False)
+@define
 class DepthGradio:
     interface: gradio.Blocks = None
     fields: DotMap = Factory(DotMap)
 
     def simple(self, method: Callable, **options: dict) -> dict:
         """An ugly hack to avoid manually listing inputs and outputs"""
+        show_progress = bool(options.get("outputs"))
         outputs = options.pop("outputs", set(DictUtils.rvalues(self.fields)))
         inputs  = options.pop("inputs",  set(DictUtils.rvalues(self.fields)))
-        show_progress = bool(options.get("outputs"))
         return dict(
             fn=method,
             inputs=inputs,
@@ -171,8 +171,8 @@ class DepthGradio:
                         )
                         with gradio.Row(equal_height=True):
                             self.fields.upscaler = gradio.Dropdown(
-                                choices=list(self.upscalers.keys()),
-                                value=list(self.upscalers.keys())[0],
+                                choices=list(UPSCALERS.keys()),
+                                value=list(UPSCALERS.keys())[0],
                                 label="Upscaler", scale=10
                             )
                             self.fields.upscale = gradio.Button(value="🚀 Upscale", scale=1)
@@ -184,8 +184,8 @@ class DepthGradio:
                         )
                         with gradio.Row(equal_height=True):
                             self.fields.estimator = gradio.Dropdown(
-                                choices=list(self.estimators.keys()),
-                                value=list(self.estimators.keys())[0],
+                                choices=list(ESTIMATORS.keys()),
+                                value=list(ESTIMATORS.keys())[0],
                                 label="Depth Estimator", scale=10
                             )
                             self.fields.estimate = gradio.Button(value="🔎 Estimate", scale=1)
