@@ -248,26 +248,26 @@ class DepthGradio:
                             animation_type(FilterBase)
 
                 with gradio.Row(equal_height=True):
-                    with gradio.Row(equal_height=True, variant="panel"):
+                    with gradio.Column(variant="panel"):
                         self.fields.width = gradio.Number(label="Width",
                             minimum=1, precision=0, scale=10, value=1920)
                         self.fields.fit_height = gradio.Button(
                             value="➡️ Fit height", scale=1)
 
-                    with gradio.Row(equal_height=True, variant="panel"):
+                    with gradio.Column(variant="panel"):
                         self.fields.height = gradio.Number(label="Height",
                             minimum=1, precision=0, scale=10, value=1080)
                         self.fields.fit_width = gradio.Button(
                             value="⬅️ Fit width", scale=1)
 
-                    with gradio.Row(equal_height=True, variant="panel"):
+                    with gradio.Column(variant="panel"):
                         self.fields.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
-                            info="Renders at a higher resolution for smoother edges",
+                            info="Smoother edges and better quality",
                             value=1.5, minimum=1, maximum=2, step=0.1)
 
-                    with gradio.Row(equal_height=True, variant="panel"):
+                    with gradio.Column(variant="panel"):
                         self.fields.quality = gradio.Slider(label="Shader quality",
-                            info="Reduces internal step size for better quality",
+                            info="Improves intersections calculations",
                             value=50, minimum=0, maximum=100, step=10)
 
                     self.fields.fit_height.click(**self.simple(self.fit_width))
