@@ -102,14 +102,16 @@ class DepthScene(ShaderScene):
                     self.cli.command(post, post=self.config.animation.add)
 
     def input(self,
-        image: Annotated[list[str], Option("--image", "-i",
-            help="[bold green](🟢 Basic)[/] Background Image [green](Path, URL, NumPy, PIL)[/]"
+        image: Annotated[list[str],
+            Option("--image", "-i",
+            help="[bold green](🟢 Basic)[/] Input image from Path, URL or Directory"
         )],
-        depth: Annotated[list[str], Option("--depth", "-d",
-            help="[bold green](🟢 Basic)[/] Depthmap of the Image [medium_purple3](None to estimate)[/]"
+        depth: Annotated[list[str],
+            Option("--depth", "-d",
+            help="[bold green](🟢 Basic)[/] Input depthmap of the image [medium_purple3](None to estimate)[/]"
         )]=None,
     ) -> None:
-        """Input images from Path, URL, Directories and its estimated Depthmap (Lazy load)"""
+        """Use the given image(s) and depthmap(s) as the input of the scene"""
         self.config.image = image
         self.config.depth = depth
 

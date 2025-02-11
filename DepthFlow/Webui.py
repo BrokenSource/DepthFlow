@@ -36,24 +36,23 @@ class DepthGradio:
     fields: DotMap = Factory(DotMap)
 
     estimators = {
-        "DepthAnything V2": DepthAnythingV2,
-        "DepthAnything V1": DepthAnythingV1,
-        "DepthPro": DepthPro,
-        "ZoeDepth": ZoeDepth,
-        "Marigold": Marigold,
+        "DepthAnything Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
+        "DepthAnything Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
+        "DepthAnything Large": DepthAnythingV2(model=DepthAnythingV2.Model.Large),
     }
 
     upscalers = {
-        "Upscayl": Upscayl,
-        "Real-ESRGAN": Realesr,
-        "Waifu2x": Waifu2x,
+        "Upscayl Digital Art":   Upscayl(model=Upscayl.Model.DigitalArt),
+        "Upscayl High Fidelity": Upscayl(model=Upscayl.Model.HighFidelity),
+        "Real-ESRGAN":           Realesr(),
+        "Waifu2x":               Waifu2x(),
     }
 
     def simple(self, method: Callable, **options: dict) -> dict:
         """An ugly hack to avoid manually listing inputs and outputs"""
-        show_progress = bool(options.get("outputs"))
         outputs = options.pop("outputs", set(DictUtils.rvalues(self.fields)))
-        inputs = options.pop("inputs", set(DictUtils.rvalues(self.fields)))
+        inputs  = options.pop("inputs",  set(DictUtils.rvalues(self.fields)))
+        show_progress = bool(options.get("outputs"))
         return dict(
             fn=method,
             inputs=inputs,
@@ -63,10 +62,10 @@ class DepthGradio:
         )
 
     def _estimator(self, user: dict) -> BaseEstimator:
-        return self.estimators[user[self.fields.estimator]]()
+        return self.estimators[user[self.fields.estimator]]
 
     def _upscaler(self, user: dict) -> UpscalerBase:
-        return self.upscalers[user[self.fields.upscaler]]()
+        return self.upscalers[user[self.fields.upscaler]]
 
     def estimate(self, user: dict):
         if ((image := user[self.fields.image]) is None):
