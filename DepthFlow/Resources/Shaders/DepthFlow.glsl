@@ -53,6 +53,9 @@ DepthFlow DepthMake(
     if (depth.oob)
         return depth;
 
+    // Shift ray origin to the target center point
+    camera.origin += vec3(depth.origin, 0);
+
     // Point where the ray intersects with a fixed point pivoting around depth=steady
     vec3 intersect = vec3(depth.center + camera.gluv, 1.0)
         - vec3(camera.position.xy, 0.0) * (1.0/(1.0 - rel_steady)) * int(depth.fixed);

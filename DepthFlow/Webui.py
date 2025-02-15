@@ -22,9 +22,9 @@ WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebU
 """The temporary output for the WebUI, cleaned at the start and after any render"""
 
 ESTIMATORS: dict[str, DepthEstimator] = {
-    "DepthAnything Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
-    "DepthAnything Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
-    "DepthAnything Large": DepthAnythingV2(model=DepthAnythingV2.Model.Large),
+    "DepthAnything2 Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
+    "DepthAnything2 Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
+    "DepthAnything2 Large": DepthAnythingV2(model=DepthAnythingV2.Model.Large),
 }
 
 UPSCALERS: dict[str, BrokenUpscaler] = {
@@ -36,7 +36,7 @@ UPSCALERS: dict[str, BrokenUpscaler] = {
 
 # ------------------------------------------------------------------------------------------------ #
 
-@define
+@define(slots=False)
 class DepthGradio:
     interface: gradio.Blocks = None
     fields: DotMap = Factory(DotMap)
