@@ -37,6 +37,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["DepthFlow"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"Examples" = "DepthFlow/Resources/Examples"
+
 [tool.hatch.metadata.hooks.custom]
 path = ".github/hatch_build.py"
 
