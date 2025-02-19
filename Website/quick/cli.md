@@ -233,8 +233,8 @@ Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` fol
 !!! example ""
 
     ```shell title=""
-    # This creates 'foo-batch.mp4', 'bar-batch.mp4', 'baz-batch.mp4' in the './outputs' folder
-    depthflow input -i ./images -b all main -o ./outputs/batch
+    # This creates 'foo-suffix.mp4', 'bar-suffix.mp4', 'baz-suffix.mp4' in the './outputs' folder
+    depthflow input -i ./images main -b all -o ./outputs/suffix
     ```
 
     The prefix is _enforced_ mainly as there's no 'empty' file in a directory, but also useful in:
