@@ -14,7 +14,7 @@ from ShaderFlow.Message import ShaderMessage
 
 # Note: DepthScene.method(self) is preferred over super().method(self) for clarity
 
-class YourScene(DepthScene):
+class CustomScene(DepthScene):
     def update(self):
         self.state.offset_x = math.sin(2*self.cycle)
         ...
@@ -28,14 +28,11 @@ class YourScene(DepthScene):
         ...
 
 def manual():
-    scene = YourScene()
+    scene = CustomScene()
     scene.cli(sys.argv[1:])
 
 def managed():
-    from Broken.Externals.Upscaler import Upscayl
-    # Note: For headless rendering / server, use backend='headless'
-    scene = YourScene(backend="glfw")
-    scene.set_upscaler(Upscayl())
+    scene = CustomScene(backend="headless")
     scene.input(image="image.png")
     scene.main(output="./video.mp4", fps=30, time=5)
     scene.window.destroy()

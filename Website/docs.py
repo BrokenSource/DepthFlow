@@ -12,7 +12,7 @@ from ShaderFlow.Variable import ShaderVariable, Uniform
 from Broken import BROKEN, Environment, OnceTracker, install, log
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 
-install(packages="manim")
+install(package="manim")
 
 if TYPE_CHECKING:
     import manim
