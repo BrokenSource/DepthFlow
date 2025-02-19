@@ -16,11 +16,20 @@ def gradio() -> None:
 
 def main() -> None:
     with BrokenProfiler("DEPTHFLOW"):
-        BrokenTyper.complex(
-            main=depthflow,
-            nested=(depthflow, gradio),
-            simple=BrokenTorch.install,
-        )
+        cli = BrokenTyper.toplevel()
+
+        with cli.panel("Commands"):
+            cli.command(depthflow, default=True)
+            cli.command(gradio)
+            cli.command(BrokenTorch.install)
+
+        with cli.panel("Depth Estimators"):
+            ...
+
+        with cli.panel("Upscalers"):
+            ...
+
+        cli(*sys.argv[1:])
 
 if __name__ == "__main__":
     main()
