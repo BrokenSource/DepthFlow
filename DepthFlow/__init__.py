@@ -1,4 +1,3 @@
-import DepthFlow.Resources as DepthFlowResources
 from Broken import BrokenProject, __version__
 
 DEPTHFLOW_ABOUT = """
@@ -10,7 +9,6 @@ DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
     APP_NAME="DepthFlow",
     APP_AUTHOR="BrokenSource",
-    RESOURCES=DepthFlowResources,
     ABOUT=DEPTHFLOW_ABOUT,
 )
 
