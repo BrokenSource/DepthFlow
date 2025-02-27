@@ -181,7 +181,7 @@ class FilterBase(AnimationBase):
 
 # ------------------------------------------------------------------------------------------------ #
 
-class Actions(ClassEnum):
+class Animation(ClassEnum):
 
     # ----------------------------------------------|
     # Special components
@@ -355,14 +355,14 @@ class Actions(ClassEnum):
             scene.state.steady    = self.steady
 
             if self.loop:
-                (Actions.Sine if self.smooth else Actions.Triangle)(
+                (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.OffsetY,
                     amplitude = 0.8*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
                 ).apply(scene)
             else:
-                (Actions.Sine if self.smooth else Actions.Triangle)(
+                (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.OffsetY,
                     amplitude = self.intensity,
                     phase     = -0.25,
@@ -383,14 +383,14 @@ class Actions(ClassEnum):
             scene.state.steady    = self.steady
 
             if self.loop:
-                (Actions.Sine if self.smooth else Actions.Triangle)(
+                (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.OffsetX,
                     amplitude = 0.8*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
                 ).apply(scene)
             else:
-                (Actions.Sine if self.smooth else Actions.Triangle)(
+                (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.OffsetX,
                     amplitude = self.intensity,
                     phase     = -0.25,
@@ -406,7 +406,7 @@ class Actions(ClassEnum):
 
         def apply(self, scene: DepthScene) -> None:
             if self.loop:
-                (Actions.Sine if self.smooth else Actions.Triangle)(
+                (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.Height,
                     amplitude = (self.intensity/2),
                     bias      = (self.intensity/2),
@@ -415,7 +415,7 @@ class Actions(ClassEnum):
                     reverse   = self.reverse,
                 ).apply(scene)
             else:
-                (Actions.Sine if self.smooth else Actions.Triangle)(
+                (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.Height,
                     amplitude = 0.75 * self.intensity,
                     phase     = 0.00,
@@ -436,14 +436,14 @@ class Actions(ClassEnum):
             scene.state.isometric = self.isometric
             scene.state.steady    = self.steady
 
-            (Actions.Sine if self.smooth else Actions.Triangle)(
+            (Animation.Sine if self.smooth else Animation.Triangle)(
                 target    = Target.OffsetX,
                 amplitude = (0.5*self.intensity*self.amplitude[0]),
                 phase     = self.phase[0] + 0.25,
                 reverse   = self.reverse,
             ).apply(scene)
 
-            (Actions.Sine if self.smooth else Actions.Triangle)(
+            (Animation.Sine if self.smooth else Animation.Triangle)(
                 target    = Target.OffsetY,
                 amplitude = (0.5*self.intensity*self.amplitude[1]),
                 phase     = self.phase[1],
@@ -468,7 +468,7 @@ class Actions(ClassEnum):
             else:
                 phase, cycles = (-0.75 if self.reverse else 0.25), 0.5
 
-            (Actions.Sine if self.smooth else Actions.Triangle)(
+            (Animation.Sine if self.smooth else Animation.Triangle)(
                 target    = Target.Isometric,
                 amplitude = self.intensity/2,
                 bias      = self.intensity/2,
@@ -486,14 +486,14 @@ class Actions(ClassEnum):
             scene.state.steady = self.depth
             scene.state.focus  = self.depth
 
-            Actions.Cosine(
+            Animation.Cosine(
                 target    = Target.Isometric,
                 amplitude = self.intensity/2,
                 bias      = self.intensity/2,
                 reverse   = self.reverse,
             ).apply(scene)
 
-            Actions.Sine(
+            Animation.Sine(
                 target    = Target.OffsetX,
                 amplitude = 0.5*self.intensity,
                 reverse   = self.reverse,
@@ -504,30 +504,30 @@ class Actions(ClassEnum):
 AnimationType: TypeAlias = Union[
     # Special
     DepthState,
-    Actions.Nothing,
-    Actions.Custom,
-    Actions.Reset,
+    Animation.Nothing,
+    Animation.Custom,
+    Animation.Reset,
     # Constants
-    Actions.Set,
-    Actions.Add,
+    Animation.Set,
+    Animation.Add,
     # Basic
-    Actions.Linear,
-    Actions.Sine,
-    Actions.Cosine,
-    Actions.Triangle,
+    Animation.Linear,
+    Animation.Sine,
+    Animation.Cosine,
+    Animation.Triangle,
     # Filters
-    Actions.Vignette,
-    Actions.Lens,
-    Actions.Blur,
-    Actions.Inpaint,
-    Actions.Colors,
+    Animation.Vignette,
+    Animation.Lens,
+    Animation.Blur,
+    Animation.Inpaint,
+    Animation.Colors,
     # Presets
-    Actions.Vertical,
-    Actions.Horizontal,
-    Actions.Zoom,
-    Actions.Circle,
-    Actions.Dolly,
-    Actions.Orbital,
+    Animation.Vertical,
+    Animation.Horizontal,
+    Animation.Zoom,
+    Animation.Circle,
+    Animation.Dolly,
+    Animation.Orbital,
 ]
 
 # ------------------------------------------------------------------------------------------------ #

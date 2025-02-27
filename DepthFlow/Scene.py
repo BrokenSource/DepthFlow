@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Annotated, Optional
 
-import numpy
+import numpy as np
 import validators
 from attr import Factory, define
 from imgui_bundle import imgui
@@ -35,7 +35,7 @@ from Broken.Loaders import LoadableImage, LoadImage
 from Broken.Types import FileExtensions, PydanticImage
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Animation import (
-    Actions,
+    Animation,
     ComponentBase,
     DepthAnimation,
     FilterBase,
@@ -58,6 +58,9 @@ class DepthScene(ShaderScene):
         estimator: DepthEstimator = Field(default_factory=DepthAnythingV2)
         animation: DepthAnimation = Field(default_factory=DepthAnimation)
         upscaler:  BrokenUpscaler = Field(default_factory=NoUpscaler)
+
+    # Redefinition for type hinting
+    config: Config = Factory(Config)
 
     # -------------------------------------------------------------------------------------------- #
     # Command line interface
@@ -86,17 +89,17 @@ class DepthScene(ShaderScene):
 
         with self.cli.panel("🚀 Animation components"):
             _hidden = Environment.flag("ADVANCED", 0)
-            for animation in Actions.members():
+            for animation in Animation.members():
                 if issubclass(animation, ComponentBase):
                     self.cli.command(animation, post=self.config.animation.add, hidden=_hidden)
 
         with self.cli.panel("🔮 Animation presets"):
-            for preset in Actions.members():
+            for preset in Animation.members():
                 if issubclass(preset, PresetBase):
                     self.cli.command(preset, post=self.config.animation.add)
 
         with self.cli.panel("🎨 Post-processing"):
-            for post in Actions.members():
+            for post in Animation.members():
                 if issubclass(post, FilterBase):
                     self.cli.command(post, post=self.config.animation.add)
 
@@ -125,7 +128,7 @@ class DepthScene(ShaderScene):
 
     def setup(self) -> None:
         if (not self.config.animation):
-            self.config.animation.add(Actions.Orbital())
+            self.config.animation.add(Animation.Orbital())
         self._load_inputs()
 
     def update(self) -> None:
@@ -184,44 +187,44 @@ class DepthScene(ShaderScene):
     # # Animations
 
     # Constant
-    def set(self, **options) -> Actions.Set:
-        return self.config.animation.add(Actions.Set(**options))
-    def add(self, **options) -> Actions.Add:
-        return self.config.animation.add(Actions.Add(**options))
+    def set(self, **options) -> Animation.Set:
+        return self.config.animation.add(Animation.Set(**options))
+    def add(self, **options) -> Animation.Add:
+        return self.config.animation.add(Animation.Add(**options))
 
     # Basic
-    def linear(self, **options) -> Actions.Linear:
-        return self.config.animation.add(Actions.Linear(**options))
-    def sine(self, **options) -> Actions.Sine:
-        return self.config.animation.add(Actions.Sine(**options))
-    def cosine(self, **options) -> Actions.Cosine:
-        return self.config.animation.add(Actions.Cosine(**options))
-    def triangle(self, **options) -> Actions.Triangle:
-        return self.config.animation.add(Actions.Triangle(**options))
+    def linear(self, **options) -> Animation.Linear:
+        return self.config.animation.add(Animation.Linear(**options))
+    def sine(self, **options) -> Animation.Sine:
+        return self.config.animation.add(Animation.Sine(**options))
+    def cosine(self, **options) -> Animation.Cosine:
+        return self.config.animation.add(Animation.Cosine(**options))
+    def triangle(self, **options) -> Animation.Triangle:
+        return self.config.animation.add(Animation.Triangle(**options))
 
     # Presets
-    def vertical(self, **options) -> Actions.Vertical:
-        return self.config.animation.add(Actions.Vertical(**options))
-    def horizontal(self, **options) -> Actions.Horizontal:
-        return self.config.animation.add(Actions.Horizontal(**options))
-    def zoom(self, **options) -> Actions.Zoom:
-        return self.config.animation.add(Actions.Zoom(**options))
-    def circle(self, **options) -> Actions.Circle:
-        return self.config.animation.add(Actions.Circle(**options))
-    def dolly(self, **options) -> Actions.Dolly:
-        return self.config.animation.add(Actions.Dolly(**options))
-    def orbital(self, **options) -> Actions.Orbital:
-        return self.config.animation.add(Actions.Orbital(**options))
+    def vertical(self, **options) -> Animation.Vertical:
+        return self.config.animation.add(Animation.Vertical(**options))
+    def horizontal(self, **options) -> Animation.Horizontal:
+        return self.config.animation.add(Animation.Horizontal(**options))
+    def zoom(self, **options) -> Animation.Zoom:
+        return self.config.animation.add(Animation.Zoom(**options))
+    def circle(self, **options) -> Animation.Circle:
+        return self.config.animation.add(Animation.Circle(**options))
+    def dolly(self, **options) -> Animation.Dolly:
+        return self.config.animation.add(Animation.Dolly(**options))
+    def orbital(self, **options) -> Animation.Orbital:
+        return self.config.animation.add(Animation.Orbital(**options))
 
     # Post-processing
-    def vignette(self, **options) -> Actions.Vignette:
-        return self.config.animation.add(Actions.Vignette(**options))
-    def blur(self, **options) -> Actions.Blur:
-        return self.config.animation.add(Actions.Blur(**options))
-    def inpaint(self, **options) -> Actions.Inpaint:
-        return self.config.animation.add(Actions.Inpaint(**options))
-    def colors(self, **options) -> Actions.Colors:
-        return self.config.animation.add(Actions.Colors(**options))
+    def vignette(self, **options) -> Animation.Vignette:
+        return self.config.animation.add(Animation.Vignette(**options))
+    def blur(self, **options) -> Animation.Blur:
+        return self.config.animation.add(Animation.Blur(**options))
+    def inpaint(self, **options) -> Animation.Inpaint:
+        return self.config.animation.add(Animation.Inpaint(**options))
+    def colors(self, **options) -> Animation.Colors:
+        return self.config.animation.add(Animation.Colors(**options))
 
     # -------------------------------------------------------------------------------------------- #
     # Internal batch exporting
@@ -283,7 +286,7 @@ class DepthScene(ShaderScene):
                 yield from self._iter_batch_input(part)
 
         # Return known valid inputs as is
-        elif isinstance(item, (bytes, ImageType, numpy.ndarray)):
+        elif isinstance(item, (bytes, ImageType, np.ndarray)):
             yield item
         elif validators.url(item):
             yield item

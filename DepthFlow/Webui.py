@@ -16,7 +16,7 @@ from Broken import BrokenPath, BrokenResolution, DictUtils
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
-from DepthFlow.Animation import Actions, FilterBase, PresetBase
+from DepthFlow.Animation import Animation, FilterBase, PresetBase
 
 WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebUI")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
@@ -103,7 +103,7 @@ class DepthGradio:
             scene.aspect_ratio = None
 
             # Build and add any enabled preset class
-            for preset in Actions.members():
+            for preset in Animation.members():
                 preset_name = preset.__name__
                 preset_dict = self.fields.animation[preset_name]
                 if (not preset_dict.enable):
@@ -204,7 +204,7 @@ class DepthGradio:
                 with gradio.Row(equal_height=True, variant="panel"):
                     with gradio.Accordion("Animation (WIP)", open=False):
                         def animation_type(type):
-                            for preset in Actions.members():
+                            for preset in Animation.members():
                                 if not issubclass(preset, type):
                                     continue
                                 preset_name = preset.__name__
