@@ -37,7 +37,7 @@ class ClassEnum:
 
     @classmethod
     def members(cls) -> Iterable[type]:
-        for name in dir(cls):
+        for name in cls.__dict__:
             if name.startswith("_"):
                 continue
             if (name == "members"):
