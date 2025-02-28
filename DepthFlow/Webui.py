@@ -1,24 +1,114 @@
 import os
+import sys
 import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor as ThreadPool
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any, Iterable
 
 import gradio
+import gradio.blocks
+import gradio.strings
 from attr import Factory
 from attrs import define
 from dotmap import DotMap
-from gradio.themes.utils import colors, fonts, sizes
+from gradio.themes.utils import fonts, sizes
 from typer import Option
 
-from Broken import BrokenPath, BrokenResolution, DictUtils
+from Broken import BrokenPath, BrokenResolution, BrokenTorch, DictUtils, Runtime, denum
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Animation import Animation, FilterBase, PresetBase
 
-WEBUI_OUTPUT: Path = BrokenPath.recreate(DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebUI")
+# ------------------------------------------------------------------------------------------------ #
+
+class BrokenGradio:
+
+    @staticmethod
+    def theme() -> gradio.Theme:
+        return gradio.themes.Base(
+            font=fonts.GoogleFont("Rubik"),
+            spacing_size=sizes.Size(
+                name="spacing_sm",
+                xxs="0px",
+                xs="0px",
+                sm="1px",
+                md="2px",
+                lg="0px",
+                xl="4px",
+                xxl="2px",
+            ),
+            radius_size=sizes.radius_lg,
+            text_size=sizes.text_md,
+        ).set(
+            block_title_text_weight="bold",
+            border_color_primary_dark="#00000000",
+            link_text_color_dark="#00000000",
+        )
+
+    @staticmethod
+    def _css() -> Iterable[str]:
+
+        # Fullscreen like app without body padding
+        yield """
+            .app.svelte-1tlb5zm.svelte-1tlb5zm {
+                padding: 0;
+            }
+        """
+
+        # Remove up and down arrows from number inputs
+        yield """
+            input[type=number]::-webkit-inner-spin-button,
+            input[type=number]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            input[type=number] {
+                -moz-appearance: textfield;
+            }
+        """
+
+        # Remove nested tabs padding
+        yield """
+            .tabitem.svelte-wv8on1 .tabitem.svelte-wv8on1 {
+                padding: 0 !important;
+            }
+        """
+
+        # Add margin-top to the first tab element (non-child), only first one
+        yield """
+            *:not(.tabs) > .tabs:first-of-type {
+                margin-top: 3px !important;
+            }
+        """
+
+        # No margin top on the whole footer component
+        yield """
+            footer {
+                margin-bottom: 4px !important;
+                margin-top: 0 !important;
+            }
+        """
+
+        # Remove image sources selection to align with video
+        yield ".source-selection {display: none;}"
+
+        # Apply rounding to sliders
+        yield """
+            input.svelte-10lj3xl, .reset-button.svelte-10lj3xl {
+                border-radius: 6px !important;
+            }
+        """
+
+    @staticmethod
+    def css() -> str:
+        return '\n'.join(BrokenGradio._css())
+
+# ------------------------------------------------------------------------------------------------ #
+
+WEBUI_OUTPUT: Path = (DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebUI")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
 
 ESTIMATORS: dict[str, DepthEstimator] = {
@@ -39,13 +129,15 @@ UPSCALERS: dict[str, BrokenUpscaler] = {
 @define(slots=False)
 class DepthGradio:
     interface: gradio.Blocks = None
-    fields: DotMap = Factory(DotMap)
+    ui: DotMap = Factory(DotMap)
+
+    # -------------------------------------------|
 
     def simple(self, method: Callable, **options: dict) -> dict:
         """An ugly hack to avoid manually listing inputs and outputs"""
         show_progress = bool(options.get("outputs"))
-        outputs = options.pop("outputs", set(DictUtils.rvalues(self.fields)))
-        inputs  = options.pop("inputs",  set(DictUtils.rvalues(self.fields)))
+        outputs = options.pop("outputs", set(DictUtils.rvalues(self.ui)))
+        inputs  = options.pop("inputs",  set(DictUtils.rvalues(self.ui)))
         return dict(
             fn=method,
             inputs=inputs,
@@ -54,58 +146,73 @@ class DepthGradio:
             **options,
         )
 
+    # -------------------------------------------|
+    # Estimators
+
     def _estimator(self, user: dict) -> DepthEstimator:
-        return ESTIMATORS[user[self.fields.estimator]]
+        return ESTIMATORS[user[self.ui.estimator]]
 
     def _upscaler(self, user: dict) -> BrokenUpscaler:
-        return UPSCALERS[user[self.fields.upscaler]]
+        return UPSCALERS[user[self.ui.upscaler]]
 
     def estimate(self, user: dict):
-        if ((image := user[self.fields.image]) is None):
+        if ((image := user[self.ui.image]) is None):
             return None
         yield {
-            self.fields.depth:  self._estimator(user).estimate(image),
-            self.fields.width:  image.size[0],
-            self.fields.height: image.size[1]
+            self.ui.depth:  self._estimator(user).estimate(image),
+            self.ui.width:  image.size[0],
+            self.ui.height: image.size[1]
         }
 
+    # -------------------------------------------|
+    # Upscalers
+
     def upscale(self, user: dict):
-        if ((image := user[self.fields.image]) is None):
+        if ((image := user[self.ui.image]) is None):
             return gradio.Warning("The input image is empty")
-        yield {self.fields.image: self._upscaler(user).upscale(image)}
+        yield {self.ui.image: (image := self._upscaler(user).upscale(image))}
+        return gradio.Info(f"Upscaled image to size {image.size[0]}x{image.size[1]}")
+
+    # -------------------------------------------|
+    # Resolution
 
     def _fit_resolution(self, user: dict, target: tuple[int, int]) -> tuple[int, int]:
-        if (user[self.fields.image] is None):
+        if (user[self.ui.image] is None):
             raise GeneratorExit()
-        width, height = user[self.fields.image].size
+        width, height = user[self.ui.image].size
         return BrokenResolution().fit(
             old=(1920, 1080), new=target,
             ar=(width/height), multiple=1,
         )
 
     def fit_width(self, user: dict):
-        yield {self.fields.height: self._fit_resolution(user, (user[self.fields.width], None))[1]}
+        yield {self.ui.height: self._fit_resolution(user, (user[self.ui.width], None))[1]}
 
     def fit_height(self, user: dict):
-        yield {self.fields.width: self._fit_resolution(user, (None, user[self.fields.height]))[0]}
+        yield {self.ui.width: self._fit_resolution(user, (None, user[self.ui.height]))[0]}
+
+    # -------------------------------------------|
+    # Rendering
 
     def render(self, user: dict):
-        if (user[self.fields.image] is None):
+        # Warn: This method leaks about 50MB of RAM per 100 renders
+        # Warn: due a bug in (moderngl?) I'll look into the future
+
+        if (user[self.ui.image] is None):
             return gradio.Warning("The input image is empty")
-        if (user[self.fields.depth] is None):
+        if (user[self.ui.depth] is None):
             return gradio.Warning("The input depthmap is empty")
 
         def worker():
             from DepthFlow.Scene import DepthScene
             scene = DepthScene(backend="headless")
             scene.set_estimator(self._estimator(user))
-            scene.input(image=user[self.fields.image], depth=user[self.fields.depth])
-            scene.aspect_ratio = None
+            scene.input(image=user[self.ui.image], depth=user[self.ui.depth])
 
             # Build and add any enabled preset class
             for preset in Animation.members():
                 preset_name = preset.__name__
-                preset_dict = self.fields.animation[preset_name]
+                preset_dict = self.ui.animation[preset_name]
                 if (not preset_dict.enable):
                     continue
                 if (not user[preset_dict.enable]):
@@ -114,202 +221,240 @@ class DepthGradio:
                     key: user[item] for (key, item) in preset_dict.options.items()
                 }))
 
+            # Let the user override the ratio
+            width = user[self.ui.width]
+            height = user[self.ui.height]
+
             return scene.main(
-                width=user[self.fields.width],
-                height=user[self.fields.height],
-                ssaa=user[self.fields.ssaa],
-                fps=user[self.fields.fps],
-                time=user[self.fields.time],
-                loop=user[self.fields.loop],
+                width=width, height=height,
+                ratio=(width/height),
+                ssaa=user[self.ui.ssaa],
+                fps=user[self.ui.fps],
+                time=user[self.ui.time],
+                loop=user[self.ui.loop],
                 output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
-                noturbo=(not user[self.fields.turbopipe]),
+                noturbo=True,
             )[0]
 
         with ThreadPool() as pool:
             task = pool.submit(worker)
-            yield {self.fields.video: task.result()}
+            yield {self.ui.video: task.result()}
             os.remove(task.result())
+
+    # -------------------------------------------|
+    # Layout
 
     def launch(self,
         port: Annotated[int, Option("--port", "-p",
-            help="Port to run the WebUI on")]=None,
+            help="Port to run the WebUI on, None finds a free one")]=None,
         server: Annotated[str, Option("--server",
-            help="Server to run the WebUI on")]="0.0.0.0",
-        share: Annotated[bool, Option("--share", "-s",
-            help="Share the WebUI on the network")]=False,
-        threads: Annotated[int,  Option("--threads", "-t",
+            help="Hostname or IP address to run the WebUI")]="0.0.0.0",
+        share: Annotated[bool, Option("--share", "-s", " /--local",
+            help="Get a public shareable link tunneled through Gradio")]=False,
+        workers: Annotated[int,  Option("--workers", "-w",
             help="Number of maximum concurrent renders")]=4,
         browser: Annotated[bool, Option("--open", " /--no-open",
-            help="Open the WebUI in the browser")]=True,
+            help="Open the WebUI in a new tab on the default browser")]=True,
         block: Annotated[bool, Option("--block", "-b", " /--no-block",
-            help="Holds the main thread until the WebUI is closed")]=True,
+            help="Blocks the main thread while the WebUI is running")]=True,
+        pwa: Annotated[bool, Option("--pwa", " /--no-pwa",
+            help="Enable Gradio's Progressive Web Application mode")]=False,
     ) -> gradio.Blocks:
+        """🚀 Launch DepthFlow's Gradio WebUI with the given options"""
+        BrokenPath.recreate(WEBUI_OUTPUT)
+
+        # Todo: Gradio UI from Pydantic models
+        def make_animation(type):
+            for preset in Animation.members():
+                if not issubclass(preset, type):
+                    continue
+                preset_name = preset.__name__
+                preset_dict = self.ui.animation[preset_name]
+
+                with gradio.Tab(preset_name):
+                    preset_dict.enable = gradio.Checkbox(
+                        value=False, label="Enable")
+
+                    for attr, field in preset.model_fields.items():
+                        if (attr.lower() == "enable"):
+                            continue
+                        if (field.annotation is bool):
+                            with gradio.Group():
+                                preset_dict.options[attr] = gradio.Checkbox(
+                                    value=field.default,
+                                    label=attr.capitalize(),
+                                    info=field.description,
+                                )
+                        elif (field.annotation is float):
+                            with gradio.Group():
+                                preset_dict.options[attr] = gradio.Slider(
+                                    minimum=field.metadata[0].min,
+                                    maximum=field.metadata[0].max,
+                                    step=0.01, label=attr.capitalize(),
+                                    value=field.default,
+                                    info=field.description,
+                                )
+                        elif (isinstance(field.annotation, tuple)):
+                            print(attr, field, field.annotation)
+
         with gradio.Blocks(
-            theme=gradio.themes.Ocean(
-                font=(fonts.GoogleFont("Roboto Slab"),),
-                font_mono=(fonts.GoogleFont("Fira Code"),),
-                primary_hue=colors.emerald,
-                spacing_size=sizes.spacing_sm,
-                radius_size=sizes.radius_sm,
-                text_size=sizes.text_sm,
-            ),
+            theme=BrokenGradio.theme(),
+            css=BrokenGradio.css(),
             analytics_enabled=False,
-            title="DepthFlow WebUI",
+            title="DepthFlow",
             fill_height=True,
-            fill_width=True
+            fill_width=True,
         ) as self.interface:
 
-            gradio.Markdown("# 🌊 DepthFlow")
+            # Stretch up to the footer images and videos
+            HEIGHT = "calc(100vh - 184px)"
 
-            with gradio.Tab("Application"):
-                with gradio.Row(equal_height=True):
-                    with gradio.Column(variant="panel"):
-                        self.fields.image = gradio.Image(scale=1,
-                            sources=["upload", "clipboard"],
-                            type="pil", label="Input image",
-                            interactive=True,
-                        )
-                        with gradio.Row(equal_height=True):
-                            self.fields.upscaler = gradio.Dropdown(
-                                choices=list(UPSCALERS.keys()),
-                                value=list(UPSCALERS.keys())[0],
-                                label="Upscaler", scale=10
+            with gradio.Row():
+                with gradio.Column(variant="panel"):
+                    with gradio.Tab("Image"):
+                        with gradio.Column(variant="panel"):
+                            self.ui.image = gradio.Image(
+                                sources=["upload", "clipboard"],
+                                type="pil", label="Input image",
+                                interactive=True, height=HEIGHT
                             )
-                            self.fields.upscale = gradio.Button(value="🚀 Upscale", scale=1)
+                            with gradio.Row(equal_height=True):
+                                self.ui.upscaler = gradio.Dropdown(
+                                    choices=list(UPSCALERS.keys()),
+                                    value=list(UPSCALERS.keys())[0],
+                                    label="Upscaler", scale=10
+                                )
+                                self.ui.upscale = gradio.Button(
+                                    value="🚀 Upscale", scale=1)
 
-                    with gradio.Column(variant="panel"):
-                        self.fields.depth = gradio.Image(scale=1,
-                            sources=["upload", "clipboard"],
-                            type="pil", label="Depthmap"
-                        )
-                        with gradio.Row(equal_height=True):
-                            self.fields.estimator = gradio.Dropdown(
-                                choices=list(ESTIMATORS.keys()),
-                                value=list(ESTIMATORS.keys())[0],
-                                label="Depth Estimator", scale=10
+                    with gradio.Tab("Depth"):
+                        with gradio.Column(variant="panel"):
+                            self.ui.depth = gradio.Image(
+                                sources=["upload", "clipboard"],
+                                type="pil", label="Depthmap",
+                                height=HEIGHT
                             )
-                            self.fields.estimate = gradio.Button(value="🔎 Estimate", scale=1)
+                            with gradio.Row(equal_height=True):
+                                self.ui.estimator = gradio.Dropdown(
+                                    choices=list(ESTIMATORS.keys()),
+                                    value=list(ESTIMATORS.keys())[0],
+                                    label="Depth estimator", scale=10
+                                )
+                                self.ui.estimate = gradio.Button(
+                                    value="🔎 Estimate", scale=1)
 
-                    with gradio.Column(variant="panel"):
-                        self.fields.video = gradio.Video(scale=1,
-                            label="Output video",
-                            interactive=False,
-                            autoplay=True,
-                        )
-                        self.fields.render = gradio.Button(
-                            value="🔥 Render 🔥",
-                            variant="primary",
-                        )
+                    with gradio.Tab("Animation"):
+                        make_animation(PresetBase)
 
-                with gradio.Row(equal_height=True, variant="panel"):
-                    with gradio.Accordion("Animation (WIP)", open=False):
-                        def animation_type(type):
-                            for preset in Animation.members():
-                                if not issubclass(preset, type):
-                                    continue
-                                preset_name = preset.__name__
-                                preset_dict = self.fields.animation[preset_name]
+                    with gradio.Tab("Filters"):
+                        make_animation(FilterBase)
 
-                                with gradio.Tab(preset_name):
-                                    preset_dict.enable = gradio.Checkbox(
-                                        value=False, label="Enable", info=preset.__doc__)
+                    with gradio.Tab("Output"):
 
-                                    for attr, field in preset.model_fields.items():
-                                        if (attr.lower() == "enable"):
-                                            continue
-                                        if (field.annotation is bool):
-                                            preset_dict.options[attr] = gradio.Checkbox(
-                                                value=field.default,
-                                                label=attr.capitalize(),
-                                                info=field.description,
-                                            )
-                                        elif (field.annotation is float):
-                                            preset_dict.options[attr] = gradio.Slider(
-                                                minimum=field.metadata[0].min,
-                                                maximum=field.metadata[0].max,
-                                                step=0.01, label=attr.capitalize(),
-                                                value=field.default,
-                                                info=field.description,
-                                            )
-                                        elif (isinstance(field.annotation, tuple)):
-                                            print(attr, field, field.annotation)
+                        self.ui.time = gradio.Slider(label="Duration (seconds)",
+                            info="How long each loop will last",
+                            minimum=0, maximum=30, step=0.5, value=5)
 
-                        with gradio.Tab("Presets"):
-                            animation_type(PresetBase)
-                        with gradio.Tab("Filters"):
-                            animation_type(FilterBase)
+                        with gradio.Row():
+                            with gradio.Group():
+                                with gradio.Group():
+                                    self.ui.fps = gradio.Slider(label="Framerate",
+                                        info="Smoothness of the final video",
+                                        minimum=1, maximum=144, step=1, value=60)
 
-                with gradio.Row(equal_height=True):
-                    with gradio.Column(variant="panel"):
-                        self.fields.width = gradio.Number(label="Width",
-                            minimum=1, precision=0, scale=10, value=1920)
-                        self.fields.fit_height = gradio.Button(
-                            value="➡️ Fit height", scale=1)
+                            with gradio.Group():
+                                self.ui.loop = gradio.Slider(label="Loops",
+                                    info="Loop the animation multiple times",
+                                    minimum=1, maximum=10, step=1, value=1)
 
-                    with gradio.Column(variant="panel"):
-                        self.fields.height = gradio.Number(label="Height",
-                            minimum=1, precision=0, scale=10, value=1080)
-                        self.fields.fit_width = gradio.Button(
-                            value="⬅️ Fit width", scale=1)
+                        with gradio.Row(equal_height=True):
+                            with gradio.Column(variant="panel"):
+                                self.ui.quality = gradio.Slider(label="Shader quality",
+                                    info="Improves intersections calculations",
+                                    value=50, minimum=0, maximum=100, step=10)
+                            with gradio.Column(variant="panel"):
+                                self.ui.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
+                                    info="Reduce aliasing and improve quality **(expensive)**",
+                                    value=1.5, minimum=1, maximum=4, step=0.1)
 
-                    with gradio.Column(variant="panel"):
-                        self.fields.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
-                            info="Smoother edges and better quality",
-                            value=1.5, minimum=1, maximum=2, step=0.1)
+                        with gradio.Row(equal_height=True):
+                            with gradio.Group():
+                                self.ui.width = gradio.Number(label="Width",
+                                    minimum=1, precision=0, scale=10, value=1920)
+                                self.ui.fit_width = gradio.Button(
+                                    size="sm", value="Fit aspect")
 
-                    with gradio.Column(variant="panel"):
-                        self.fields.quality = gradio.Slider(label="Shader quality",
-                            info="Improves intersections calculations",
-                            value=50, minimum=0, maximum=100, step=10)
+                            with gradio.Group():
+                                self.ui.height = gradio.Number(label="Height",
+                                    minimum=1, precision=0, scale=10, value=1080)
+                                self.ui.fit_height = gradio.Button(
+                                    size="sm", value="Fit aspect")
 
-                    self.fields.fit_height.click(**self.simple(self.fit_width))
-                    self.fields.fit_width.click(**self.simple(self.fit_height))
+                            self.ui.fit_height.click(**self.simple(self.fit_width))
+                            self.ui.fit_width.click(**self.simple(self.fit_height))
 
-                with gradio.Row(equal_height=True, variant="panel"):
-                    self.fields.time = gradio.Slider(label="Duration (seconds)",
-                        info="How long the animation or its loop lasts",
-                        minimum=0, maximum=30, step=0.5, value=5)
-                    self.fields.fps = gradio.Slider(label="Framerate (fps)",
-                        info="Defines the animation smoothness",
-                        minimum=1, maximum=120, step=1, value=60)
-                    self.fields.loop = gradio.Slider(label="Loop count",
-                        info="Repeat the final video this many times",
-                        minimum=1, maximum=10, step=1, value=1)
+                with gradio.Column(variant="panel"):
+                    with gradio.Tab("Rendering"):
+                        with gradio.Column(variant="panel"):
+                            self.ui.video = gradio.Video(
+                                label="Output video",
+                                interactive=False,
+                                height=HEIGHT,
+                                autoplay=True,
+                                loop=True,
+                            )
 
-            with gradio.Tab("Advanced"):
-                self.fields.turbopipe = gradio.Checkbox(label="Enable TurboPipe", value=True,
-                    info="Improves rendering speeds, disable if you encounter issues or crashes")
+                            # Fixme: Stretch to match gradio.Dropdown
+                            with gradio.Row(height=52, equal_height=True):
+                                self.ui.render = gradio.Button(
+                                    value="🔥 Render 🔥",
+                                    variant="primary",
+                                )
 
             # Update depth map and resolution on image change
-            outputs = {self.fields.image, self.fields.depth, self.fields.width, self.fields.height}
-            self.fields.image    .change(**self.simple(self.estimate, outputs=outputs))
-            self.fields.upscale  .click (**self.simple(self.upscale,  outputs=outputs))
-            self.fields.estimator.change(**self.simple(self.estimate, outputs=outputs))
-            self.fields.estimate .click (**self.simple(self.estimate, outputs=outputs))
+            outputs = {self.ui.image, self.ui.depth, self.ui.width, self.ui.height}
+            self.ui.image    .change(**self.simple(self.estimate, outputs=outputs))
+            self.ui.upscale  .click (**self.simple(self.upscale,  outputs=outputs))
+            self.ui.estimator.change(**self.simple(self.estimate, outputs=outputs))
+            self.ui.estimate .click (**self.simple(self.estimate, outputs=outputs))
 
             # Main render button
-            self.fields.render.click(**self.simple(
-                self.render, outputs={self.fields.video}
+            self.ui.render.click(**self.simple(
+                self.render, outputs={self.ui.video},
+                concurrency_limit=workers,
             ))
 
-            gradio.Markdown(''.join((
-                "Made with ❤️ by [**Tremeschin**](https://github.com/Tremeschin) | ",
-                f"**Alpha** WebUI v{DEPTHFLOW.VERSION} | ",
-                "[**Website**](https://brokensrc.dev/) | "
-                "[**Discord**](https://discord.com/invite/KjqvcYwRHm/) | ",
-                "[**Telegram**](https://t.me/BrokenSource/) | ",
-                "[**GitHub**](https://github.com/BrokenSource/DepthFlow)"
-            )))
+            # Footer-like credits :^)
+            gradio.Markdown(f"""
+                <center><div style='padding-top: 10px; opacity: 0.7'>
+                    <b>DepthFlow</b> {Runtime.Method} v{DEPTHFLOW.VERSION} •
+                    <b>Python</b> v{sys.version.split(' ')[0]} •
+                    <b>PyTorch</b> v{denum(BrokenTorch.version())}
+                    <p><small style='opacity: 0.6'>
+                        Made with ❤️ by <a href='https://github.com/Tremeschin'>
+                            <b>Tremeschin</b></a> •
+                        <a href='https://brokensrc.dev/'><b>Website</b></a> •
+                        <a href='https://discord.com/invite/KjqvcYwRHm/'><b>Discord</b></a> •
+                        <a href='https://t.me/BrokenSource/'><b>Telegram</b></a> •
+                        <a href='https://github.com/BrokenSource/DepthFlow'><b>GitHub</b></a> •
+                        <a href='https://brokensrc.dev/about/sponsors/'><b>Sponsoring</b></a>
+                    </small></p>
+                </div></center>
+            """)
+
+        # Quiet removes important information on the url
+        gradio.strings.en["PUBLIC_SHARE_TRUE"] = ""
 
         return self.interface.launch(
-            allowed_paths=[DEPTHFLOW.DIRECTORIES.DATA],
-            favicon_path=DEPTHFLOW.RESOURCES.ICON_PNG,
+            favicon_path=str(DEPTHFLOW.RESOURCES.ICON_PNG),
             inbrowser=browser, show_api=False,
             prevent_thread_lock=(not block),
-            max_threads=threads,
+            max_threads=workers,
             server_name=server,
             server_port=port,
+            show_error=True,
             share=share,
+            pwa=pwa,
         )
 
 # ------------------------------------------------------------------------------------------------ #
@@ -317,5 +462,3 @@ class DepthGradio:
 if (__name__ == "__main__"):
     demo = DepthGradio()
     demo.launch()
-
-# ------------------------------------------------------------------------------------------------ #
