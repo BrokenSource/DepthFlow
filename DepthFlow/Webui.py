@@ -250,7 +250,7 @@ class DepthGradio:
                 ssaa=user[self.ui.ssaa],
                 fps=user[self.ui.fps],
                 time=user[self.ui.time],
-                loop=user[self.ui.loop],
+                loops=user[self.ui.loop],
                 output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
                 turbo=self.turbopipe,
             )[0]
