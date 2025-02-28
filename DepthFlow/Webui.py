@@ -15,7 +15,15 @@ from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
 from typer import Option
 
-from Broken import BrokenPath, BrokenResolution, BrokenTorch, DictUtils, Runtime, denum
+from Broken import (
+    BrokenPath,
+    BrokenResolution,
+    BrokenTorch,
+    DictUtils,
+    Environment,
+    Runtime,
+    denum,
+)
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from DepthFlow import DEPTHFLOW
@@ -166,10 +174,12 @@ class DepthGradio:
     def estimate(self, user: dict):
         if ((image := user[self.ui.image]) is None):
             return None
+        (width, height) = image.size
         yield {
+            self.ui.image:  gradio.Image(label=f"Size: ({width}x{height})"),
             self.ui.depth:  self._estimator(user).estimate(image),
-            self.ui.width:  image.size[0],
-            self.ui.height: image.size[1]
+            self.ui.width:  width,
+            self.ui.height: height,
         }
 
     # -------------------------------------------|
@@ -179,7 +189,6 @@ class DepthGradio:
         if ((image := user[self.ui.image]) is None):
             return gradio.Warning("The input image is empty")
         yield {self.ui.image: (image := self._upscaler(user).upscale(image))}
-        return gradio.Info(f"Upscaled image to size {image.size[0]}x{image.size[1]}")
 
     # -------------------------------------------|
     # Resolution
@@ -201,6 +210,8 @@ class DepthGradio:
 
     # -------------------------------------------|
     # Rendering
+
+    turbopipe: bool = False
 
     def render(self, user: dict):
         # Warn: This method leaks about 50MB of RAM per 100 renders
@@ -241,7 +252,7 @@ class DepthGradio:
                 time=user[self.ui.time],
                 loop=user[self.ui.loop],
                 output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
-                noturbo=True,
+                turbo=self.turbopipe,
             )[0]
 
         with ThreadPool() as pool:
@@ -267,9 +278,13 @@ class DepthGradio:
             help="Blocks the main thread while the WebUI is running")]=True,
         pwa: Annotated[bool, Option("--pwa", " /--no-pwa",
             help="Enable Gradio's Progressive Web Application mode")]=False,
+        turbopipe: Annotated[bool, Option("--turbo", " /--no-turbo",
+            help="Enable TurboPipe for faster rendering")]=False,
     ) -> gradio.Blocks:
         """🚀 Launch DepthFlow's Gradio WebUI with the given options"""
         BrokenPath.recreate(WEBUI_OUTPUT)
+
+        self.turbopipe = turbopipe
 
         # Todo: Gradio UI from Pydantic models
         def make_animation(type):
@@ -281,7 +296,9 @@ class DepthGradio:
 
                 with gradio.Tab(preset_name):
                     preset_dict.enable = gradio.Checkbox(
-                        value=False, label="Enable")
+                        value=(preset is Animation.Orbital),
+                        label="Enable"
+                    )
 
                     for attr, field in preset.model_fields.items():
                         if (attr.lower() == "enable"):
