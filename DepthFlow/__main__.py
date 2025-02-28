@@ -1,6 +1,11 @@
 import sys
 
-from Broken import BrokenProfiler, BrokenTorch, BrokenTyper, log
+from Broken import (
+    BrokenProfiler,
+    BrokenTorch,
+    BrokenTyper,
+    log,
+)
 
 
 def depthflow() -> None:
@@ -21,6 +26,7 @@ def main() -> None:
         with cli.panel("Commands"):
             cli.command(depthflow, default=True)
             cli.command(gradio)
+            cli.direct_script()
             cli.command(BrokenTorch.install)
 
         with cli.panel("Depth Estimators"):
