@@ -51,11 +51,7 @@ class BrokenGradio:
     def _css() -> Iterable[str]:
 
         # Fullscreen like app without body padding
-        yield """
-            .app.svelte-1tlb5zm.svelte-1tlb5zm {
-                padding: 0;
-            }
-        """
+        yield ".app {padding: 0 !important;}"
 
         # Remove up and down arrows from number inputs
         yield """
@@ -97,7 +93,7 @@ class BrokenGradio:
 
         # Apply rounding to sliders
         yield """
-            input.svelte-10lj3xl, .reset-button.svelte-10lj3xl {
+            input, .reset-button {
                 border-radius: 6px !important;
             }
         """
@@ -105,6 +101,18 @@ class BrokenGradio:
     @staticmethod
     def css() -> str:
         return '\n'.join(BrokenGradio._css())
+
+    @staticmethod
+    def progress_button(element: Callable, then: Callable):
+        """Disables a button while a task is running"""
+        def toggle(state: bool) -> dict:
+            return dict(
+                fn=lambda: gradio.update(interactive=state),
+                inputs=None, outputs=element
+            )
+        element.click(**toggle(False)) \
+            .then(**then) \
+            .then(**toggle(True))
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -413,13 +421,16 @@ class DepthGradio:
 
             # Update depth map and resolution on image change
             outputs = {self.ui.image, self.ui.depth, self.ui.width, self.ui.height}
-            self.ui.image    .change(**self.simple(self.estimate, outputs=outputs))
-            self.ui.upscale  .click (**self.simple(self.upscale,  outputs=outputs))
-            self.ui.estimator.change(**self.simple(self.estimate, outputs=outputs))
-            self.ui.estimate .click (**self.simple(self.estimate, outputs=outputs))
+            self.ui.image.change(**self.simple(self.estimate, outputs=outputs))
 
-            # Main render button
-            self.ui.render.click(**self.simple(
+            # Estimate or upscale explicit buttons
+            BrokenGradio.progress_button(element=self.ui.estimate,
+                then=self.simple(self.estimate, outputs=outputs))
+            BrokenGradio.progress_button(element=self.ui.upscale,
+                then=self.simple(self.upscale, outputs=outputs))
+
+            # Render video on render button click
+            BrokenGradio.progress_button(self.ui.render, self.simple(
                 self.render, outputs={self.ui.video},
                 concurrency_limit=workers,
             ))
