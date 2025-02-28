@@ -342,7 +342,7 @@ class Animation(ClassEnum):
     # Presets
 
     class Vertical(PresetBase):
-        """Add a Vertical motion to the camera"""
+        """Add a Vertical Motion animation preset"""
         type:      Annotated[Literal["vertical"], BrokenTyper.exclude()] = "vertical"
         smooth:    SmoothType    = Field(True)
         loop:      LoopType      = Field(True)
@@ -370,7 +370,7 @@ class Animation(ClassEnum):
                 ).apply(scene)
 
     class Horizontal(PresetBase):
-        """Add a Horizontal motion to the camera"""
+        """Add a Horizontal Motion animation preset"""
         type:      Annotated[Literal["horizontal"], BrokenTyper.exclude()] = "horizontal"
         smooth:    SmoothType    = Field(True)
         loop:      LoopType      = Field(True)
@@ -398,7 +398,7 @@ class Animation(ClassEnum):
                 ).apply(scene)
 
     class Zoom(PresetBase):
-        """Add a Zoom motion to the camera"""
+        """Add a Zoom Motion animation preset"""
         type:   Annotated[Literal["zoom"], BrokenTyper.exclude()] = "zoom"
         smooth: SmoothType = Field(True)
         loop:   LoopType   = Field(True)
@@ -424,7 +424,7 @@ class Animation(ClassEnum):
                 ).apply(scene)
 
     class Circle(PresetBase):
-        """Add a Circular motion to the camera"""
+        """Add a Circular Motion animation preset"""
         type:      Annotated[Literal["circle"], BrokenTyper.exclude()] = "circle"
         smooth:    SmoothType       = Field(True)
         phase:     PhaseXYZType     = Field((0.0, 0.0, 0.0))
@@ -451,17 +451,17 @@ class Animation(ClassEnum):
             ).apply(scene)
 
     class Dolly(PresetBase):
-        """Add a Dolly zoom to the camera"""
+        """Add a Dolly Zoom animation preset"""
         type:   Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
         smooth: SmoothType  = Field(True)
         loop:   LoopType    = Field(True)
-        depth:  DepthType   = Field(0.35)
+        steady: DepthType   = Field(0.35)
         phase:  PhaseType   = Field(0.0)
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.height = 0.5*self.intensity
-            scene.state.steady = self.depth
-            scene.state.focus  = self.depth
+            scene.state.steady = self.steady
+            scene.state.focus  = self.steady
 
             if self.loop:
                 phase, cycles = ( 0.75 if self.reverse else 0.25), 1.0
@@ -479,12 +479,12 @@ class Animation(ClassEnum):
 
     class Orbital(PresetBase):
         """Orbit the camera around a fixed point"""
-        type:  Annotated[Literal["orbital"], BrokenTyper.exclude()] = "orbital"
-        depth: DepthType = Field(0.3)
+        type:   Annotated[Literal["orbital"], BrokenTyper.exclude()] = "orbital"
+        steady: DepthType = Field(0.3)
 
         def apply(self, scene: DepthScene) -> None:
-            scene.state.steady = self.depth
-            scene.state.focus  = self.depth
+            scene.state.steady = self.steady
+            scene.state.focus  = self.steady
 
             Animation.Cosine(
                 target    = Target.Isometric,

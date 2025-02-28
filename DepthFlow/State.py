@@ -12,11 +12,11 @@ class VignetteState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable this vignette (darken corners) effect"""
 
-    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=100)] = Field(30.0)
+    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=1)] = Field(0.2)
     """The intensity of the effect (darken amount on edges)"""
 
-    decay: Annotated[float, Option("--decay", "-d", min=0, max=1)] = Field(0.1)
-    """A decay of one starts the effect in the middle of the screen"""
+    decay: Annotated[float, Option("--decay", "-d", min=0, max=100)] = Field(20)
+    """The shape of the effect (how fast it darkens)"""
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield Uniform("bool",  "iVigEnable",    self.enable)
@@ -29,10 +29,10 @@ class LensState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable this lens distortion effect"""
 
-    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=4)] = Field(0.3)
+    intensity: Annotated[float, Option("--intensity", "-i", min=0, max=1)] = Field(0.1)
     """The intensity of the effect (blur amount on edges)"""
 
-    decay: Annotated[float, Option("--decay", "-d", min=0, max=2)] = Field(0.4)
+    decay: Annotated[float, Option("--decay", "-d", min=0, max=1)] = Field(0.4)
     """A decay of one starts the effect in the middle of the screen"""
 
     quality: Annotated[int, Option("--quality", "-q", min=0, max=50)] = Field(30)
@@ -115,7 +115,7 @@ class ColorState(BrokenModel):
     grayscale: Annotated[float, Option("--grayscale", "-x", min=0, max=100)] = Field(0.0)
     """Grayscale effect of the image (0 is full color, 100 is grayscale)"""
 
-    sepia: Annotated[float, Option("--sepia", "-n", min=0, max=200)] = Field(0.0)
+    sepia: Annotated[float, Option("--sepia", "-n", min=0, max=100)] = Field(0.0)
     """Sepia effect of the image (0 is grayscale, 100 is full sepia, a brownish nostalgic tint)"""
 
     def pipeline(self) -> Iterable[ShaderVariable]:

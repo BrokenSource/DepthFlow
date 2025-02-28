@@ -205,31 +205,38 @@ void main() {
     // Vignette post processing
     if (iVigEnable) {
         vec2 away = astuv * (1.0 - astuv.yx);
-        float linear = iVigIntensity * (away.x*away.y);
-        fragColor.rgb *= clamp(pow(linear, iVigDecay), 0.0, 1.0);
+        float linear = iVigDecay * (away.x*away.y);
+        fragColor.rgb *= clamp(pow(linear, iVigIntensity), 0.0, 1.0);
     }
 
     // Colors post processing
     float luminance;
 
-    // Saturation
-    luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
-    fragColor.rgb = mix(vec3(luminance), fragColor.rgb, iColorsSaturation);
+    /* Saturation */ if (iColorsSaturation != 1.0) {
+        vec3 _hsv = rgb2hsv(fragColor.rgb);
+        _hsv.y = clamp(_hsv.y * iColorsSaturation, 0.0, 1.0);
+        fragColor.rgb = hsv2rgb(_hsv);
+    }
 
-    // Contrast
-    fragColor.rgb = mix(vec3(0.5), fragColor.rgb, iColorsContrast);
+    /* Contrast */ if (iColorsContrast != 1.0) {
+        fragColor.rgb = clamp((fragColor.rgb - 0.5) * iColorsContrast + 0.5, 0.0, 1.0);
+    }
 
-    // Brightness
-    fragColor.rgb += (iColorsBrightness - 1);
+    /* Brightness */ if (iColorsBrightness != 1.0) {
+        fragColor.rgb = clamp(fragColor.rgb * iColorsBrightness, 0.0, 1.0);
+    }
 
-    // Gamma
-    fragColor.rgb = pow(fragColor.rgb, vec3(1.0/iColorsGamma));
+    /* Gamma */ if (iColorsGamma != 1.0) {
+        fragColor.rgb = pow(fragColor.rgb, vec3(1.0/iColorsGamma));
+    }
 
-    // Sepia
-    luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
-    fragColor.rgb = mix(fragColor.rgb, luminance*vec3(1.2, 1.0, 0.8), iColorsSepia);
+    /* Sepia */ if (iColorsSepia != 0.0) {
+        luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+        fragColor.rgb = mix(fragColor.rgb, luminance*vec3(1.2, 1.0, 0.8), iColorsSepia);
+    }
 
-    // Grayscale
-    luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
-    fragColor.rgb = mix(fragColor.rgb, vec3(luminance), iColorsGrayscale);
+    /* Grayscale */ if (iColorsGrayscale != 0.0) {
+        luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+        fragColor.rgb = mix(fragColor.rgb, vec3(luminance), iColorsGrayscale);
+    }
 }
