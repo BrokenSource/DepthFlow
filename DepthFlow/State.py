@@ -141,7 +141,7 @@ class DepthState(BrokenModel):
     """Focal depth plane of perspective (A value of 0 makes the background stationary; and 1 for the foreground)"""
 
     zoom: Annotated[float, Option("--zoom", "-z", min=0, max=2)] = Field(1.0)
-    """Camera zoom factor (0.25 means a quarter of the image is visible)"""
+    """Camera zoom factor (0.5 means a quarter of the image is visible)"""
 
     isometric: Annotated[float, Option("--isometric", "-i", min=0, max=1)] = Field(0.0)
     """Isometric factor of camera projections (0 is full perspective, 1 is orthographic)"""

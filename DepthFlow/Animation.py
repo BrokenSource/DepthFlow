@@ -112,6 +112,9 @@ SteadyType: TypeAlias = Annotated[float, Option("--steady", "-S", min=-1, max=2,
 IsometricType: TypeAlias = Annotated[float, Option("--isometric", "-I", min=0, max=1,
     help=f"{hint} The 'flatness' of the projection, 0 is perspective, 1 is isometric")]
 
+ZoomType: TypeAlias = Annotated[float, Option("--zoom", "-z", min=0, max=2,
+    help=f"{hint} Crops parts of the image, 0.5 a quarter is visible, 1 is full frame")]
+
 PhaseType: TypeAlias = Annotated[float, Option("--phase", "-p", min=0, max=1,
     help=f"{hint} Phase shift of the main animation's wave")]
 
@@ -426,7 +429,6 @@ class Animation(ClassEnum):
     class Circle(PresetBase):
         """Add a Circular Motion animation preset"""
         type:      Annotated[Literal["circle"], BrokenTyper.exclude()] = "circle"
-        smooth:    SmoothType       = Field(True)
         phase:     PhaseXYZType     = Field((0.0, 0.0, 0.0))
         amplitude: AmplitudeXYZType = Field((1.0, 1.0, 0.0))
         steady:    SteadyType       = Field(0.3)
@@ -436,14 +438,14 @@ class Animation(ClassEnum):
             scene.state.isometric = self.isometric
             scene.state.steady    = self.steady
 
-            (Animation.Sine if self.smooth else Animation.Triangle)(
+            Animation.Sine(
                 target    = Target.OffsetX,
                 amplitude = (0.5*self.intensity*self.amplitude[0]),
                 phase     = self.phase[0] + 0.25,
                 reverse   = self.reverse,
             ).apply(scene)
 
-            (Animation.Sine if self.smooth else Animation.Triangle)(
+            Animation.Sine(
                 target    = Target.OffsetY,
                 amplitude = (0.5*self.intensity*self.amplitude[1]),
                 phase     = self.phase[1],
@@ -481,10 +483,12 @@ class Animation(ClassEnum):
         """Orbit the camera around a fixed point"""
         type:   Annotated[Literal["orbital"], BrokenTyper.exclude()] = "orbital"
         steady: DepthType = Field(0.3)
+        zoom:   ZoomType  = Field(0.98)
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.steady = self.steady
             scene.state.focus  = self.steady
+            scene.state.zoom   = self.zoom
 
             Animation.Cosine(
                 target    = Target.Isometric,
