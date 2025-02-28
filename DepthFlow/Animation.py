@@ -402,12 +402,15 @@ class Animation(ClassEnum):
 
     class Zoom(PresetBase):
         """Add a Zoom Motion animation preset"""
-        type:   Annotated[Literal["zoom"], BrokenTyper.exclude()] = "zoom"
-        smooth: SmoothType = Field(True)
-        loop:   LoopType   = Field(True)
-        phase:  PhaseType  = Field(0.0)
+        type:      Annotated[Literal["zoom"], BrokenTyper.exclude()] = "zoom"
+        smooth:    SmoothType    = Field(True)
+        loop:      LoopType      = Field(False)
+        phase:     PhaseType     = Field(0.0)
+        isometric: IsometricType = Field(0.8)
 
         def apply(self, scene: DepthScene) -> None:
+            scene.state.isometric = self.isometric
+
             if self.loop:
                 (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.Height,
@@ -420,7 +423,7 @@ class Animation(ClassEnum):
             else:
                 (Animation.Sine if self.smooth else Animation.Triangle)(
                     target    = Target.Height,
-                    amplitude = 0.75 * self.intensity,
+                    amplitude = (2*self.intensity),
                     phase     = 0.00,
                     cycles    = 0.25,
                     reverse   = self.reverse,
@@ -457,13 +460,13 @@ class Animation(ClassEnum):
         type:   Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
         smooth: SmoothType  = Field(True)
         loop:   LoopType    = Field(True)
-        steady: DepthType   = Field(0.35)
+        focus:  DepthType   = Field(0.35)
         phase:  PhaseType   = Field(0.0)
 
         def apply(self, scene: DepthScene) -> None:
-            scene.state.height = 0.5*self.intensity
-            scene.state.steady = self.steady
-            scene.state.focus  = self.steady
+            scene.state.height = self.intensity/3
+            scene.state.steady = self.focus
+            scene.state.focus  = self.focus
 
             if self.loop:
                 phase, cycles = ( 0.75 if self.reverse else 0.25), 1.0

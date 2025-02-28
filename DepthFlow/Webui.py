@@ -332,7 +332,7 @@ class DepthGradio:
         ) as self.interface:
 
             # Stretch up to the footer images and videos
-            HEIGHT = "calc(100vh - 184px)"
+            HEIGHT = "calc(100vh - 184px)" # 102px
 
             with gradio.Row():
                 with gradio.Column(variant="panel"):
