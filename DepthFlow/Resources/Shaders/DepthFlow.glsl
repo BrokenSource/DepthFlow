@@ -21,7 +21,7 @@ struct DepthFlow {
     vec2 offset;
     vec2 center;
     vec2 origin;
-    bool fixed;
+    bool glued;
     // Output
     float derivative;
     float steep;
@@ -58,7 +58,7 @@ DepthFlow DepthMake(
 
     // Point where the ray intersects with a fixed point pivoting around depth=steady
     vec3 intersect = vec3(depth.center + camera.gluv, 1.0)
-        - vec3(camera.position.xy, 0.0) * (1.0/(1.0 - rel_steady)) * int(depth.fixed);
+        - vec3(camera.position.xy, 0.0) * (1.0/(1.0 - rel_steady)) * int(depth.glued);
 
     // The quality of the parallax effect is how tiny the steps are
     // Optimization: Low quality overshoot, high quality reverse
@@ -135,7 +135,7 @@ DepthFlow DepthMake(
         name.mirror    = name##Mirror; \
         name.invert    = name##Invert; \
         name.quality   = iQuality; \
-        name.fixed     = true; \
+        name.glued     = true; \
         name.value     = 0.0; \
         name.gluv      = vec2(0.0); \
         name.oob       = false; \
