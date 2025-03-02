@@ -212,6 +212,7 @@ class DepthGradio:
     # Rendering
 
     turbopipe: bool = False
+    nvenc: bool = False
 
     def render(self, user: dict):
         # Warn: This method leaks about 50MB of RAM per 100 renders
@@ -239,6 +240,9 @@ class DepthGradio:
                 scene.config.animation.add(preset(**{
                     key: user[item] for (key, item) in preset_dict.options.items()
                 }))
+
+            if self.nvenc:
+                scene.ffmpeg.h264_nvenc()
 
             # Let the user override the ratio
             width = user[self.ui.width]
@@ -284,11 +288,14 @@ class DepthGradio:
             help="Enable Gradio's Progressive Web Application mode")]=False,
         turbopipe: Annotated[bool, Option("--turbo", " /--no-turbo",
             help="Enable TurboPipe for faster rendering")]=False,
+        nvenc: Annotated[bool, Option("--nvenc", " /--no-nvenc",
+            help="Enable NVENC hardware acceleration for encoding")]=False,
     ) -> gradio.Blocks:
         """🚀 Launch DepthFlow's Gradio WebUI with the given options"""
         BrokenPath.recreate(WEBUI_OUTPUT)
 
         self.turbopipe = turbopipe
+        self.nvenc = nvenc
 
         # Todo: Gradio UI from Pydantic models
         def make_animation(type):
