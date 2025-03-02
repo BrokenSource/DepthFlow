@@ -311,6 +311,8 @@ class DepthGradio:
             help="Blocks the main thread while the WebUI is running")]=True,
         pwa: Annotated[bool, Option("--pwa", " /--no-pwa",
             help="Enable Gradio's Progressive Web Application mode")]=False,
+        ssr: Annotated[bool, Option("--ssr", " /--no-ssr",
+            help="Enable Server Side Rendering mode (Needs Node)")]=False,
         turbo: Annotated[bool, Option("--turbo", " /--no-turbo",
             help="Enable TurboPipe for faster rendering")]=False,
         nvenc: Annotated[bool, Option("--nvenc", " /--no-nvenc",
@@ -517,6 +519,7 @@ class DepthGradio:
             server_name=server,
             server_port=port,
             show_error=True,
+            ssr_mode=ssr,
             share=share,
             pwa=pwa,
         )
