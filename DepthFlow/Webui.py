@@ -226,8 +226,10 @@ class DepthGradio:
         def worker(output: Path) -> Path:
             from DepthFlow.Scene import DepthScene
             scene = DepthScene(backend="headless")
-            scene.set_estimator(self._estimator(user))
-            scene.input(image=user[self.ui.image], depth=user[self.ui.depth])
+            scene.input(
+                image=user[self.ui.image],
+                depth=user[self.ui.depth]
+            )
 
             # Build and add any enabled preset class
             for preset in Animation.members():
