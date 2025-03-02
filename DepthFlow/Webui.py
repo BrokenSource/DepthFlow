@@ -9,10 +9,12 @@ from typing import Annotated, Iterable
 import gradio
 import gradio.blocks
 import gradio.strings
+import spaces
 from attr import Factory
 from attrs import define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
+from PIL.Image import Image as ImageType
 from typer import Option
 
 from Broken import (
@@ -20,7 +22,6 @@ from Broken import (
     BrokenResolution,
     BrokenTorch,
     DictUtils,
-    Environment,
     Runtime,
     denum,
 )
@@ -211,60 +212,82 @@ class DepthGradio:
     # -------------------------------------------|
     # Rendering
 
-    turbopipe: bool = False
+    turbo: bool = False
     nvenc: bool = False
+
+    @spaces.GPU(duration=15)
+    def worker(
+        image: ImageType,
+        depth: ImageType,
+        width: int,
+        height: int,
+        ssaa: float,
+        fps: int,
+        time: float,
+        loops: int,
+        turbo: bool,
+        nvenc: bool,
+        output: Path,
+        animation: list[Animation],
+    ) -> Path:
+        from DepthFlow.Scene import DepthScene
+
+        scene = DepthScene(backend="headless")
+        scene.input(image=image, depth=depth)
+        scene.config.animation.steps = animation
+        if nvenc: scene.ffmpeg.h264_nvenc()
+
+        return scene.main(
+            width=width,
+            height=height,
+            ratio=(width/height),
+            ssaa=ssaa,
+            fps=fps,
+            time=time,
+            loops=loops,
+            turbo=turbo,
+            output=output,
+        )[0]
 
     def render(self, user: dict):
         # Warn: This method leaks about 50MB of RAM per 100 renders
-        # Warn: due a bug in (moderngl?) I'll look into the future
+        #       due a bug in (moderngl?) I'll look into the future
 
         if (user[self.ui.image] is None):
             return gradio.Warning("The input image is empty")
         if (user[self.ui.depth] is None):
             return gradio.Warning("The input depthmap is empty")
 
-        def worker(output: Path) -> Path:
-            from DepthFlow.Scene import DepthScene
-            scene = DepthScene(backend="headless")
-            scene.input(
-                image=user[self.ui.image],
-                depth=user[self.ui.depth]
-            )
-
-            # Build and add any enabled preset class
-            for preset in Animation.members():
-                preset_name = preset.__name__
-                preset_dict = self.ui.animation[preset_name]
-                if (not preset_dict.enable):
-                    continue
-                if (not user[preset_dict.enable]):
-                    continue
-                scene.config.animation.add(preset(**{
-                    key: user[item] for (key, item) in preset_dict.options.items()
-                }))
-
-            if self.nvenc:
-                scene.ffmpeg.h264_nvenc()
-
-            # Let the user override the ratio
-            width = user[self.ui.width]
-            height = user[self.ui.height]
-
-            return scene.main(
-                width=width, height=height,
-                ratio=(width/height),
-                ssaa=user[self.ui.ssaa],
-                fps=user[self.ui.fps],
-                time=user[self.ui.time],
-                loops=user[self.ui.loop],
-                turbo=self.turbopipe,
-                output=output,
-            )[0]
+        # Build animation classes
+        animation = []
+        for cls in Animation.members():
+            preset = self.ui.animation[cls.__name__]
+            if (not preset.enable):
+                continue
+            if (not user[preset.enable]):
+                continue
+            animation.append(cls(**{
+                key: user[item] for (key, item) in preset.options.items()}
+            ))
 
         with ThreadPool() as pool:
             try:
                 output = (WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4")
-                task = pool.submit(worker, output=output)
+                task = pool.submit(
+                    DepthGradio.worker,
+                    image=user[self.ui.image],
+                    depth=user[self.ui.depth],
+                    width=user[self.ui.width],
+                    height=user[self.ui.height],
+                    ssaa=user[self.ui.ssaa],
+                    fps=user[self.ui.fps],
+                    time=user[self.ui.time],
+                    loops=user[self.ui.loop],
+                    turbo=self.turbo,
+                    nvenc=self.nvenc,
+                    output=output,
+                    animation=animation,
+                )
                 yield {self.ui.video: task.result()}
             finally:
                 with contextlib.suppress(FileNotFoundError):
@@ -288,7 +311,7 @@ class DepthGradio:
             help="Blocks the main thread while the WebUI is running")]=True,
         pwa: Annotated[bool, Option("--pwa", " /--no-pwa",
             help="Enable Gradio's Progressive Web Application mode")]=False,
-        turbopipe: Annotated[bool, Option("--turbo", " /--no-turbo",
+        turbo: Annotated[bool, Option("--turbo", " /--no-turbo",
             help="Enable TurboPipe for faster rendering")]=False,
         nvenc: Annotated[bool, Option("--nvenc", " /--no-nvenc",
             help="Enable NVENC hardware acceleration for encoding")]=False,
@@ -296,12 +319,12 @@ class DepthGradio:
         """🚀 Launch DepthFlow's Gradio WebUI with the given options"""
         BrokenPath.recreate(WEBUI_OUTPUT)
 
-        self.turbopipe = turbopipe
+        self.turbo = turbo
         self.nvenc = nvenc
 
         # Todo: Gradio UI from Pydantic models
         def make_animation(type):
-            for preset in Animation.members():
+            for preset in reversed(list(Animation.members())):
                 if not issubclass(preset, type):
                     continue
                 preset_name = preset.__name__
