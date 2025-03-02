@@ -1,10 +1,10 @@
-import os
+import contextlib
 import sys
 import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor as ThreadPool
 from pathlib import Path
-from typing import Annotated, Any, Iterable
+from typing import Annotated, Iterable
 
 import gradio
 import gradio.blocks
@@ -222,7 +222,7 @@ class DepthGradio:
         if (user[self.ui.depth] is None):
             return gradio.Warning("The input depthmap is empty")
 
-        def worker():
+        def worker(output: Path) -> Path:
             from DepthFlow.Scene import DepthScene
             scene = DepthScene(backend="headless")
             scene.set_estimator(self._estimator(user))
@@ -251,14 +251,18 @@ class DepthGradio:
                 fps=user[self.ui.fps],
                 time=user[self.ui.time],
                 loops=user[self.ui.loop],
-                output=(WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4"),
                 turbo=self.turbopipe,
+                output=output,
             )[0]
 
         with ThreadPool() as pool:
-            task = pool.submit(worker)
-            yield {self.ui.video: task.result()}
-            os.remove(task.result())
+            try:
+                output = (WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4")
+                task = pool.submit(worker, output=output)
+                yield {self.ui.video: task.result()}
+            finally:
+                with contextlib.suppress(FileNotFoundError):
+                    output.unlink()
 
     # -------------------------------------------|
     # Layout
