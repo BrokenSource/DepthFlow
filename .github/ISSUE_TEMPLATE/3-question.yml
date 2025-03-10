@@ -1,20 +1,22 @@
-name: ❓ Create a new question ticket
-description: Have a question about the project?
+name: 🤔 Ask a question
+description: Need quick help or insights?
 
 body:
+
 - type: markdown
   attributes:
-    value: |
-      > [!IMPORTANT]
-      > - ⚠️ Please use the Discussions tab above for questions!
-      > - You can also ask your question on [**Discord or Telegram**](https://brokensrc.dev/about/contact/)
+    value: <div align="center"><h2>🔥 Question Details 🔥</h2></div>
 
-- type: dropdown
+- type: textarea
+  id: description
   attributes:
-    label: "Please read the message above!"
-    options:
-      - Ok!
-    default: 0
+    label: Description
+    description: |
+      - ✅ Describe the question you need help with
+      - **Tip:** Add any relevant context, error logs, or code examples
+      - **Tip:** You can include screenshots or videos for better clarity
+  validations:
+    required: true
 
 - type: markdown
   attributes:

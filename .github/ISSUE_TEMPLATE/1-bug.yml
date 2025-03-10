@@ -1,15 +1,8 @@
-name: 🐞 Create a new bug report ticket
-description: Facing some unexpected behavior or error?
-labels:
-  - bug
+name: 🐞 Submit a bug report
+description: Facing errors or unexpected behavior?
+type: bug
 
 body:
-- type: markdown
-  attributes:
-    value: |
-      > [!IMPORTANT]
-      > - Only the [latest versions](https://brokensrc.dev/get/) of the projects are supported
-      > - You can also get help on [Discord or Telegram](https://brokensrc.dev/about/contact/)
 
 - type: markdown
   attributes:
@@ -18,7 +11,7 @@ body:
 - type: dropdown
   id: operating-system
   attributes:
-    label: 🔘 Operating system
+    label: Operating system
     description: |
       - Where are you experiencing the problem?
     options:
@@ -40,14 +33,15 @@ body:
 - type: dropdown
   id: runtime-method
   attributes:
-    label: 🔘 Runtime method
+    label: Runtime method
     description: |
       - Where are you running the projects from?
     options:
-      - 📦 PyApp Executables (experimental)
-      - 🧀 PyPI Wheels (pip, poetry, pdm, uv)
-      - 🔥 Source Code (Install scripts)
+      - 📦 PyApp executables
+      - 🧀 PyPI wheels (pip)
+      - 🔥 Source code (git main)
       - 🐳 Docker containers
+      - 🦭 Podman containers
       - ☁️ Cloud services
       - N/A
     multiple: true
@@ -58,7 +52,7 @@ body:
 - type: input
   id: project-version
   attributes:
-    label: 🔘 Project version
+    label: Project version
     description: |
       - **Check** the file name, console logs, or run `project --version`
       - **Examples**: 0.9.0, latest, 0.8.0.dev0, etc.
@@ -68,7 +62,7 @@ body:
 - type: dropdown
   id: python-version
   attributes:
-    label: 🔘 Python version
+    label: Python version
     description: |
       - **📦 Executables**: Keep the default (Auto-managed) option
       - **🧀 PyPI Wheels**: Check the Python version with `python --version`
@@ -89,18 +83,18 @@ body:
 - type: dropdown
   id: gpu-vendor
   attributes:
-    label: 🔘 GPU Vendor
+    label: GPU Brand
     description: |
       - **Select all that apply**; Feel free to leave it blank if the issue/project isn't GPU related
       - **Hybrid systems:** See in logs the GPU being used, switch on your OS if wrong one
     options:
-      - 🍎 Apple Silicon
       - 🟢 NVIDIA Desktop
       - 🟢 NVIDIA Laptop
       - 🔴 AMD Desktop
       - 🔴 AMD Laptop
       - 🔵 Intel Desktop
       - 🔵 Intel Laptop
+      - 🍎 Apple Silicon
     multiple: true
   validations:
     required: false
@@ -108,24 +102,25 @@ body:
 - type: input
   id: gpu-model
   attributes:
-    label: 🔘 GPU Model
+    label: GPU Model
     description: |
       - **If applicable**, provide the model of the GPU(s) you're using
       - **Examples**: RTX 3090, RX 6800 XT, Arc B580, Iris Xe, etc.
+      - **🍎 Apple Silicon**: Leave this field blank
   validations:
     required: false
 
 - type: markdown
   attributes:
-    value: <div align="center"><h2>🔥 Ticket details 🔥</h2></div>
+    value: <div align="center"><h2>🔥 Report Details 🔥</h2></div>
 
 - type: textarea
   id: description
   attributes:
-    label: 🔘 Description
+    label: Description
     description: |
-      - ✅ Report what (and how) a certain code or feature is failing, should be enough to get started
-      - ✅ Any guess on what went wrong? You can provide a solution, workaround or the idea of one
+      - ✅ Report which parts of the code or features are failing, or your best guess of what went wrong
+      - ✅ If you have anything to contribute, like a workaround or fix, feel free to share them too!
       - **Tip:** You can provide a Python script, commands, links, steps to reproduce the issue
       - **Tip:** You can <kbd>CTRL+V</kbd> screenshots, videos, to help explain the issue
   validations:
@@ -134,7 +129,7 @@ body:
 - type: textarea
   id: traceback
   attributes:
-    label: 🔘 Traceback
+    label: Traceback
     description: |
       - **If relevant**, paste the full traceback, error message, or log file here
       - **Tip:** You can use [**GitHub Gists**](https://gist.github.com/) to share multiple files
