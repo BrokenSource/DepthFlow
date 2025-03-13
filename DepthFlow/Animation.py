@@ -495,8 +495,8 @@ class Animation(ClassEnum):
 
             Animation.Cosine(
                 target    = Target.Isometric,
-                amplitude = self.intensity/2,
-                bias      = self.intensity/2,
+                amplitude = self.intensity/4,
+                bias      = self.intensity/2 + 0.5,
                 reverse   = self.reverse,
             ).apply(scene)
 
