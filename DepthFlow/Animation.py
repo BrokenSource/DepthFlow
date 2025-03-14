@@ -502,7 +502,7 @@ class Animation(ClassEnum):
 
             Animation.Sine(
                 target    = Target.OffsetX,
-                amplitude = 0.5*self.intensity,
+                amplitude = self.intensity/4,
                 reverse   = self.reverse,
             ).apply(scene)
 

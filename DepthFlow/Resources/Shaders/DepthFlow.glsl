@@ -62,8 +62,8 @@ DepthFlow DepthMake(
 
     // The quality of the parallax effect is how tiny the steps are
     // Optimization: Low quality overshoot, high quality reverse
-    float quality = (1.0 / mix(200, 1000, depth.quality));
-    float probe   = (1.0 / mix( 50,  100, depth.quality));
+    float quality = (1.0 / mix(200, 2000, depth.quality));
+    float probe   = (1.0 / mix( 50,  120, depth.quality));
 
     // The guaranteed relative distance to not hit the surface
     float safe = (1.0 - depth.height);
