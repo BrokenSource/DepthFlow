@@ -21,7 +21,7 @@ def gradio() -> None:
     BrokenTyper.simple(DepthGradio().launch)
 
 def estimator() -> None:
-    """🔎 Estimate depthmaps using multiple models"""
+    """🔎 Estimate depthmaps of general images"""
     from Broken.Externals.Depthmap import (
         DepthAnythingV1,
         DepthAnythingV2,
@@ -38,7 +38,7 @@ def estimator() -> None:
     cli(*sys.argv[1:])
 
 def upscaler() -> None:
-    """✨ Upscale images using multiple models"""
+    """✨ Upscale images to higher resolutions"""
     from Broken.Externals.Upscaler import Realesr, Upscayl, Waifu2x
     cli = BrokenTyper(description=upscaler.__doc__)
     Realesr.cli(cli, name="realesr")
