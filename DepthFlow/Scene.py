@@ -229,7 +229,7 @@ class DepthScene(ShaderScene):
     # -------------------------------------------------------------------------------------------- #
     # Internal batch exporting
 
-    def _load_inputs(self) -> None:
+    def _load_inputs(self, echo: bool=True) -> None:
         """Load inputs: single or batch exporting"""
 
         # Batch exporting implementation
@@ -239,8 +239,8 @@ class DepthScene(ShaderScene):
         if (image is None):
             raise ShaderBatchStop()
 
-        self.log_info(f"Loading image: {image}")
-        self.log_info(f"Loading depth: {depth or 'Estimating from image'}")
+        self.log_info(f"Loading image: {image}", echo=echo)
+        self.log_info(f"Loading depth: {depth or 'Estimating from image'}", echo=echo)
 
         # Load, estimate, upscale input image
         image = self.config.upscaler.upscale(LoadImage(image))
