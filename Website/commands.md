@@ -258,4 +258,4 @@ Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` fol
     depthflow input -i ./images main -b all -o ./images -h 1080p
     ```
 
-{% include-markdown "include/love-short.md" %}
+--8<-- "include/love-short.md"

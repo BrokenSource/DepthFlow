@@ -38,20 +38,20 @@
 
 ## 🔥 Description
 
-**DepthFlow** is an advanced _image-to-video_ converter that transforms static pictures into stunning 3D parallax animations. Bring photos to life with motion, featuring high quality and custom presets, perfect for digital art, social media, stock footage, fillers and more.
+**DepthFlow** is an advanced _image-to-video_ converter that transforms static pictures into awesome 3D parallax animations. Bring photos to life with motion, featuring high quality and custom presets, perfect for digital art, social media, stock footage, fillers and more.
 
-<small>✨ It works by combining an source image and its depthmap with the power of mathmagic!</small>
+<small>✨ It works by combining a source image and its depthmap with the power of mathmagic!</small>
 
 - [x] **High quality** results with seamless loops and artifact-free edges, ensuring a polished and professional look for your animations. Enhance your creations with upscalers and add a touch of magic with lens distortion, depth of field, vignette post effects!
 - [x] **Fast processing** with an heavily optimized GLSL Shader running on the GPU. Render up to 8k50fps with an RTX 3060, export videos with any resolution, codec, supersampling.
 - [x] **Commercial** use is encouraged • Kindly [retribute back](https://brokensrc.dev/about/sponsors/) if you got value from it ❤️
 - [x] **Powerful** WebUI built with [Gradio](https://gradio.app), for an user-friendly experience:
 
-<img src="https://github.com/user-attachments/assets/05b81504-d736-4c95-8e6f-9b4901c9eebd">
+<img src="https://github.com/user-attachments/assets/8224ad9b-e7b4-417f-9454-d5005e092411">
 
 - [x] **Use your** own depthmaps, or let them be estimated with the latest AI models available!
 - [x] **Customizable** with a wide range of projection parameters, allowing you to precisely tweak the effect to your liking. Automate it with [Python scripts](https://github.com/BrokenSource/DepthFlow/tree/main/Examples) for mass production!
-- [x] **Self hosted** with no watermarks, unlimited usage, portable ready-to-run executables. It's free and open source, no strings attached.
+- [x] **Self hosted** with no watermarks, unlimited usage, portable ready-to-run executables. It's free and open source, no strings attached, as opposed to competitors 😄
 
 ❤️ **Loving it?** Your [**support**](https://brokensrc.dev/about/sponsors/) is essential!
 

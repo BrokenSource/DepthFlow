@@ -1,12 +1,8 @@
 """
 (c) CC BY-SA 4.0, Tremeschin
 
-Simple example of running DepthFlow default implementation
-
-Note: This file is the same as running `python -m DepthFlow` or just `depthflow` with the pyproject
-    scripts entry points when on the venv. You can also run this directly with `python Basic.py`
-
-• For more information, visit https://brokensrc.dev/depthflow
+This file is the same as running `python -m DepthFlow (args)` or just `depthflow (args)`
+from within a venv. You can also run this directly with `python Basic.py (args)`
 """
 import sys
 

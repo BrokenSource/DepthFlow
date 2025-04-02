@@ -2,20 +2,14 @@
 title: DepthFlow/Foundations
 ---
 
-!!! warning "🚧 Work in Progress 🚧"
-    Many missing parts, mostly sketching ideas and structure.
-
-This page describes _in depth_[^pun] the DepthFlow project in a paper-like format
-
-[^pun]: Pun intended 🙂
-
-> **Note**: This is a mostly technical write-up with notable trivia, and it's not necessary to understand the math or history to use it. For what you should know, see [**Parameters**](site:/depthflow/learn/parameters).
-
-<hr>
-
 <div align="center" class="paper-title">
     <h2>DepthFlow: A fully featured steep parallax algorithm</h2>
 </div>
+
+> **Note**: This is a mostly technical write-up with notable trivia, and it's not necessary to understand the math or history to use it. For what you should know, see [**Parameters**](site:/depthflow/parameters).
+
+!!! warning "🚧 Work in Progress 🚧"
+    Many missing parts, mostly sketching ideas and structure.
 
 ## Introduction
 

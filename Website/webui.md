@@ -4,9 +4,7 @@ title: DepthFlow/WebUI
 
 ✅ On any installation method, you can run `depthflow gradio` to start the web interface. This will open a new tab in your default browser on a local server hosted in your machine:
 
-<div align="center">
-    <img src="https://github.com/user-attachments/assets/05b81504-d736-4c95-8e6f-9b4901c9eebd">
-</div>
+<img src="https://github.com/user-attachments/assets/8224ad9b-e7b4-417f-9454-d5005e092411">
 
 The user interface _should_ be somewhat self-explanatory, and is subject to change.
 
@@ -18,4 +16,4 @@ The user interface _should_ be somewhat self-explanatory, and is subject to chan
 
 - 🚧 **Animations** system _will_ change and be improved. For now, enable presets and change their settings on the expandable accordion on the middle of the interface.
 
-{% include-markdown "include/love-short.md" %}
+--8<-- "include/love-short.md"

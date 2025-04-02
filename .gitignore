@@ -1,2 +1,3 @@
 Workspace
+.cache
 *__pycache__
