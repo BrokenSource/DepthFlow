@@ -11,8 +11,7 @@ Homepage  = "https://brokensrc.dev"
 name        = "depthflow"
 description = "🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative"
 authors     = [{name="Tremeschin", email="29046864+Tremeschin@users.noreply.github.com"}]
-dynamic     = ["license-files"] # Fixme: Dummy to trigger hooks
-version     = "0.0.0" # Managed by a hatchling metadata hook
+dynamic     = ["version"]
 readme      = "readme.md"
 license     = "AGPL-3.0"
 requires-python = ">=3.10"

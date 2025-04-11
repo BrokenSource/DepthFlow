@@ -11,4 +11,4 @@ for path in (cwd := Path.cwd(), *cwd.parents):
 else:
     class DummyHook(MetadataHookInterface):
         def update(self, metadata: dict) -> None:
-            pass
+            metadata["version"] = "0.0.0"
