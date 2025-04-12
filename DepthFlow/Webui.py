@@ -1,5 +1,6 @@
 import contextlib
 import sys
+import time
 import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor as ThreadPool
@@ -21,6 +22,7 @@ from Broken import (
     BrokenPath,
     BrokenResolution,
     BrokenTorch,
+    BrokenWorker,
     DictUtils,
     Runtime,
     denum,
@@ -290,8 +292,13 @@ class DepthGradio:
                 )
                 yield {self.ui.video: task.result()}
             finally:
-                with contextlib.suppress(FileNotFoundError):
-                    output.unlink()
+                def remove(path: Path, delay: float):
+                    with contextlib.suppress(FileNotFoundError):
+                        time.sleep(delay)
+                        path.unlink()
+
+                # Gradio doesn't accept bytes, give some time to read
+                BrokenWorker.thread(remove, path=output, delay=10)
 
     # -------------------------------------------|
     # Layout
