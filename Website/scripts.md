@@ -10,34 +10,34 @@ Talk is cheap, and if you're here, you know what you want 😅
 
 !!! example "This simplest script is the same as running the main entry point directly"
     ```python
-    {% include-markdown "../depthflow/examples/basic.py" %}
+    {% include-markdown "../Examples/Basic.py" %}
     ```
 
 ### Custom
 
 !!! example "You can create custom animations, and manage/automate everything within Python"
     ```python
-    {% include-markdown "../depthflow/examples/custom.py" %}
+    {% include-markdown "../Examples/Custom.py" %}
     ```
 
 ### Screenshot
 
 !!! example "Grab frames out of the shader directly"
     ```python
-    {% include-markdown "../depthflow/examples/screenshot.py" %}
+    {% include-markdown "../Examples/Screenshot.py" %}
     ```
 
 ### Side by side
 
 !!! example "Rendering a stereographic output"
     ```python
-    {% include-markdown "../depthflow/examples/sidebyside.py" %}
+    {% include-markdown "../Examples/SideBySide.py" %}
     ```
 
 ### Complex
 
 ??? example "This monstruous script combines batch and parallel processing, animation variations"
     ```python
-    {% include-markdown "../depthflow/examples/complex.py" %}
+    {% include-markdown "../Examples/Complex.py" %}
     ```
 

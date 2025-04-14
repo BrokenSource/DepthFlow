@@ -1,0 +1,35 @@
+INHERIT: ../../mkdocs-base.yml
+site_name: DepthFlow
+site_description: 🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative
+site_url: https://depth.brokensrc.dev/
+repo_url: https://github.com/BrokenSource/DepthFlow/
+nav:
+  - Home:
+    - index.md
+    - About:
+      - 🪵 Changelog: about/changelog.md
+      - 🧭 Roadmap: https://github.com/orgs/BrokenSource/projects/2
+      - 💬 Contact: about/contact.md
+  - Installation:
+    - get/index.md
+    - 📦 Installers: get/installers.md
+    - 🧀 Wheels: get/wheels.md
+    - 🔥 Source: get/source.md
+    - 🐳 Docker: get/docker.md
+    - ☁️ Cloud: get/cloud.md
+  - Usage:
+    - quickstart/index.md
+    - 🔴 Gradio WebUI: webui.md
+    - 🟡 Command line: commands.md
+    - 🟢 Python scripts: scripts.md
+  - Documentation:
+    - 🔧 Parameters: parameters.md
+    - 📜 Foundations: paper.md
+  # - Code:
+  #   - 📦 Package: Code/
+theme:
+  custom_dir: ../../Website/overrides
+  favicon: DepthFlow/Resources/Images/DepthFlow.png
+markdown_extensions:
+  pymdownx.snippets:
+    base_path: [../../Website]

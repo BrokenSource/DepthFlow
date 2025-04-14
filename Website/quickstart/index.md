@@ -1,6 +1,5 @@
 ---
 title: DepthFlow/Quick Start
-template: home.html
 ---
 
 # ⚡️ Quick start

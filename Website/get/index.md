@@ -1,5 +1,5 @@
 ---
-title: DepthFlow/Install
+title: Get started
 ---
 
 --8<--
