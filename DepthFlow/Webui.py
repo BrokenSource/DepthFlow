@@ -8,8 +8,6 @@ from pathlib import Path
 from typing import Annotated, Iterable
 
 import gradio
-import gradio.blocks
-import gradio.strings
 import spaces
 from attr import Factory
 from attrs import define
@@ -514,9 +512,6 @@ class DepthGradio:
                     </small></p>
                 </div></center>
             """)
-
-        # Quiet removes important information on the url
-        gradio.strings.en["PUBLIC_SHARE_TRUE"] = ""
 
         return self.interface.launch(
             favicon_path=str(DEPTHFLOW.RESOURCES.ICON_PNG),
