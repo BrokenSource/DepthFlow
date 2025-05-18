@@ -6,10 +6,11 @@ Simple example of grabbing frames from a scene
 from DepthFlow.Scene import DepthScene
 from PIL import Image
 
+
 class CustomScene(DepthScene):
     def setup(self):
         DepthScene.setup(self)
-        self.scene.on_frame.bind(self.capture)
+        self.on_frame.bind(self.capture)
 
     def capture(self):
         data = self.screenshot()

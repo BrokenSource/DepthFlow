@@ -31,7 +31,7 @@ from Broken.Externals.Upscaler import (
     Upscayl,
     Waifu2x,
 )
-from Broken.Loaders import LoadableImage, LoadImage
+from Broken.Extra.BrokenLoaders import LoadableImage, LoadImage
 from Broken.Types import FileExtensions, PydanticImage
 from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from DepthFlow.Animation import (

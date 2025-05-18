@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field
 from typer import Option
 
 from Broken import BrokenAttribute, BrokenModel, BrokenTyper, Environment, MultiEnum
-from Broken.Loaders import LoadString
+from Broken.Extra.BrokenLoaders import LoadString
 from DepthFlow.State import (
     BlurState,
     ColorState,

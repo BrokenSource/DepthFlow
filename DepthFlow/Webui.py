@@ -9,8 +9,7 @@ from typing import Annotated, Iterable
 
 import gradio
 import spaces
-from attr import Factory
-from attrs import define
+from attr import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
 from PIL.Image import Image as ImageType
@@ -18,7 +17,6 @@ from typer import Option
 
 from Broken import (
     BrokenPath,
-    BrokenResolution,
     BrokenTorch,
     BrokenWorker,
     DictUtils,
@@ -27,6 +25,7 @@ from Broken import (
 )
 from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
 from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
+from Broken.Extra.BrokenResolution import BrokenResolution
 from DepthFlow import DEPTHFLOW
 from DepthFlow.Animation import Animation, FilterBase, PresetBase
 
