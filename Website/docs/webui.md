@@ -1,5 +1,5 @@
 ---
-title: DepthFlow/WebUI
+icon: material/web
 ---
 
 ✅ On any installation method, you can run `depthflow gradio` to start the web interface. This will open a new tab in your default browser on a local server hosted in your machine:

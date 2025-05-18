@@ -1,3 +1,7 @@
+---
+icon: octicons/package-16
+---
+
 --8<--
 get/installers.md
 --8<--

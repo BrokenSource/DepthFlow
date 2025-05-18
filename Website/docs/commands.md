@@ -1,5 +1,5 @@
 ---
-title: DepthFlow/Command Line
+icon: octicons/command-palette-16
 ---
 
 ✅ As **DepthFlow** is a [**ShaderFlow**](site:/shaderflow) _"spin-off"_ - a custom Scene - most of its documentation on commands, behavior, issues and options are shared between the two.
@@ -123,7 +123,7 @@ The video is eternal, so getting the best render quality even if it takes longer
 
 1. **Resolution**: A combination of the input image and the exported video's resolution. Rendering at a higher resolution than the input image will not improve quality.
 
-2. [**Super Sampling Anti Aliasing**](https://en.wikipedia.org/wiki/Supersampling): Rendering at a higher internal resolution and then downscaling to the output target mitigates edge artifacts and smooths them. The default is 1.2, and the maximum quality gains happen at 2.0, don't go above it.
+2. [**Super Sampling Anti Aliasing**](https://en.wikipedia.org/wiki/Supersampling): Rendering at a higher internal resolution and then downscaling to the output target mitigates edge artifacts and smooths them. The default is 1.2, good quality with 2, best with 4, don't go above it.
 
 3. **Quality parameter**: The `depthflow main --quality 50` parameter defines how accurate calculating the projection's intersections are. A value of 0 is sufficient for subtle movements, and will create 'layers' artifacts at higher values. The default is 50, which is actually overkill for most cases, given how much optimized the code is.
 
