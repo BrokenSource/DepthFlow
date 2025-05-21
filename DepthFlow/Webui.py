@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Annotated, Iterable
 
 import gradio
-import spaces
 from attr import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
@@ -214,40 +213,6 @@ class DepthGradio:
     turbo: bool = False
     nvenc: bool = False
 
-    @spaces.GPU(duration=15)
-    def worker(
-        image: ImageType,
-        depth: ImageType,
-        width: int,
-        height: int,
-        ssaa: float,
-        fps: int,
-        time: float,
-        loops: int,
-        turbo: bool,
-        nvenc: bool,
-        output: Path,
-        animation: list[Animation],
-    ) -> Path:
-        from DepthFlow.Scene import DepthScene
-
-        scene = DepthScene(backend="headless")
-        scene.input(image=image, depth=depth)
-        scene.config.animation.steps = animation
-        if nvenc: scene.ffmpeg.h264_nvenc()
-
-        return scene.main(
-            width=width,
-            height=height,
-            ratio=(width/height),
-            ssaa=ssaa,
-            fps=fps,
-            time=time,
-            loops=loops,
-            turbo=turbo,
-            output=output,
-        )[0]
-
     def render(self, user: dict):
         # Warn: This method leaks about 50MB of RAM per 100 renders
         #       due a bug in (moderngl?) I'll look into the future
@@ -257,36 +222,48 @@ class DepthGradio:
         if (user[self.ui.depth] is None):
             return gradio.Warning("The input depthmap is empty")
 
-        # Build animation classes
-        animation = []
-        for cls in Animation.members():
-            preset = self.ui.animation[cls.__name__]
-            if (not preset.enable):
-                continue
-            if (not user[preset.enable]):
-                continue
-            animation.append(cls(**{
-                key: user[item] for (key, item) in preset.options.items()}
-            ))
+        def worker(output: Path) -> Path:
+            from DepthFlow.Scene import DepthScene
+            scene = DepthScene(backend="headless")
+            scene.input(
+                image=user[self.ui.image],
+                depth=user[self.ui.depth]
+            )
+
+            # Build and add any enabled preset class
+            for preset in Animation.members():
+                preset_name = preset.__name__
+                preset_dict = self.ui.animation[preset_name]
+                if (not preset_dict.enable):
+                    continue
+                if (not user[preset_dict.enable]):
+                    continue
+                scene.config.animation.add(preset(**{
+                    key: user[item] for (key, item) in preset_dict.options.items()
+                }))
+
+            if self.nvenc:
+                scene.ffmpeg.h264_nvenc()
+
+            # Let the user override the ratio
+            width  = user[self.ui.width]
+            height = user[self.ui.height]
+
+            return scene.main(
+                width=width, height=height,
+                ratio=(width/height),
+                ssaa=user[self.ui.ssaa],
+                fps=user[self.ui.fps],
+                time=user[self.ui.time],
+                loops=user[self.ui.loop],
+                turbo=self.turbo,
+                output=output,
+            )[0]
 
         with ThreadPool() as pool:
             try:
                 output = (WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4")
-                task = pool.submit(
-                    DepthGradio.worker,
-                    image=user[self.ui.image],
-                    depth=user[self.ui.depth],
-                    width=user[self.ui.width],
-                    height=user[self.ui.height],
-                    ssaa=user[self.ui.ssaa],
-                    fps=user[self.ui.fps],
-                    time=user[self.ui.time],
-                    loops=user[self.ui.loop],
-                    turbo=self.turbo,
-                    nvenc=self.nvenc,
-                    output=output,
-                    animation=animation,
-                )
+                task = pool.submit(worker, output=output)
                 yield {self.ui.video: task.result()}
             finally:
                 def remove(path: Path, delay: float):
