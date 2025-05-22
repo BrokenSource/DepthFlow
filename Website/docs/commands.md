@@ -2,7 +2,7 @@
 icon: octicons/command-palette-16
 ---
 
-✅ As **DepthFlow** is a [**ShaderFlow**](site:/shaderflow) _"spin-off"_ - a custom Scene - most of its documentation on commands, behavior, issues and options are shared between the two.
+✅ As **DepthFlow** is a [ShaderFlow](https://github.com/BrokenSource/ShaderFlow) _"spin-off"_ - a custom Scene - most of its documentation on commands, behavior, issues and options are shared between the two.
 
 - The examples of each section shows a single functionality, but you can combine them[^combine].
 
@@ -123,9 +123,9 @@ The video is eternal, so getting the best render quality even if it takes longer
 
 1. **Resolution**: A combination of the input image and the exported video's resolution. Rendering at a higher resolution than the input image will not improve quality.
 
-2. [**Super Sampling Anti Aliasing**](https://en.wikipedia.org/wiki/Supersampling): Rendering at a higher internal resolution and then downscaling to the output target mitigates edge artifacts and smooths them. The default is 1.2, good quality with 2, best with 4, don't go above it.
+2. [**Super Sampling Anti Aliasing**](https://en.wikipedia.org/wiki/Supersampling): Renders at a higher internal resolution and then downscaling to the output target mitigates edge artifacts and smooths them. The default is 1.2, good quality with 2, best with 4, don't go above it. Uses `N^2` times more GPU power.
 
-3. **Quality parameter**: The `depthflow main --quality 50` parameter defines how accurate calculating the projection's intersections are. A value of 0 is sufficient for subtle movements, and will create 'layers' artifacts at higher values. The default is 50, which is actually overkill for most cases, given how much optimized the code is.
+3. **Quality parameter**: The `depthflow main --quality 50` parameter defines how accurate calculating the projection's intersections are. A value of 0 is sufficient for subtle movements, and will create 'layers' artifacts at higher offsets. The default is 50, which is quite overkill for most cases, given how much optimized the code is.
 
 4. **Depth map**: Defines the accuracy of the parallax effect. The default estimator is a state of the art balance of speed, portability, quality, and should be enough.
 
@@ -147,8 +147,8 @@ Upscale the input image before rendering the video with:
 !!! example ""
 
     ```shell title=""
-    # Use RealESRGAN to upscale the image (https://github.com/xinntao/Real-ESRGAN)
-    depthflow realesr input -i ./image.png main -o ./output.mp4
+    # Use Upscayl to upscale the image (https://github.com/upscayl/upscayl)
+    depthflow upscayl -m digital-art input -i ./image.png main -o ./output.mp4
     ```
 
     ```shell title=""

@@ -15,9 +15,9 @@ title: DepthFlow/Foundations
 
 <b><span class="the">D</span>epthFlow</b> is a software that generates 3D parallax effect videos from images and their depthmaps. This is done by projecting the image in 3D space and rendering from a camera's perspective, with many different parameters that can vary over time.
 
-The code heavily relies on the [**ShaderFlow**](site:/shaderflow){:target="_blank"} engine, providing high level abstractions and utilities such as exporting videos, camera modeling, and more. Technically speaking, DepthFlow is a ShaderFlow spin-off, so does other projects like [**Pianola**](site:/pianola){:target="_blank"} and [**SpectroNote**](site:/spectronote){:target="_blank"}, where the [**main implementation**](https://github.com/BrokenSource/DepthFlow/blob/main/DepthFlow/Resources/Shaders/DepthFlow.glsl){:target="_blank"} is a feature simple, not-so-long but dense [**GLSL**](https://en.wikipedia.org/wiki/OpenGL_Shading_Language){:target="_blank"} shader[^glsl].
+The code heavily relies on the [**ShaderFlow**](site:/shaderflow) engine, providing high level abstractions and utilities such as exporting videos, camera modeling, and more. Technically speaking, DepthFlow is a ShaderFlow spin-off, so does other projects like [**Pianola**](site:/pianola) and [**SpectroNote**](site:/spectronote), where the [**main implementation**](https://github.com/BrokenSource/DepthFlow/blob/main/DepthFlow/Resources/Shaders/DepthFlow.glsl) is a feature simple, not-so-long but dense [**GLSL**](https://en.wikipedia.org/wiki/OpenGL_Shading_Language) shader[^glsl].
 
-[^glsl]: As such, it can be easily ported to other shading languages or platforms, such as [**WebGL**](https://en.wikipedia.org/wiki/WebGL){:target="_blank"}, [**HLSL**](https://en.wikipedia.org/wiki/High-Level_Shading_Language){:target="_blank"}, or [**Metal**](https://en.wikipedia.org/wiki/Metal_(API)){:target="_blank"}.
+[^glsl]: As such, it can be easily ported to other shading languages or platforms, such as [**WebGL**](https://en.wikipedia.org/wiki/WebGL), [**HLSL**](https://en.wikipedia.org/wiki/High-Level_Shading_Language), or [**Metal**](https://en.wikipedia.org/wiki/Metal_(API)).
 
 
 ### Motivation
@@ -47,7 +47,7 @@ The inputs involved are:
 
 ## Mathematics
 
-<span class="the">T</span>his section will focus on the heuristics and analytics of the DepthFlow algorithm. We'll go through the main concepts and the math behind them, working with a simplified version of the problem first, and then expanding to the full implementation. I'll provide both the intuition and the formalism, as well as visualizations with [**Manim**](https://www.manim.community){:target="_blank"} ✨
+<span class="the">T</span>his section will focus on the heuristics and analytics of the DepthFlow algorithm. We'll go through the main concepts and the math behind them, working with a simplified version of the problem first, and then expanding to the full implementation. I'll provide both the intuition and the formalism, as well as visualizations with [**Manim**](https://www.manim.community) ✨
 
 Before you continue, this will involve **a lot of linear algebra**, and I highly recommend learning the basics with [**The Essence of Linear Algebra**](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) series by [**3Blue1Brown**](https://www.3blue1brown.com/).
 
@@ -65,7 +65,7 @@ At first, I was overwhelmed by the complexity of the problem. Imagine-, you have
 
 In a way, some level of brute forcing is necessary, but we can make it smart. Another thing to realize is that the problem of **finding the intersections** is **totally independent** from the **projection parameters**. The parameters will define what the camera sees (ray origin and target), then it's just a matter of finding intersections with the scene and sampling.
 
-> **Note**: It's possible to create a 3D mesh from the depthmap, and use standard rasterization for the effect. However, rendering this many quads would be [**very expensive**](https://www.youtube.com/watch?v=hf27qsQPRLQ){:target="_blank"}, and a lot of non-linearity would be lost or hard to implement in the Euclidean space we'll see later.
+> **Note**: It's possible to create a 3D mesh from the depthmap, and use standard rasterization for the effect. However, rendering this many quads would be [**very expensive**](https://www.youtube.com/watch?v=hf27qsQPRLQ), and a lot of non-linearity would be lost or hard to implement in the Euclidean space we'll see later.
 
 A key insight is to realize that the problem isn't inherently 3D, but 2D. The projection intersection will **only ever happen** _"below[^below]"_ the path a ray takes. Calculate for all, we're set.
 
@@ -79,7 +79,7 @@ For that, let's start defining the problem from basic, reasonable assumptions:
 - The image is centered on the $xy$ screen plane at $z = 1$ (forward)
 - The camera is at the origin $(0, 0, 0)$, looking forward $(0, 0, 1)$
 - The depthmap uses a (0=far) (1=near) convention
-- The camera uses [**this modelling**](site:/shaderflow/learn/camera){:target="_blank"}
+- The camera uses [**this modelling**](site:/shaderflow/learn/camera)
 
 And additional
 
@@ -88,7 +88,7 @@ And additional
 
 With only that, we can look at a 2D slice and solve the simplified problem!
 
-!!! note "For more information on the coordinate system details or choice, see [**here**](site:/shaderflow/learn/camera){:target="_blank"}"
+!!! note "For more information on the coordinate system details or choice, see [**here**](site:/shaderflow/learn/camera)"
 
 
 ### Intersections

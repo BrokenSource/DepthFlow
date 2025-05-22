@@ -14,8 +14,6 @@ nav:
     - Installers: get/installers.md
     - Wheels: get/wheels.md
     - Source: get/source.md
-    - Docker: get/docker.md
-    - Cloud: get/cloud.md
   - Quickstart:
     - docs/index.md
     - Gradio WebUI: docs/webui.md
