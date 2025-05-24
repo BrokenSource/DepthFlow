@@ -1,4 +1,4 @@
-name: deploy-website
+name: make-website
 on:
   workflow_dispatch:
 
@@ -6,19 +6,17 @@ permissions:
   contents: write
 
 jobs:
-  wheels:
-    name: Build and Deploy
+  main:
     runs-on: ubuntu-latest
     steps:
       - uses: BrokenSource/BrokenSource@main
-        name: Broken Setup
 
-      - name: GitHub Actions Credentials
+      - name: Credentials
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
-      - name: Build and Deploy
-        run: uv run mkdocs gh-deploy --force
-        working-directory: Projects/DepthFlow
+      - name: Make Website
+        run: uv run mkdocs gh-deploy --force --no-history
+        working-directory: Projects/${{github.event.repository.name}}

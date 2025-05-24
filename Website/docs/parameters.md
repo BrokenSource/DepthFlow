@@ -23,7 +23,7 @@ Or settable by the command line as a animation component:
 
 ```python title="Terminal"
 # Note: This will only create a static image
-depthflow config --height 0.3 --offset-x 1 main
+depthflow state --height 0.3 --offset-x 1 main
 ```
 
 However, they are best used within the `.update()` method for creating animations:
@@ -36,7 +36,7 @@ class YourScene(DepthScene):
         self.state.offset_x = 0.3 * math.sin(self.cycle)
 ```
 
-Internally, they are used and sent when the render method is called for the shader, which non-surprisingly happens in the main event loop of the Scene, after all `.update()`'s.
+Internally, they are used and sent when the render method is called for the shader, which happens in the main event loop of the Scene, after all `.update()`'s.
 
 Directly controlling those makes more sense when managing the code within Python (and bypassing the animation system, which essentially does the same thing) for writing custom animations and more advanced interactions or behaviors.
 
