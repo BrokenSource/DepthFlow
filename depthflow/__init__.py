@@ -1,4 +1,4 @@
-from Broken import BrokenProject, __version__
+from broken import BrokenProject, __version__
 
 DEPTHFLOW_ABOUT = """
 🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative.\n\n
@@ -8,10 +8,9 @@ DEPTHFLOW_ABOUT = """
 DEPTHFLOW = BrokenProject(
     PACKAGE=__file__,
     APP_NAME="DepthFlow",
-    APP_AUTHOR="BrokenSource",
     ABOUT=DEPTHFLOW_ABOUT,
 )
 
-from Broken import BrokenTorch
+from broken import BrokenTorch
 
 BrokenTorch.install(exists_ok=True)

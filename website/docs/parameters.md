@@ -12,7 +12,7 @@ title: DepthFlow/Parameters
 All parameters are controlled within the [**state dictionary**](https://github.com/BrokenSource/DepthFlow/blob/main/DepthFlow/State.py) class, acessible by:
 
 ```python
-from DepthFlow import DepthScene
+from depthflow import DepthScene
 
 scene = DepthScene()
 scene.state.height = 0.3

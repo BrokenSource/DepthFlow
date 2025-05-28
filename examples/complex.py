@@ -18,13 +18,13 @@ from threading import Thread
 from typing import Self
 
 from attr import Factory, define
-from DepthFlow.Animation import Animation, Target
-from DepthFlow.Scene import DepthScene
+from depthflow.animation import Animation, Target
+from depthflow.scene import DepthScene
 from dotmap import DotMap
 
-from Broken import Environment, combinations
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
-from Broken.Externals.Upscaler import BrokenUpscaler, NoUpscaler, Upscayl
+from broken import Environment, combinations
+from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
+from broken.externals.upscaler import BrokenUpscaler, NoUpscaler, Upscayl
 
 
 # Note: You can also use your own subclassing like Custom.py!

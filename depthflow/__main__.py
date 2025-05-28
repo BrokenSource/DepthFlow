@@ -1,6 +1,6 @@
 import sys
 
-from Broken import (
+from broken import (
     BrokenProfiler,
     BrokenTorch,
     BrokenTyper,
@@ -11,18 +11,18 @@ from Broken import (
 
 def depthflow() -> None:
     """🚀 Run DepthFlow's [bold green]Command line interface[/]"""
-    from DepthFlow.Scene import DepthScene
+    from depthflow.scene import DepthScene
     DepthScene().cli(*sys.argv[1:])
 
 def gradio() -> None:
     """🎓 Run DepthFlow's [bold green]Gradio user interface[/]"""
     log.minor("Launching the DepthFlow WebUI")
-    from DepthFlow.Webui import DepthGradio
+    from depthflow.webui import DepthGradio
     BrokenTyper.simple(DepthGradio().launch)
 
 def estimator() -> None:
     """🔎 Estimate depthmaps of general images"""
-    from Broken.Externals.Depthmap import (
+    from broken.externals.depthmap import (
         DepthAnythingV1,
         DepthAnythingV2,
         DepthPro,
@@ -39,7 +39,7 @@ def estimator() -> None:
 
 def upscaler() -> None:
     """✨ Upscale images to higher resolutions"""
-    from Broken.Externals.Upscaler import Realesr, Upscayl, Waifu2x
+    from broken.externals.upscaler import Realesr, Upscayl, Waifu2x
     cli = BrokenTyper(description=upscaler.__doc__)
     Realesr.cli(cli, name="realesr")
     Upscayl.cli(cli, name="upscayl")

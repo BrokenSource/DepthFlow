@@ -6,7 +6,7 @@ from within a venv. You can also run this directly with `python Basic.py (args)`
 """
 import sys
 
-from DepthFlow.Scene import DepthScene
+from depthflow.scene import DepthScene
 
 if __name__ == "__main__":
     scene = DepthScene()

@@ -8,15 +8,15 @@ from attr import Factory, define
 from imgui_bundle import imgui
 from PIL.Image import Image as ImageType
 from pydantic import Field
-from ShaderFlow.Exceptions import ShaderBatchStop
-from ShaderFlow.Message import ShaderMessage
-from ShaderFlow.Scene import ShaderScene
-from ShaderFlow.Texture import ShaderTexture
-from ShaderFlow.Variable import ShaderVariable
+from shaderflow.exceptions import ShaderBatchStop
+from shaderflow.message import ShaderMessage
+from shaderflow.scene import ShaderScene
+from shaderflow.texture import ShaderTexture
+from shaderflow.variable import ShaderVariable
 from typer import Option
 
-from Broken import BrokenPath, Environment, flatten, list_get
-from Broken.Externals.Depthmap import (
+from broken import BrokenPath, Environment, flatten, list_get
+from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
     DepthEstimator,
@@ -24,29 +24,29 @@ from Broken.Externals.Depthmap import (
     Marigold,
     ZoeDepth,
 )
-from Broken.Externals.Upscaler import (
+from broken.externals.upscaler import (
     BrokenUpscaler,
     NoUpscaler,
     Realesr,
     Upscayl,
     Waifu2x,
 )
-from Broken.Extra.BrokenLoaders import LoadableImage, LoadImage
-from Broken.Types import FileExtensions, PydanticImage
-from DepthFlow import DEPTHFLOW, DEPTHFLOW_ABOUT
-from DepthFlow.Animation import (
+from broken.core.extra.loaders import LoadableImage, LoadImage
+from broken.types import FileExtensions, PydanticImage
+from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT
+from depthflow.animation import (
     Animation,
     ComponentBase,
     DepthAnimation,
     FilterBase,
     PresetBase,
 )
-from DepthFlow.State import DepthState
+from depthflow.state import DepthState
 
 # -------------------------------------------------------------------------------------------------|
 
 DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-DEPTH_SHADER: Path = (DEPTHFLOW.RESOURCES.SHADERS/"DepthFlow.glsl")
+DEPTH_SHADER: Path = (DEPTHFLOW.RESOURCES.SHADERS/"depthflow.glsl")
 
 @define
 class DepthScene(ShaderScene):

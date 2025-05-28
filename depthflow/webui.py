@@ -14,7 +14,7 @@ from gradio.themes.utils import fonts, sizes
 from PIL.Image import Image as ImageType
 from typer import Option
 
-from Broken import (
+from broken import (
     BrokenPath,
     BrokenTorch,
     BrokenWorker,
@@ -22,11 +22,11 @@ from Broken import (
     Runtime,
     denum,
 )
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
-from Broken.Externals.Upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
-from Broken.Extra.BrokenResolution import BrokenResolution
-from DepthFlow import DEPTHFLOW
-from DepthFlow.Animation import Animation, FilterBase, PresetBase
+from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
+from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
+from broken.core.extra.resolution import BrokenResolution
+from depthflow import DEPTHFLOW
+from depthflow.animation import Animation, FilterBase, PresetBase
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -123,7 +123,7 @@ class BrokenGradio:
 
 # ------------------------------------------------------------------------------------------------ #
 
-WEBUI_OUTPUT: Path = (DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"WebUI")
+WEBUI_OUTPUT: Path = (DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"webui")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
 
 ESTIMATORS: dict[str, DepthEstimator] = {
@@ -223,7 +223,7 @@ class DepthGradio:
             return gradio.Warning("The input depthmap is empty")
 
         def worker(output: Path) -> Path:
-            from DepthFlow.Scene import DepthScene
+            from depthflow.scene import DepthScene
             scene = DepthScene(backend="headless")
             scene.input(
                 image=user[self.ui.image],

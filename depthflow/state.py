@@ -1,10 +1,10 @@
 from typing import Annotated, Iterable, Tuple
 
 from pydantic import Field
-from ShaderFlow.Variable import ShaderVariable, Uniform
+from shaderflow.variable import ShaderVariable, Uniform
 from typer import Option
 
-from Broken import BrokenModel, BrokenTyper
+from broken import BrokenModel, BrokenTyper
 
 # ------------------------------------------------------------------------------------------------ #
 

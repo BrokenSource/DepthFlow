@@ -4,13 +4,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable
 
 from attr import Factory, define
-from DepthFlow import DEPTHFLOW
-from DepthFlow.Scene import DEPTH_SHADER, DepthScene
+from depthflow import DEPTHFLOW
+from depthflow.scene import DEPTH_SHADER, DepthScene
 from imgui_bundle import imgui
-from ShaderFlow.Variable import ShaderVariable, Uniform
+from shaderflow.Variable import ShaderVariable, Uniform
 
-from Broken import BROKEN, Environment, OnceTracker, install, log
-from Broken.Externals.Depthmap import DepthAnythingV2, DepthEstimator
+from broken import BROKEN, Environment, OnceTracker, install, log
+from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 
 install(package="manim")
 

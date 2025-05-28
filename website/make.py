@@ -1,4 +1,4 @@
-from Broken.Mkdocs import BrokenMkdocs
+from broken.website import BrokenMkdocs
 
 make = BrokenMkdocs(
     project="DepthFlow",

@@ -17,9 +17,9 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from Broken import BrokenAttribute, BrokenModel, BrokenTyper, Environment, MultiEnum
-from Broken.Extra.BrokenLoaders import LoadString
-from DepthFlow.State import (
+from broken import BrokenAttribute, BrokenModel, BrokenTyper, Environment, MultiEnum
+from broken.core.extra.loaders import LoadString
+from depthflow.state import (
     BlurState,
     ColorState,
     DepthState,
@@ -29,7 +29,7 @@ from DepthFlow.State import (
 )
 
 if TYPE_CHECKING:
-    from DepthFlow.Scene import DepthScene
+    from depthflow.scene import DepthScene
 
 # ------------------------------------------------------------------------------------------------ #
 

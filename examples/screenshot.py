@@ -3,7 +3,7 @@
 
 Simple example of grabbing frames from a scene
 """
-from DepthFlow.Scene import DepthScene
+from depthflow.scene import DepthScene
 from PIL import Image
 
 

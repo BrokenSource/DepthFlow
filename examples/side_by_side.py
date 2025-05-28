@@ -3,8 +3,8 @@
 
 Simple example of rendering a side-by-side video
 """
-from DepthFlow.Scene import DepthScene
-from ShaderFlow.Modules.Camera import CameraProjection
+from depthflow.scene import DepthScene
+from shaderflow.modules.Camera import CameraProjection
 
 class CustomScene(DepthScene):
     def setup(self):

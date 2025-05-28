@@ -3,7 +3,7 @@
 
 Simple example of programmatically batch rendering multiple inputs
 """
-from DepthFlow.Scene import DepthScene
+from depthflow.scene import DepthScene
 from pathlib import Path
 
 def main():

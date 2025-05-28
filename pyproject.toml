@@ -21,19 +21,19 @@ dependencies = [
 ]
 
 [project.scripts]
-depthflow = "DepthFlow.__main__:main"
-depth     = "DepthFlow.__main__:main"
-depthdocs = "Website.docs:main"
+depthflow = "depthflow.__main__:main"
+depth     = "depthflow.__main__:main"
+depthdocs = "website.docs:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["DepthFlow"]
+packages = ["depthflow"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"Examples" = "DepthFlow/Resources/Examples"
+"examples" = "depthflow/resources/examples"
 
 [tool.hatch.metadata.hooks.custom]
 path = ".github/hatch_build.py"
