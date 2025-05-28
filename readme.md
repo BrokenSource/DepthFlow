@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/DepthFlow/Resources/Images/DepthFlow.png" width="210">
+  <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/depthflow/resources/images/logo.png" width="210">
   <h1 style="margin-top: 0">DepthFlow</h1>
   <b>Images to → 3D Parallax</b> effect video • A free and open source <a href="https://www.immersity.ai/"><b>ImmersityAI</b></a> alternative
   <br>
