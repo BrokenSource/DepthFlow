@@ -29,6 +29,7 @@ icon: material/file-document-edit
         - The quality of the project is too high for a freebie now, 5k+ downloads without much support
         - They take a lot of effort to maintain and test, but are too convenient to use
         - It's a soft attempt to make the development financially sustainable, might revert later
+    - Convert the project into snake case, still have my differences
 
 ### 📦 v0.8.0 <small>October 27, 2024</small> {#0.8.0}
 

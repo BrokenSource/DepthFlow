@@ -21,12 +21,11 @@ nav:
     - Python scripts: docs/scripts.md
   - Documentation:
     - Parameters: docs/parameters.md
-    - Foundations: docs/paper.md
   # - Code:
   #   - 📦 Package: Code/
 theme:
-  custom_dir: ../../Website/overrides
-  favicon: DepthFlow/Resources/Images/DepthFlow.png
+  custom_dir: ../../website/overrides
+  favicon: depthflow/resources/images/logo.png
 markdown_extensions:
   pymdownx.snippets:
-    base_path: [../../Website]
+    base_path: [../../website]
