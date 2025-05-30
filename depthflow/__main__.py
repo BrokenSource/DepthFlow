@@ -1,7 +1,6 @@
 import sys
 
 from broken import (
-    BrokenProfiler,
     BrokenTorch,
     BrokenTyper,
     log,
@@ -49,20 +48,19 @@ def upscaler() -> None:
 # -----------------------------------------------|
 
 def main() -> None:
-    with BrokenProfiler("DEPTHFLOW"):
-        cli = BrokenTyper.toplevel()
+    cli = BrokenTyper.toplevel()
 
-        with cli.panel("Commands"):
-            cli.command(depthflow, default=True)
-            cli.command(gradio)
-            cli.direct_script()
+    with cli.panel("Commands"):
+        cli.command(depthflow, default=True)
+        cli.command(gradio)
+        cli.direct_script()
 
-        with cli.panel("Tools"):
-            cli.command(BrokenTorch.install)
-            cli.command(estimator)
-            cli.command(upscaler)
+    with cli.panel("Tools"):
+        cli.command(BrokenTorch.install)
+        cli.command(estimator)
+        cli.command(upscaler)
 
-        cli(*sys.argv[1:])
+    cli(*sys.argv[1:])
 
 if __name__ == "__main__":
     main()
