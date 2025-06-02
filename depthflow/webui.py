@@ -22,9 +22,9 @@ from broken import (
     Runtime,
     denum,
 )
+from broken.core.extra.resolution import BrokenResolution
 from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
-from broken.core.extra.resolution import BrokenResolution
 from depthflow import DEPTHFLOW
 from depthflow.animation import Animation, FilterBase, PresetBase
 
@@ -483,8 +483,8 @@ class DepthGradio:
                         <a href='https://brokensrc.dev/'><b>Website</b></a> •
                         <a href='https://discord.com/invite/KjqvcYwRHm/'><b>Discord</b></a> •
                         <a href='https://t.me/BrokenSource/'><b>Telegram</b></a> •
-                        <a href='https://github.com/BrokenSource/DepthFlow'><b>GitHub</b></a> •
-                        <a href='https://brokensrc.dev/about/sponsors/'><b>Sponsoring</b></a>
+                        <a href='https://github.com/BrokenSource/DepthFlow/'><b>GitHub</b></a> •
+                        <a href='https://github.com/sponsors/Tremeschin/'><b>Sponsoring</b></a>
                     </small></p>
                 </div></center>
             """)

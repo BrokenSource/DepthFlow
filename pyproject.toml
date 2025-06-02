@@ -1,11 +1,11 @@
 [project.urls]
-GitHub    = "https://github.com/BrokenSource/DepthFlow"
-Changelog = "https://depth.brokensrc.dev/about/changelog"
-Funding   = "https://depth.brokensrc.dev/about/sponsors"
-Contact   = "https://depth.brokensrc.dev/about/contact"
+Funding   = "https://github.com/sponsors/Tremeschin/"
+GitHub    = "https://github.com/BrokenSource/DepthFlow/"
+Changelog = "https://depth.brokensrc.dev/about/changelog/"
+Contact   = "https://depth.brokensrc.dev/about/contact/"
 Docs      = "https://depth.brokensrc.dev/docs/"
 Download  = "https://depth.brokensrc.dev/get/"
-Homepage  = "https://depth.brokensrc.dev"
+Homepage  = "https://depth.brokensrc.dev/"
 
 [project]
 name        = "depthflow"

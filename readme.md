@@ -17,17 +17,17 @@
     Links •
     <a href="https://depth.brokensrc.dev/get/">Installation</a> •
     <a href="https://depth.brokensrc.dev/docs/">Documentation</a> •
-    <a href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
-    <a href="https://github.com/BrokenSource/DepthFlow/issues">Issues</a> •
-    <a href="https://brokensrc.dev/about/sponsors">Funding</a>
+    <a href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes/">ComfyUI</a> •
+    <a href="https://github.com/BrokenSource/DepthFlow/issues/">Issues</a> •
+    <a href="https://github.com/sponsors/Tremeschin/">Funding</a>
   </b>
   <br>
   <sub>
     <a href="https://www.youtube.com/@Tremeschin">YouTube</a> •
-    <a href="https://www.github.com/BrokenSource/DepthFlow">GitHub</a> •
-    <a href="https://depth.brokensrc.dev/about/contact">Contact</a> •
-    <a href="https://depth.brokensrc.dev/about/changelog">Changelog</a> •
-    <a href="https://depth.brokensrc.dev/about/license">License</a>
+    <a href="https://www.github.com/BrokenSource/DepthFlow/">GitHub</a> •
+    <a href="https://depth.brokensrc.dev/about/contact/">Contact</a> •
+    <a href="https://depth.brokensrc.dev/about/changelog/">Changelog</a> •
+    <a href="https://depth.brokensrc.dev/about/license/">License</a>
   </sub>
   <br>
   <br>
@@ -41,7 +41,7 @@
 
 - [x] **High quality** results with seamless loops and artifact-free edges, ensuring a polished and professional look for your animations. Enhance your creations with upscalers and add a touch of magic with lens distortion, depth of field, vignette post effects!
 - [x] **Fast processing** with an heavily optimized GLSL Shader running on the GPU. Render up to 8k50fps with an RTX 3060, export videos with any resolution, codec, supersampling.
-- [x] **Commercial** use is encouraged • Kindly [retribute back](https://brokensrc.dev/about/sponsors/) if you got value from it ❤️
+- [x] **Commercial** use is encouraged • Kindly [retribute back](https://github.com/sponsors/Tremeschin) if you got value from it ❤️
 - [x] **Powerful** WebUI built with [Gradio](https://gradio.app), for an user-friendly experience:
 
 <img src="https://github.com/user-attachments/assets/4856692d-6bca-44c7-bfe0-30a5035ec0be">
@@ -50,13 +50,13 @@
 - [x] **Customizable** with a wide range of projection parameters, allowing you to precisely tweak the effect to your liking. Automate it with [Python scripts](https://github.com/BrokenSource/DepthFlow/tree/main/examples) for mass production!
 - [x] **Self hosted** with no watermarks, unlimited usage, portable ready-to-run executables. It's free and open source, no strings attached, as opposed to competitors 😄
 
-❤️ **Loving it?** Your [**support**](https://brokensrc.dev/about/sponsors/) is essential!
+❤️ **Loving it?** Your [**support**](https://github.com/sponsors/Tremeschin) is essential!
 
 <br>
 
 ## 📦 Installation
 
-Head out to the [**Official Website**](https://brokensrc.dev/get) for the latest installation instructions and more!
+Head out to the [**Official Website**](https://depth.brokensrc.dev/get) for the latest installation instructions and more!
 
 <a href="https://brokensrc.dev/get">
   <img src="https://github.com/user-attachments/assets/8470c0d2-46de-4068-b9ce-a1261a6c0e69">
@@ -64,7 +64,7 @@ Head out to the [**Official Website**](https://brokensrc.dev/get) for the latest
 
 ## ⭐️ Usage
 
-See all [**Quick Start**](https://brokensrc.dev/depthflow/quick/) options in the website as well!
+See all [**Quick Start**](https://depth.brokensrc.dev/docs/) options in the website as well!
 
 <a href="https://brokensrc.dev/depthflow/quick/">
   <img src="https://github.com/user-attachments/assets/a32e5709-d8ea-48e6-bdc2-f9540f5323de">
