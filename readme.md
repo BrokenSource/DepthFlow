@@ -50,7 +50,7 @@
 <img src="https://github.com/user-attachments/assets/4856692d-6bca-44c7-bfe0-30a5035ec0be">
 
 - [x] **Use your** own depthmaps, or let them be estimated with the latest AI models available!
-- [x] **Customizable** with a wide range of projection parameters, allowing you to precisely tweak the effect to your liking. Automate it with [Python scripts](https://github.com/BrokenSource/DepthFlow/tree/main/Examples) for mass production!
+- [x] **Customizable** with a wide range of projection parameters, allowing you to precisely tweak the effect to your liking. Automate it with [Python scripts](https://github.com/BrokenSource/DepthFlow/tree/main/examples) for mass production!
 - [x] **Self hosted** with no watermarks, unlimited usage, portable ready-to-run executables. It's free and open source, no strings attached, as opposed to competitors 😄
 
 ❤️ **Loving it?** Your [**support**](https://brokensrc.dev/about/sponsors/) is essential!
