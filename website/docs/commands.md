@@ -4,12 +4,8 @@ icon: octicons/command-palette-16
 
 ✅ As **DepthFlow** is a [ShaderFlow](https://github.com/BrokenSource/ShaderFlow) _"spin-off"_ - a custom Scene - most of its documentation on commands, behavior, issues and options are shared between the two.
 
-- The examples of each section shows a single functionality, but you can combine them[^combine].
+- The examples of each section shows a single functionality, but you can combine them.
 
-[^combine]: For example, when exporting a video, you can also input your image on the command chain.
-
-
-<hr>
 
 ### Simplest command
 
@@ -25,8 +21,6 @@ Start a realtime window with the default image and animation with:
 - Drag and drop image files or URLs to load them
 - Press <kbd>Tab</kbd> for a dev menu with some options
 
-
-<hr>
 
 ### Using your images
 
@@ -47,11 +41,9 @@ Load an input image, and start the main event loop with:
 - **Note**: Make sure the image path exists, relative paths (not starting with `C:\` or `/`) are relative to where the the executable or current working directory of the shell or is.
 
 
-<hr>
-
 ### Exporting a video
 
-Render 10 seconds of the animation to a video file with default settings with:
+Render 5 seconds of the animation to a video file with default settings with:
 
 !!! example ""
 
@@ -63,7 +55,7 @@ Render 10 seconds of the animation to a video file with default settings with:
 
 #### Resolution
 
-The output resolution, by default, will match the input image's one. You can send either `-w` or `-h` to force one component and fit the other based on the image's aspect ratio:
+The output resolution will match the input image by default. You can pass either `--width/-w` or `--height/-h` to force one component and fit the other based on the image's aspect ratio:
 
 !!! example ""
 
@@ -84,7 +76,7 @@ The output video will scale and loop perfectly, with a period set by the `--time
 !!! example ""
 
     ```shell title=""
-    # Loops every 5 seconds
+    # 5 second video with 1 loop happening
     depthflow main -o ./output.mp4 --time 5
     ```
 
@@ -102,8 +94,8 @@ You can also easily change the video encoder:
     You can see all available codecs in `depthflow --help` !
 
     ```shell title=""
-    # Configure the H264 codec, see also `depthflow h264 --help`
-    depthflow h264 --preset fast main -o ./output.mp4
+    # Configure the H264 codec
+    depthflow h264 --preset veryfast main -o ./output.mp4
     ```
 
     ```shell title=""
@@ -111,9 +103,8 @@ You can also easily change the video encoder:
     depthflow h264-nvenc main -o ./output.mp4
     ```
 
-
     ```shell title=""
-    # I don't even have a RTX 40 to test this lol
+    # Only supported in RTX 4000 and newer GPUs
     depthflow av1-nvenc main -o ./output.mp4
     ```
 
@@ -125,11 +116,11 @@ The video is eternal, so getting the best render quality even if it takes longer
 
 2. [**Super Sampling Anti Aliasing**](https://en.wikipedia.org/wiki/Supersampling): Renders at a higher internal resolution and then downscaling to the output target mitigates edge artifacts and smooths them. The default is 1.2, good quality with 2, best with 4, don't go above it. Uses `N^2` times more GPU power.
 
-3. **Quality parameter**: The `depthflow main --quality 50` parameter defines how accurate calculating the projection's intersections are. A value of 0 is sufficient for subtle movements, and will create 'layers' artifacts at higher offsets. The default is 50, which is quite overkill for most cases, given how much optimized the code is.
+3. **Quality parameter**: The `depthflow main --quality 50` parameter defines how accurate the projection's intersections are. A value of 0 is sufficient for subtle movements, and will create _"layers"_ artifacts at higher offsets. The default is 50, which is actually overkill for most cases.
 
 4. **Depth map**: Defines the accuracy of the parallax effect. The default estimator is a state of the art balance of speed, portability, quality, and should be enough.
 
-5. **Video codec**: The encoder compresses the video from unimaginably impractical sizes of raw data to something manageable. Briefly, CPU encoders yields the best compression, file sizes, and quality, but are slow(er) than GPU encoders, which are _"worse"_ in every other situation. There's no better quality than the realtime window itself.
+5. **Video codec**: The encoder compresses the video from unimaginably impractical sizes of raw data to something manageable. Briefly, CPU encoders yields the best compression, file sizes, and quality, but are slower than GPU encoders, which are _"worse"_ in every other aspect. Max quality is seen only on the realtime window, as it is the raw data itself.
 
 !!! example ""
 
@@ -138,7 +129,11 @@ The video is eternal, so getting the best render quality even if it takes longer
     depthflow main --quality 80 --ssaa 2 -o ./output.mp4
     ```
 
-<hr>
+    ```
+    # Extremely slow, but the best quality
+    depthflow main --quality 100 --ssaa 4 -o ./output.mp4
+    ```
+
 
 ### Using an upscaler
 
@@ -156,7 +151,6 @@ Upscale the input image before rendering the video with:
     depthflow waifu2x input -i ./image.png main -o ./output.mp4
     ```
 
-<hr>
 
 ### Custom animations
 
@@ -193,23 +187,22 @@ You can use a couple of high quality presets with:
     depthflow zoom main
     ```
 
-<hr>
 
 ### Batch processing
 
 <sup><b>⚠️ Note:</b> Batch exporting feature is experimental and might have issues!</sup>
 
-You can also batch process images and videos with:
-
 #### Selecting inputs
 
 !!! example ""
 
+    Multiple direct inputs
+
     ```shell title=""
-    # Multiple direct inputs, local paths:
+    # Local paths
     depthflow input -i ./image1.png -i ./image2.png (...)
 
-    # Or even URLs, though only one at a time:
+    # Or even URLs
     depthflow input -i https://.. -i https://.. (...)
     ```
 
@@ -242,7 +235,7 @@ Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` fol
     ```shell title=""
     # Create many different animations of the same image
     depthflow input -i ./images orbital main -b all -o ./outputs/orbital
-    depthflow input -i ./images circle main -b all -o ./outputs/circle
+    depthflow input -i ./images circle  main -b all -o ./outputs/circle
     ```
 
     Or even set the output folder to the same input, so videos sorts nicely alongside images:

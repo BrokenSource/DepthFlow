@@ -15,20 +15,19 @@
   <br>
   <b>
     Links •
-    <a href="https://brokensrc.dev/get/">✅ Installation</a> •
-    <a href="https://brokensrc.dev/depthflow/">📦 Documentation</a> •
-    <a href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">⭐️ ComfyUI</a> •
-    <a href="https://github.com/BrokenSource/DepthFlow/issues">🔥 Issues</a> •
-    <a href="https://brokensrc.dev/about/sponsors">❤️ Funding</a>
+    <a href="https://depth.brokensrc.dev/get/">Installation</a> •
+    <a href="https://depth.brokensrc.dev/docs/">Documentation</a> •
+    <a href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes">ComfyUI</a> •
+    <a href="https://github.com/BrokenSource/DepthFlow/issues">Issues</a> •
+    <a href="https://brokensrc.dev/about/sponsors">Funding</a>
   </b>
   <br>
   <sub>
     <a href="https://www.youtube.com/@Tremeschin">YouTube</a> •
     <a href="https://www.github.com/BrokenSource/DepthFlow">GitHub</a> •
-    <a href="https://brokensrc.dev/about/contact">Contact</a> •
-    <a href="https://brokensrc.dev/about/changelog">Changelog</a> •
-    <a href="https://brokensrc.dev/get/uninstalling">Uninstalling</a> •
-    <a href="https://brokensrc.dev/about/license">License</a>
+    <a href="https://depth.brokensrc.dev/about/contact">Contact</a> •
+    <a href="https://depth.brokensrc.dev/about/changelog">Changelog</a> •
+    <a href="https://depth.brokensrc.dev/about/license">License</a>
   </sub>
   <br>
   <br>
@@ -39,8 +38,6 @@
 ## 🔥 Description
 
 **DepthFlow** is an advanced _image-to-video_ converter that transforms static pictures into awesome 3D parallax animations. Bring photos to life with motion, featuring high quality and custom presets, perfect for digital art, social media, stock footage, fillers and more.
-
-<small>✨ It works by combining a source image and its depthmap with the power of mathmagic!</small>
 
 - [x] **High quality** results with seamless loops and artifact-free edges, ensuring a polished and professional look for your animations. Enhance your creations with upscalers and add a touch of magic with lens distortion, depth of field, vignette post effects!
 - [x] **Fast processing** with an heavily optimized GLSL Shader running on the GPU. Render up to 8k50fps with an RTX 3060, export videos with any resolution, codec, supersampling.
@@ -75,7 +72,7 @@ See all [**Quick Start**](https://brokensrc.dev/depthflow/quick/) options in the
 
 ## ♻️ Community
 
-<small>✅ **Be featured here** if you're using DepthFlow in your projects!</small>
+<small>✅ **Be featured** here if you're using DepthFlow in your projects or art, get in touch!</small>
 
 Check out amazing community work built on top of DepthFlow:
 

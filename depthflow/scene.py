@@ -16,6 +16,7 @@ from shaderflow.variable import ShaderVariable
 from typer import Option
 
 from broken import BrokenPath, Environment, flatten, list_get
+from broken.core.extra.loaders import LoadableImage, LoadImage
 from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -31,7 +32,6 @@ from broken.externals.upscaler import (
     Upscayl,
     Waifu2x,
 )
-from broken.core.extra.loaders import LoadableImage, LoadImage
 from broken.types import FileExtensions, PydanticImage
 from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from depthflow.animation import (
