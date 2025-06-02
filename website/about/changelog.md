@@ -7,9 +7,15 @@ icon: material/file-document-edit
     p  {margin-bottom: 2px !important;}
 </style>
 
-### ✏️ v0.9.0 <small>Unreleased</small> {#0.9.0}
+### ✏️ Staging <small>Unreleased</small> {#next}
 
 !!! example ""
+    - Cooking!
+
+### 📦 v0.9.0 <small>June 2, 2025</small> {#0.9.0}
+
+!!! success ""
+    - Convert the project into snake case, still have my differences
     - Overhauled the Readme and the WebUI layout and content
     - Improvements to perceptual quality of the animation presets
     - Add [Upscayl](https://github.com/upscayl/upscayl) as an upscaler option
@@ -25,11 +31,6 @@ icon: material/file-document-edit
     - Simplify how the ray intersections are computed with ray marching
     - Fix how projection rays are calculated, as `steady`, `focus` were slightly wrong
     - Fix base scene duration is now 5 seconds
-    - Windows binaries are now exclusive to members for a cheap price:
-        - The quality of the project is too high for a freebie now, 5k+ downloads without much support
-        - They take a lot of effort to maintain and test, but are too convenient to use
-        - It's a soft attempt to make the development financially sustainable, might revert later
-    - Convert the project into snake case, still have my differences
 
 ### 📦 v0.8.0 <small>October 27, 2024</small> {#0.8.0}
 
