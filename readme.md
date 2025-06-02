@@ -34,7 +34,7 @@
   <br>
 </div>
 
-<video src="https://github.com/user-attachments/assets/ea9e3c4e-7e62-4cf7-b0a9-265b9323f83d" loop controls autoplay></video>
+<video src="https://github.com/user-attachments/assets/a67632a3-5528-453b-843a-120a65cc480e" loop controls autoplay></video>
 
 ## 🔥 Description
 
@@ -47,7 +47,7 @@
 - [x] **Commercial** use is encouraged • Kindly [retribute back](https://brokensrc.dev/about/sponsors/) if you got value from it ❤️
 - [x] **Powerful** WebUI built with [Gradio](https://gradio.app), for an user-friendly experience:
 
-<img src="https://github.com/user-attachments/assets/8224ad9b-e7b4-417f-9454-d5005e092411">
+<img src="https://github.com/user-attachments/assets/4856692d-6bca-44c7-bfe0-30a5035ec0be">
 
 - [x] **Use your** own depthmaps, or let them be estimated with the latest AI models available!
 - [x] **Customizable** with a wide range of projection parameters, allowing you to precisely tweak the effect to your liking. Automate it with [Python scripts](https://github.com/BrokenSource/DepthFlow/tree/main/Examples) for mass production!
