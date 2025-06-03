@@ -363,6 +363,7 @@ class Animation(ClassEnum):
                     amplitude = 0.8*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
+                    reverse   = self.reverse,
                 ).apply(scene)
             else:
                 (Animation.Sine if self.smooth else Animation.Triangle)(
@@ -370,6 +371,7 @@ class Animation(ClassEnum):
                     amplitude = self.intensity,
                     phase     = -0.25,
                     cycles    = 0.50,
+                    reverse   = self.reverse,
                 ).apply(scene)
 
     class Horizontal(PresetBase):
@@ -391,6 +393,7 @@ class Animation(ClassEnum):
                     amplitude = 0.8*self.intensity,
                     phase     = self.phase,
                     cycles    = 1.00,
+                    reverse   = self.reverse,
                 ).apply(scene)
             else:
                 (Animation.Sine if self.smooth else Animation.Triangle)(
@@ -398,6 +401,7 @@ class Animation(ClassEnum):
                     amplitude = self.intensity,
                     phase     = -0.25,
                     cycles    = 0.50,
+                    reverse   = self.reverse,
                 ).apply(scene)
 
     class Zoom(PresetBase):
