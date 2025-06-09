@@ -35,7 +35,6 @@ def managed():
     scene = CustomScene(backend="headless")
     scene.input(image="image.png")
     scene.main(output="./video.mp4", fps=30, time=5)
-    scene.window.destroy()
 
 if __name__ == "__main__":
     # managed()

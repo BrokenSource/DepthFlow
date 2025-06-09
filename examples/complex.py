@@ -140,9 +140,6 @@ class DepthManager:
             video = scene.main(output=output, **data.render)[0]
             self.outputs.append(video)
 
-        # Imporant: Free up OpenGL resources
-        scene.window.destroy()
-
     def join(self):
         for thread in self.threads:
             thread.join()
