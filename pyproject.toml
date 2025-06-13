@@ -7,6 +7,9 @@ Docs      = "https://depth.brokensrc.dev/docs/"
 Download  = "https://depth.brokensrc.dev/get/"
 Homepage  = "https://depth.brokensrc.dev/"
 
+[tool.hatch.metadata.hooks.custom]
+path = ".github/hatch_build.py"
+
 [project]
 name        = "depthflow"
 description = "🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative"
@@ -16,8 +19,11 @@ readme      = "readme.md"
 license     = "AGPL-3.0"
 requires-python = ">=3.10"
 dependencies = [
-    "broken-source[gradio] @ git+https://github.com/BrokenSource/BrokenSource",
+    "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource",
     "shaderflow @ git+https://github.com/BrokenSource/ShaderFlow",
+    "transformers~=4.52.4",
+    "fastapi~=0.115.12",
+    "gradio~=5.33.1",
 ]
 
 [project.scripts]
@@ -35,11 +41,5 @@ packages = ["depthflow"]
 [tool.hatch.build.targets.wheel.force-include]
 "examples" = "depthflow/resources/examples"
 
-[tool.hatch.metadata.hooks.custom]
-path = ".github/hatch_build.py"
-
 [tool.hatch.metadata]
 allow-direct-references = true
-
-[tool.hatch.build.targets.sdist]
-exclude = ["*"]
