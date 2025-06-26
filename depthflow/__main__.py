@@ -1,7 +1,8 @@
 import sys
 
-from broken import BrokenTyper, log
+from broken import log
 from broken.core.pytorch import BrokenTorch
+from broken.core.typerx import BrokenTyper
 
 # -----------------------------------------------|
 

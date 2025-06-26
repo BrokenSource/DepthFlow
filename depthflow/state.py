@@ -4,7 +4,8 @@ from pydantic import Field
 from shaderflow.variable import ShaderVariable, Uniform
 from typer import Option
 
-from broken import BrokenModel, BrokenTyper
+from broken import BrokenModel
+from broken.core.typerx import BrokenTyper
 
 # ------------------------------------------------------------------------------------------------ #
 
