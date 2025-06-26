@@ -1,15 +1,15 @@
 import math
-import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable
+from typing import TYPE_CHECKING, Iterable
 
 from attr import Factory, define
 from depthflow import DEPTHFLOW
 from depthflow.scene import DEPTH_SHADER, DepthScene
 from imgui_bundle import imgui
-from shaderflow.Variable import ShaderVariable, Uniform
+from shaderflow.variable import ShaderVariable, Uniform
 
-from broken import BROKEN, Environment, OnceTracker, install, log
+from broken import BROKEN, Environment, install
+from broken.core.trackers import OnceTracker
 from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 
 install(package="manim")

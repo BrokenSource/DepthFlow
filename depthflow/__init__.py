@@ -11,6 +11,6 @@ DEPTHFLOW = BrokenProject(
     ABOUT=DEPTHFLOW_ABOUT,
 )
 
-from broken import BrokenTorch
+from broken.core.pytorch import BrokenTorch
 
 BrokenTorch.install(exists_ok=True)

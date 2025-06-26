@@ -11,18 +11,17 @@ import gradio
 from attr import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
-from PIL.Image import Image as ImageType
 from typer import Option
 
 from broken import (
     BrokenPath,
-    BrokenTorch,
-    BrokenWorker,
     DictUtils,
     Runtime,
     denum,
 )
 from broken.core.extra.resolution import BrokenResolution
+from broken.core.pytorch import BrokenTorch
+from broken.core.worker import BrokenWorker
 from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from depthflow import DEPTHFLOW

@@ -1,10 +1,7 @@
 import sys
 
-from broken import (
-    BrokenTorch,
-    BrokenTyper,
-    log,
-)
+from broken import BrokenTyper, log
+from broken.core.pytorch import BrokenTorch
 
 # -----------------------------------------------|
 
