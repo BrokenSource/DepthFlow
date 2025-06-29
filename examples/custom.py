@@ -10,7 +10,7 @@ import math
 import sys
 
 from depthflow.scene import DepthScene
-from shaderflow.Message import ShaderMessage
+from shaderflow.message import ShaderMessage
 
 # Note: DepthScene.method(self) is preferred over super().method(self) for clarity
 
