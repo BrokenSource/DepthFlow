@@ -94,6 +94,7 @@ class DepthScene(ShaderScene):
                     self.cli.command(animation, post=self.config.animation.add, hidden=_hidden)
 
         with self.cli.panel("🔮 Animation presets"):
+            self.cli.command(self.config.animation.clear)
             for preset in Animation.members():
                 if issubclass(preset, PresetBase):
                     self.cli.command(preset, post=self.config.animation.add)

@@ -283,21 +283,21 @@ class Animation(ClassEnum):
         """Phase shift of the wave"""
 
     class Sine(_WaveBase):
-        """Add a Sine wave to some component's animation [green](See 'sine --help' for options)[/]"""
+        """Add a Sine wave to some component's animation"""
         type: Annotated[Literal["sine"], BrokenTyper.exclude()] = "sine"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return self.amplitude * math.sin((cycle * self.cycles) + (self.phase * math.tau)) + self.bias
 
     class Cosine(_WaveBase):
-        """Add a Cosine wave to some component's animation [green](See 'cosine --help' for options)[/]"""
+        """Add a Cosine wave to some component's animation"""
         type: Annotated[Literal["cosine"], BrokenTyper.exclude()] = "cosine"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return self.amplitude * math.cos((cycle * self.cycles) + (self.phase * math.tau)) + self.bias
 
     class Triangle(_WaveBase):
-        """Add a Triangle wave to some component's animation [green](See 'triangle --help' for options)[/]"""
+        """Add a Triangle wave to some component's animation"""
         type: Annotated[Literal["triangle"], BrokenTyper.exclude()] = "triangle"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
@@ -552,6 +552,7 @@ class DepthAnimation(BrokenModel):
         return animation
 
     def clear(self) -> None:
+        """Clear all animations in the current scene"""
         self.steps.clear()
 
     def apply(self, scene: DepthScene) -> None:
