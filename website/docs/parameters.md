@@ -4,8 +4,8 @@ title: DepthFlow/Parameters
 
 <b><span class="the">T</span>his page</b> focus on all shader-related parameters, and how they affect the final image (in practical terms). The main goal is for helping you to understand how to work with the software and parametrize it to your needs, create your own animations, and more.
 
-- For rendering and exporting parameters, see the [**ShaderFlow**](site:/shaderflow) page ✨
-- For understanding the math, see the [**Foundations**](site:/depthflow/foundations) page 📜
+- For rendering and exporting parameters, see the [**ShaderFlow**](https://shaders.brokensrc.dev) page ✨
+- For understanding the math, see the [**Foundations**](site:foundations) page 📜
 
 <hr>
 
