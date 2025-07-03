@@ -33,8 +33,7 @@ struct DepthFlow {
 
 DepthFlow DepthMake(
     Camera camera,
-    DepthFlow depth,
-    sampler2D depthmap
+    DepthFlow depth
 ) {
     // Convert absolute values to relative values
     float rel_focus  = (depth.focus  * depth.height);
@@ -71,51 +70,68 @@ DepthFlow DepthMake(
     float walk = 0.0;
 
     /* Main loop: Find the intersection with the scene */
-    for (int stage=0; stage<2; stage++) {
-        bool FORWARD  = (stage == 0);
-        bool BACKWARD = (stage == 1);
+    for (int layer=depthLayers-1; layer>=0; layer--) {
+        for (int stage=0; stage<2; stage++) {
+            bool FORWARD  = (stage == 0);
+            bool BACKWARD = (stage == 1);
 
-        // Safety max iterations
-        for (int it=0; it<1000; it++) {
-            if (FORWARD && walk > 1.0)
-                break;
+            // Safety max iterations
+            for (int it=0; it<1000; it++) {
+                if (FORWARD && walk > 1.0)
+                    break;
+                if (BACKWARD && walk < 0.0)
+                    break;
 
-            walk += (FORWARD ? probe : -quality);
+                walk += (FORWARD ? probe : -quality);
 
-            // Interpolate origin and intersect, starting at minimum safe distance
-            vec3 point = mix(camera.origin, intersect, mix(safe, 1.0, walk));
-            depth.gluv = point.xy;
+                // Interpolate origin and intersect, starting at minimum safe distance
+                vec3 point = mix(camera.origin, intersect, mix(safe, 1.0, walk));
 
-            // Sample next depth value
-            last_value = depth.value;
-            depth.value = gtexture(depthmap, depth.gluv, depth.mirror).r;
+                // Fixme: How to skip if not in our masked layer? Must not update struct values
+                // Fixme: How to communicate with main which final texture layer to use?
+                // Fixme: When not in our layer, it can easily walk to infinity; the center point
+                //        of the screen (low angle) never finishes, going to iteration 1000 (slow)
+                // Fixme: Better coordinates conversion, but gluv is too nice
+                if (masksTexture(0, layer, stuv2astuv(gluv2stuv(point.xy))).r > 0.1) {
+                    // continue;
+                }
 
-            // Fixme optimization (+8%): Avoid recalculating 'invert'
-            float surface = depth.height * mix(depth.value, 1.0 - depth.value, depth.invert);
-            float ceiling = (1.0 - point.z);
+                depth.gluv = point.xy;
 
-            // Stop the first moment we're inside the surface
-            if (ceiling < surface) {
-                if (FORWARD) break;
+                // Sample next depth value
+                last_value = depth.value;
+                // depth.value = gtexture(depthmap, depth.gluv, depth.mirror).r;
+                depth.value = depthTexture(0, 4, stuv2astuv(gluv2stuv(depth.gluv))).r;
 
-            // Finish when outside at smaller steps
-            } else if (BACKWARD) {
-                depth.derivative = (last_value - depth.value) / quality;
-                break;
+                // Fixme optimization (+8%): Avoid recalculating 'invert'
+                float surface = depth.height * mix(depth.value, 1.0 - depth.value, depth.invert);
+                float ceiling = (1.0 - point.z);
+
+                // Stop the first moment we're inside the surface
+                if (ceiling < surface) {
+                    if (FORWARD) break;
+
+                // Finish when outside at smaller steps
+                } else if (BACKWARD) {
+                    depth.derivative = (last_value - depth.value) / quality;
+                    break;
+                }
             }
         }
     }
 
+    // Fixme: What layet to calculate the gradient/steepness given the segmentation?
+
     // The gradient is always normal to a surface; assume the change
     // of z is proportional to the maximum surface height
-    depth.normal = normalize(vec3(
-        (gtexture(depthmap, depth.gluv - vec2(quality, 0), depth.mirror).r - depth.value) / quality,
-        (gtexture(depthmap, depth.gluv - vec2(0, quality), depth.mirror).r - depth.value) / quality,
-        max(depth.height, quality)
-    ));
+    // depth.normal = normalize(vec3(
+    //     (gtexture(depthmap, depth.gluv - vec2(quality, 0), depth.mirror).r - depth.value) / quality,
+    //     (gtexture(depthmap, depth.gluv - vec2(0, quality), depth.mirror).r - depth.value) / quality,
+    //     max(depth.height, quality)
+    // ));
 
-    // Heuristic to determine the perceptual steepness of the surface, 'gaps'
-    depth.steep = depth.derivative * angle(depth.normal, vec3(0, 0, 1));
+    // // Heuristic to determine the perceptual steepness of the surface, 'gaps'
+    // depth.steep = depth.derivative * angle(depth.normal, vec3(0, 0, 1));
 
     return depth;
 }
@@ -146,10 +162,22 @@ DepthFlow DepthMake(
 
 
 void main() {
+    // fragColor = texture(masks0x1, astuv);
+    // fragColor = texture(image0x4, astuv);
+    // fragColor = texture(depth0x1, astuv);
+    // return;
+
     GetCamera(iCamera);
     GetDepthFlow(iDepth);
-    DepthFlow depthflow = DepthMake(iCamera, iDepth, depth);
-    fragColor = gtexture(image, depthflow.gluv, depthflow.mirror);
+    DepthFlow depthflow = DepthMake(iCamera, iDepth);
+
+    // vec3 pixel = gtexture(image0x4, depthflow.gluv, depthflow.mirror).rgb;
+    // if ((pixel.r + pixel.g + pixel.b) > 0.1) {
+    //     fragColor = vec4(0, 0, 0, 1);
+    //     return;
+    // }
+
+    fragColor = gtexture(image0x2, depthflow.gluv, depthflow.mirror);
 
     if (depthflow.oob) {
         fragColor = vec4(vec3(0.0), 1);
@@ -170,6 +198,7 @@ void main() {
     // Fixme: Ability to apply lens and blur on multi-pass (post-refactor and metaprograming overhaul)
 
     // Lens distortion (Mutually exclusive with blur)
+    // Fixme: What layer to calculate Blur and Lens with segmentation?
     if (iLensEnable) {
 
         // Define the base 'velocity' (intensity) of the effect
@@ -189,6 +218,7 @@ void main() {
     }
 
     // Depth of Field (Mutually exclusive with lens distortion)
+    // Fixme: What layer to calculate Blur and Lens with segmentation?
     else if (iBlurEnable) {
         float intensity = iBlurIntensity * pow(smoothstep(iBlurStart, iBlurEnd, 1.0 - depthflow.value), iBlurExponent);
         vec4 color = fragColor;

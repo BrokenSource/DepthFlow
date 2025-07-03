@@ -3,20 +3,16 @@ from pathlib import Path
 from typing import Annotated, Optional
 
 import numpy as np
-import validators
 from attr import Factory, define
 from imgui_bundle import imgui
-from PIL.Image import Image as ImageType
-from pydantic import Field
-from shaderflow.exceptions import ShaderBatchStop
 from shaderflow.message import ShaderMessage
 from shaderflow.scene import ShaderScene
 from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 from typer import Option
 
-from broken import BrokenPath, Environment, flatten, list_get
-from broken.core.extra.loaders import LoadableImage, LoadImage
+from broken import Environment, log
+from broken.core.vectron import Vectron
 from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -32,7 +28,6 @@ from broken.externals.upscaler import (
     Upscayl,
     Waifu2x,
 )
-from broken.types import FileExtensions, PydanticImage
 from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from depthflow.animation import (
     Animation,
@@ -41,6 +36,7 @@ from depthflow.animation import (
     FilterBase,
     PresetBase,
 )
+from depthflow.segments import SegmentAnything2, Segmenter
 from depthflow.state import DepthState
 
 # -------------------------------------------------------------------------------------------------|
@@ -50,17 +46,11 @@ DEPTH_SHADER: Path = (DEPTHFLOW.RESOURCES.SHADERS/"depthflow.glsl")
 
 @define
 class DepthScene(ShaderScene):
-    state: DepthState = Factory(DepthState)
-
-    class Config(ShaderScene.Config):
-        image:     Iterable[PydanticImage] = DEFAULT_IMAGE
-        depth:     Iterable[PydanticImage] = None
-        estimator: DepthEstimator = Field(default_factory=DepthAnythingV2)
-        animation: DepthAnimation = Field(default_factory=DepthAnimation)
-        upscaler:  BrokenUpscaler = Field(default_factory=NoUpscaler)
-
-    # Redefinition for type hinting
-    config: Config = Factory(Config)
+    state:     DepthState     = Factory(DepthState)
+    animation: DepthAnimation = Factory(DepthAnimation)
+    estimator: DepthEstimator = Factory(DepthAnythingV2)
+    segmenter: Segmenter      = Factory(SegmentAnything2)
+    upscaler:  BrokenUpscaler = Factory(NoUpscaler)
 
     # -------------------------------------------------------------------------------------------- #
     # Command line interface
@@ -91,56 +81,116 @@ class DepthScene(ShaderScene):
             _hidden = Environment.flag("ADVANCED", 0)
             for animation in Animation.members():
                 if issubclass(animation, ComponentBase):
-                    self.cli.command(animation, post=self.config.animation.add, hidden=_hidden)
+                    self.cli.command(animation, post=self.animation.add, hidden=_hidden)
 
         with self.cli.panel("🔮 Animation presets"):
-            self.cli.command(self.config.animation.clear)
             for preset in Animation.members():
                 if issubclass(preset, PresetBase):
-                    self.cli.command(preset, post=self.config.animation.add)
+                    self.cli.command(preset, post=self.animation.add)
+            self.cli.command(self.animation.clear)
 
         with self.cli.panel("🎨 Post-processing"):
             for post in Animation.members():
                 if issubclass(post, FilterBase):
-                    self.cli.command(post, post=self.config.animation.add)
+                    self.cli.command(post, post=self.animation.add)
 
     def input(self,
-        image: Annotated[list[str], Option("--image", "-i",
+        image: Annotated[str, Option("--image", "-i",
             help="[bold green](🟢 Basic)[/] Input image from Path, URL or Directory"
-        )],
-        depth: Annotated[list[str], Option("--depth", "-d",
-            help="[bold green](🟢 Basic)[/] Input depthmap of the image [medium_purple3](None to estimate)[/]"
-        )]=None,
+        )]=DEFAULT_IMAGE,
     ) -> None:
-        """Use the given image(s) and depthmap(s) as the input of the scene"""
-        self.config.image = image
-        self.config.depth = depth
+        """Use the given image and depthmap as the input of the scene"""
+        from scipy.ndimage import gaussian_filter, maximum_filter
+        from skimage.transform import resize
+
+        # Get and load the main image, update resolution
+        image = np.array(self.upscaler.upscale(image))
+        height, width, _  = (image.shape )
+        self.resolution   = (width,height)
+        self.aspect_ratio = (width/height)
+        self.image.from_numpy(image)
+        dtype = image.dtype
+
+        # Estimate the base depthmap
+        depth = self.estimator.estimate(image)
+        depth = resize(depth, (height, width))
+        self.depth.from_numpy(depth)
+        self.masks.from_numpy(depth)
+
+        # Simple classic mode
+        if (self.layers == 1):
+            pass
+
+        # Advanced inpainting mode
+        # Fixme: Work with float32? But then texture access is hard, improve LoadImage
+        elif (self.layers > 1):
+            log.info(f"Segmenting the image into {self.layers} layers")
+            cutoffs  = np.linspace(1, 0, self.layers, endpoint=0)
+            segments = self.segmenter.split(image)
+            mask     = np.zeros_like(depth)
+
+            # For each depth cutoff defining a layer
+            for layer, (A, B) in enumerate(zip(cutoffs - (1/self.layers), cutoffs)):
+                log.info(f"Estimating depthmap for layer {layer}")
+                other = self.estimator.estimate(image, cache=False)
+                other = resize(other, (height, width))
+
+                # Calculate average depth for the layer
+                for segment in segments:
+                    average = (np.sum(depth * segment) / np.sum(segment))
+
+                    if (A <= average <= B):
+                        segment = maximum_filter(input=segment, size=7)
+                        mask = np.where(segment, 1, mask)
+
+                # Apply the mask to the image
+                image = np.where(mask[..., None], 0.0, image)
+                image = image.astype(dtype)
+
+                # Fixme: Force local consistency in all parts of the depthmap
+                # Fit the depthmap to the reference one
+                other = Vectron.lstq_masked(
+                    base=depth, fill=other,
+                    mask=mask.astype(bool)
+                )
+
+                # Fixme: Improve .from_numpy to accept a layer and not recreate stuff? or is fine?
+                self.image.write(data=np.flipud(image).tobytes(), layer=layer)
+                self.depth.write(data=np.flipud(other).tobytes(), layer=layer)
+                self.masks.write(data=np.flipud(mask ).tobytes(), layer=layer)
 
     # -------------------------------------------------------------------------------------------- #
     # Module implementation
 
+    image: ShaderTexture = None
+    depth: ShaderTexture = None
+    masks: ShaderTexture = None
+    layers: int = 6
+
     def build(self) -> None:
-        self.image = ShaderTexture(scene=self, name="image").repeat(False)
-        self.depth = ShaderTexture(scene=self, name="depth").repeat(False)
+        self.image = ShaderTexture(scene=self, name="image", layers=self.layers).repeat(False)
+        self.depth = ShaderTexture(scene=self, name="depth", layers=self.layers).repeat(False)
+        self.masks = ShaderTexture(scene=self, name="masks", layers=self.layers).repeat(False)
         self.shader.fragment = DEPTH_SHADER
         self.subsample = 2
         self.runtime = 5.0
         self.ssaa = 1.2
 
     def setup(self) -> None:
-        if (not self.config.animation):
-            self.config.animation.add(Animation.Orbital())
-        self._load_inputs()
+        if (not self.animation):
+            self.animation.add(Animation.Orbital())
+        self.input()
 
     def update(self) -> None:
-        self.config.animation.apply(self)
+        # self.animation.apply(self)
+        ...
+
 
     def handle(self, message: ShaderMessage) -> None:
         ShaderScene.handle(self, message)
 
         if isinstance(message, ShaderMessage.Window.FileDrop):
             self.input(image=message.first, depth=message.second)
-            self._load_inputs()
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
@@ -152,12 +202,12 @@ class DepthScene(ShaderScene):
     # # Upscalers
 
     def set_upscaler(self, upscaler: Optional[BrokenUpscaler]=None) -> BrokenUpscaler:
-        self.config.upscaler = (upscaler or NoUpscaler())
-        return self.config.upscaler
+        self.upscaler = (upscaler or NoUpscaler())
+        return self.upscaler
     def clear_upscaler(self) -> None:
-        self.config.upscaler = NoUpscaler()
+        self.upscaler = NoUpscaler()
     def load_upscaler(self) -> None:
-        self.config.upscaler.download()
+        self.upscaler.download()
 
     def realesr(self, **options) -> Realesr:
         return self.set_upscaler(Realesr(**options))
@@ -169,10 +219,10 @@ class DepthScene(ShaderScene):
     # # Estimators
 
     def set_estimator(self, estimator: DepthEstimator) -> DepthEstimator:
-        self.config.estimator = estimator
-        return self.config.estimator
+        self.estimator = estimator
+        return self.estimator
     def load_estimator(self) -> None:
-        self.config.estimator.load_model()
+        self.estimator.load_model()
 
     def depth_anything1(self, **options) -> DepthAnythingV1:
         return self.set_estimator(DepthAnythingV1(**options))
@@ -189,126 +239,43 @@ class DepthScene(ShaderScene):
 
     # Constant
     def set(self, **options) -> Animation.Set:
-        return self.config.animation.add(Animation.Set(**options))
+        return self.animation.add(Animation.Set(**options))
     def add(self, **options) -> Animation.Add:
-        return self.config.animation.add(Animation.Add(**options))
+        return self.animation.add(Animation.Add(**options))
 
     # Basic
     def linear(self, **options) -> Animation.Linear:
-        return self.config.animation.add(Animation.Linear(**options))
+        return self.animation.add(Animation.Linear(**options))
     def sine(self, **options) -> Animation.Sine:
-        return self.config.animation.add(Animation.Sine(**options))
+        return self.animation.add(Animation.Sine(**options))
     def cosine(self, **options) -> Animation.Cosine:
-        return self.config.animation.add(Animation.Cosine(**options))
+        return self.animation.add(Animation.Cosine(**options))
     def triangle(self, **options) -> Animation.Triangle:
-        return self.config.animation.add(Animation.Triangle(**options))
+        return self.animation.add(Animation.Triangle(**options))
 
     # Presets
     def vertical(self, **options) -> Animation.Vertical:
-        return self.config.animation.add(Animation.Vertical(**options))
+        return self.animation.add(Animation.Vertical(**options))
     def horizontal(self, **options) -> Animation.Horizontal:
-        return self.config.animation.add(Animation.Horizontal(**options))
+        return self.animation.add(Animation.Horizontal(**options))
     def zoom(self, **options) -> Animation.Zoom:
-        return self.config.animation.add(Animation.Zoom(**options))
+        return self.animation.add(Animation.Zoom(**options))
     def circle(self, **options) -> Animation.Circle:
-        return self.config.animation.add(Animation.Circle(**options))
+        return self.animation.add(Animation.Circle(**options))
     def dolly(self, **options) -> Animation.Dolly:
-        return self.config.animation.add(Animation.Dolly(**options))
+        return self.animation.add(Animation.Dolly(**options))
     def orbital(self, **options) -> Animation.Orbital:
-        return self.config.animation.add(Animation.Orbital(**options))
+        return self.animation.add(Animation.Orbital(**options))
 
     # Post-processing
     def vignette(self, **options) -> Animation.Vignette:
-        return self.config.animation.add(Animation.Vignette(**options))
+        return self.animation.add(Animation.Vignette(**options))
     def blur(self, **options) -> Animation.Blur:
-        return self.config.animation.add(Animation.Blur(**options))
+        return self.animation.add(Animation.Blur(**options))
     def inpaint(self, **options) -> Animation.Inpaint:
-        return self.config.animation.add(Animation.Inpaint(**options))
+        return self.animation.add(Animation.Inpaint(**options))
     def colors(self, **options) -> Animation.Colors:
-        return self.config.animation.add(Animation.Colors(**options))
-
-    # -------------------------------------------------------------------------------------------- #
-    # Internal batch exporting
-
-    def _load_inputs(self, echo: bool=True) -> None:
-        """Load inputs: single or batch exporting"""
-
-        # Batch exporting implementation
-        image = self._get_batch_input(self.config.image)
-        depth = self._get_batch_input(self.config.depth)
-
-        if (image is None):
-            raise ShaderBatchStop()
-
-        self.log_info(f"Loading image: {image}", echo=echo)
-        self.log_info(f"Loading depth: {depth or 'Estimating from image'}", echo=echo)
-
-        # Load, estimate, upscale input image
-        image = self.config.upscaler.upscale(LoadImage(image))
-        depth = LoadImage(depth) or self.config.estimator.estimate(image)
-
-        # Match rendering resolution to image
-        self.resolution   = (image.width,image.height)
-        self.aspect_ratio = (image.width/image.height)
-        self.image.from_image(image)
-        self.depth.from_image(depth)
-
-        # Default to 1920x1080 on base image
-        if (self.config.image is DEFAULT_IMAGE):
-            self.resolution   = (1920, 1080)
-            self.aspect_ratio = (16/9)
-
-    def export_name(self, path: Path) -> Path:
-        """Modifies the output path if on batch exporting mode"""
-        options = list(self._iter_batch_input(self.config.image))
-
-        # Single file mode, return as-is
-        if (len(options) == 1):
-            return path
-
-        # Assume it's a local path
-        image = Path(options[self.index])
-        original = image.stem
-
-        # Use the URL filename as base
-        if validators.url(image):
-            original = BrokenPath.url_filename(image)
-
-        # Build the batch filename: 'file' + -'custom stem'
-        return path.with_stem(original + "-" + path.stem)
-
-    def _iter_batch_input(self, item: Optional[LoadableImage]) -> Iterable[LoadableImage]:
-        if (item is None):
-            return None
-
-        # Recurse on multiple inputs
-        if isinstance(item, (list, tuple, set)):
-            for part in item:
-                yield from self._iter_batch_input(part)
-
-        # Return known valid inputs as is
-        elif isinstance(item, (bytes, ImageType, np.ndarray)):
-            yield item
-        elif validators.url(item):
-            yield item
-
-        # Valid directory on disk
-        elif (path := BrokenPath.get(item, exists=True)):
-            if (path.is_dir()):
-                files = (path.glob("*" + x) for x in FileExtensions.Image)
-                yield from sorted(flatten(files))
-            else:
-                yield path
-
-        # Interpret as a glob pattern
-        elif ("*" in str(item)):
-            yield from sorted(path.parent.glob(path.name))
-        else:
-            self.log_minor(f"Assuming {item} is an iterable, could go wrong..")
-            yield from item
-
-    def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:
-        return list_get(list(self._iter_batch_input(item)), self.index)
+        return self.animation.add(Animation.Colors(**options))
 
     def ui(self) -> None:
         if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:

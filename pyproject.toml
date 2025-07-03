@@ -19,9 +19,10 @@ readme      = "readme.md"
 license     = "AGPL-3.0"
 requires-python = ">=3.10"
 dependencies = [
-    "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource",
+    "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource@b9a458e34f4020622af7f1f37c87520a916e9d10",
     "shaderflow @ git+https://github.com/BrokenSource/ShaderFlow",
     "transformers~=4.53.0",
+    "scikit-image~=0.25.2",
     "fastapi~=0.115.14",
     "gradio~=5.35.0",
 ]
