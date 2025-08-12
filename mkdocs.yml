@@ -1,6 +1,6 @@
 INHERIT: ../../mkdocs-base.yml
 site_name: DepthFlow
-site_description: 🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative
+site_description: Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative
 site_url: https://depth.brokensrc.dev/
 repo_url: https://github.com/BrokenSource/DepthFlow/
 nav:

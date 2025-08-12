@@ -479,7 +479,7 @@ class DepthGradio:
                     <p><small style='opacity: 0.6'>
                         Made with ❤️ by <a href='https://github.com/Tremeschin'>
                             <b>Tremeschin</b></a> •
-                        <a href='https://brokensrc.dev/'><b>Website</b></a> •
+                        <a href='https://depth.brokensrc.dev/'><b>Website</b></a> •
                         <a href='https://discord.com/invite/KjqvcYwRHm/'><b>Discord</b></a> •
                         <a href='https://t.me/BrokenSource/'><b>Telegram</b></a> •
                         <a href='https://github.com/BrokenSource/DepthFlow/'><b>GitHub</b></a> •
