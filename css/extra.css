@@ -1,0 +1,401 @@
+/* ---------------------------------------------------------------------------------------------- */
+
+/* Justify all text */
+/* .md-typeset p, ul {
+  text-align: justify
+} */
+
+/* Slightly more compact lines, shouldn't hurt readability */
+.md-typeset {
+  line-height: 1.4;
+}
+
+h1, h2, h3 {
+  font-family: 'Roboto Slab', serif;
+}
+
+/* Hide "Important" admonition, GitHub alerts workaround */
+.md-typeset .admonition.important,
+.md-typeset details.important {
+  display: none;
+}
+
+/* .md-tabs__link {
+  font-weight: bold;
+} */
+
+/* Remove underline, striketrough inside critics { } */
+ins.critic, del.critic {
+  text-decoration: none;
+}
+
+/* Closer title to main logo */
+.md-header__title {
+  margin-left: 0 !important;
+}
+
+/* Operating system logos */
+.os-logo {
+  vertical-align: middle;
+  border-radius: 20%;
+  width: 80px;
+}
+
+/* Better nested unordered lists */
+article ul ul {
+  list-style-type: circle !important;}
+article ul ul ul {
+  list-style-type: square !important;}
+
+/* Thinner table items */
+.slim-table > tr > td {
+  padding: 0.25em !important;
+}
+div.tabbed-block > p:empty {
+  display: none;
+}
+
+/* More material-dark looking colors than slate */
+[data-md-color-scheme=slate] {
+  --md-footer-bg-color--dark: hsla(var(--md-hue), 0%, 10%, 1);
+  --md-footer-bg-color:       hsla(var(--md-hue), 0%, 10%, 1);
+  --md-default-bg-color:      hsla(var(--md-hue), 0%, 15%, 1);
+  --md-code-bg-color:         hsla(var(--md-hue), 0%, 12%, 1);
+}
+
+/* Better slate header color */
+[data-md-color-scheme=slate] {
+  .md-tabs, .md-header {
+    background-color: hsl(0, 0%, 20%);
+    background-image: none;
+  }
+}
+
+/* Better code background color */
+[data-md-color-scheme=default] {
+  --md-code-bg-color: hsla(var(--md-hue), 0%, 96%, 1);
+}
+
+/* Dark gray 'currently selected' tab bar */
+[data-md-color-scheme=default] .tabbed-labels::before {
+  background: #AAA !important}
+[data-md-color-scheme=slate] .tabbed-labels::before {
+  background: #555 !important}
+
+/* Custom footer layer  */
+.footer-extra-layer {
+  color: var(--md-footer-fg-color--light);
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 0.5rem 0;
+  width: 100%;
+} .footer-extra-layer a {
+  text-decoration: underline;
+} .md-footer {
+  box-shadow: 0 0px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Zoom and saturate whole hover elements */
+.hover-pop {
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+} .hover-pop:hover {
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.01);
+  filter: saturate(200%);
+}
+
+/* ------------------------------------------------------------------------------------------ */
+
+/* https://squidfunk.github.io/mkdocs-material/reference/admonitions/#classic-admonitions */
+.md-typeset .admonition,
+.md-typeset details {
+  border-width: 0;
+  border-left-width: 4px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Pop-out admonitions on dark mode */
+[data-md-color-scheme=slate] {
+  .md-typeset .admonition,
+  .md-typeset details {
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Un-bold Admonition titles */
+.md-typeset .admonition-title,
+.md-typeset details summary {
+  font-weight: normal;
+}
+
+.doc-label {
+  border-radius: 15px;
+  padding: 2px 8px;
+  font-weight: bold;
+}
+
+.md-typeset .tabbed-set {
+  margin: 0;
+}
+
+/* https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/#with-animations */
+@keyframes beat {
+  0%, 40%, 80%, 100% {transform: scale(1);}
+  20%, 60% {transform: scale(1.1);}
+} .beat {
+  animation: beat 1000ms infinite;
+}
+
+/* ------------------------------------ Tables configuration ------------------------------------ */
+
+/* https://github.com/squidfunk/mkdocs-material/issues/3430#issuecomment-1005966126 */
+.md-typeset .md-typeset__table {
+  display: block;
+} .md-typeset__table table:not([class]) {
+  display: table;
+}
+
+/* Always align table headers */
+table > thead > tr > th {
+  text-align: center !important;
+}
+
+/* Stretch a button to the full width */
+.md-button--stretch {
+  text-align: center;
+  width: 100%;
+}
+
+/* Disabled buttons */
+.md-button--disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Elegant button */
+.md-button--thin {
+  border: 1px solid !important;
+}
+
+/* Spread content tabs to full width */
+.tabbed-labels--linked label {
+  text-align: center;
+  flex: 1;
+}
+
+/* No rows and columns grid lines */
+.md-typeset__table table:not([class]) {
+  border-collapse: collapse;
+  border: none;
+}
+.md-typeset__table table:not([class]) th,
+.md-typeset__table table:not([class]) td {
+  border: none;
+}
+
+/* ----------------------------------------- Screenshots ---------------------------------------- */
+
+.screenshot {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: scale(1.1);
+  transform-origin: center center;
+}
+
+/* ----------------------------------- Code reference styling ----------------------------------- */
+
+/* https://mkdocstrings.github.io/python/usage/customization */
+
+/* Add indentation for all .doc-contents */
+.doc-contents:not(.first) {
+  padding-left: 25px;
+}
+
+/* Apply left border only on .doc-class */
+.doc-class > .doc-contents:not(.first) {
+  border-left: .1rem solid var(--md-typeset-table-color);
+}
+
+.doc-attribute, .doc-function {
+  border: 1px solid var(--md-typeset-table-color);
+  border-radius: 4px;
+  padding-left: 6px;
+  padding-right: 8px;
+  padding-bottom: 2px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.doc-attribute h4, .doc-function h4 {
+  margin: 0;
+}
+
+h2.doc.doc-heading {
+  font-weight: bold;
+}
+
+/* ------------------------------------------ Write-ups ----------------------------------------- */
+
+/* Paper titles */
+.paper-title {
+  font-size: 1em;
+  font-weight: bold;
+  font-family: "Times New Roman", serif;
+}
+
+/* Drop cap */
+.the {
+  float: left;
+  font-size: 3em;
+  line-height: 0.8em;
+  padding-top: 0.1em;
+  padding-right: 0.1em;
+  padding-left: 0.1em;
+  font-family: "Times New Roman", serif;
+  font-weight: bold;
+}
+
+/* ------------------------------------- Custom Admonitions ------------------------------------- */
+
+/* Heart admonition */
+
+:root {
+  --md-admonition-icon--heart: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"/></svg>')
+}
+.md-typeset .admonition.heart,
+.md-typeset details.heart {
+  border-color: rgb(255, 55, 55);
+}
+.md-typeset .heart > .admonition-title,
+.md-typeset .heart > summary {
+  background-color: rgba(255, 152, 152, 0.1);
+}
+.md-typeset .heart > .admonition-title::before,
+.md-typeset .heart > summary::before {
+  background-color: rgb(255, 55, 55);
+  -webkit-mask-image: var(--md-admonition-icon--heart);
+          mask-image: var(--md-admonition-icon--heart);
+}
+
+/* Apply beat animation to the heart icon */
+.md-typeset .heart > .admonition-title::before,
+.md-typeset .heart > summary::before {
+  animation: beat 1000ms infinite;
+}
+
+/* Inline admonition */
+
+.md-typeset .admonition.bifurcation,
+.md-typeset details.bifurcation {
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+  border-left-width: 2px;
+  border-right-width: 2px;
+  border-radius: 0;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  font-size: 0.8rem;
+  padding: 0;
+}
+
+/* --------------------------------------------- Videos ----------------------------------------- */
+
+video {
+  display: block;
+  width: 100%;
+  display: inline-block;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25),
+              0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.thick-hr {
+  border: 0;
+  height: 2px;
+  background: var(--md-typeset-table-color);
+  margin: 1em 0;
+}
+
+/* ----------------------------- Round most stuff for a modern look ----------------------------- */
+
+:root {
+  --roundness: 0.4rem;
+}
+
+/* {++ ++}, {== ==}, ... */
+.md-typeset .critic, .md-typeset mark {
+  border-radius: 0.2rem;
+}
+
+/* Round borders for quotes '>' */
+.md-typeset blockquote {
+  border-radius: 4px;
+}
+
+/* Grid cargs */
+.md-typeset .grid.cards > ul > li {
+  border-radius: var(--roundness);
+}
+
+/* Buttons */
+.md-typeset .md-button {
+  border-radius: var(--roundness);
+}
+
+/* Search button */
+.md-search__form {
+  border-radius: var(--roundness);
+}
+
+/* Code blocks */
+.md-typeset pre > code {
+  border-radius: var(--roundness);
+} .highlight span.filename {
+  border-bottom: none;
+  border-radius: var(--roundness);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  text-align: center;
+  display: inline;
+} .linenos {
+  border-top-left-radius: var(--roundness) !important;
+  border-bottom-left-radius: var(--roundness) !important;
+}
+
+/* Cricit thickening */
+.md-typeset mark {
+  box-shadow: 0 0 0 0.1rem var(--md-typeset-mark-color);}
+.md-typeset ins.critic {
+  box-shadow: 0 0 0 0.1rem var(--md-typeset-ins-color);}
+.md-typeset del.critic {
+  box-shadow: 0 0 0 0.1rem var(--md-typeset-del-color);}
+
+/* ---------------------------------------------------------------------------------------------- */
+
+/* Particles configuration */
+@keyframes fadeIn {
+    0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@media (max-width: 768px) {
+  #tsparticles {
+    display: none;
+  }
+}
+
+#tsparticles {
+  position: fixed;
+  top: 0;
+  left: -5%;
+  width: 110%;
+  height: 150%;
+  z-index: -1;
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+  mask-position: center;
+  mask-size: cover;
+  animation: fadeIn 4s forwards;
+}
