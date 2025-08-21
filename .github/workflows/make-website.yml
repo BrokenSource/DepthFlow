@@ -11,12 +11,7 @@ jobs:
     steps:
       - uses: BrokenSource/BrokenSource@main
 
-      - name: Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
-
       - name: Make Website
-        run: uv run mkdocs gh-deploy --force --no-history
-        working-directory: projects/${{github.event.repository.name}}
+        run: |
+          uv run --directory */${{github.event.repository.name}} \
+          mkdocs gh-deploy --force --no-history
