@@ -13,7 +13,7 @@ description = "🌊 Images to → 3D Parallax effect video. A free and open sour
 authors     = [{name="Tremeschin"}]
 dynamic     = ["keywords"]
 version     = "0.9.2"
-readme      = "readme.md"
+readme      = ".github/readme.md"
 license     = "AGPL-3.0"
 requires-python = ">=3.10"
 dependencies = [
