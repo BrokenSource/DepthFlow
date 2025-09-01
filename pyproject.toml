@@ -19,9 +19,9 @@ requires-python = ">=3.10"
 dependencies = [
     "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource",
     "shaderflow @ git+https://github.com/BrokenSource/ShaderFlow",
-    "transformers~=4.55.0",
+    "transformers~=4.56.0",
     "fastapi~=0.116.1",
-    "gradio~=5.42.0",
+    "gradio~=5.44.1",
 ]
 
 [project.scripts]
@@ -29,10 +29,11 @@ depthflow = "depthflow.__main__:main"
 depth     = "depthflow.__main__:main"
 depthdocs = "website.docs:main"
 
-[tool.hatch.metadata.hooks.plugin]
 [build-system]
 requires = ["hatchling", "hook@git+https://github.com/BrokenSource/Hook/"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata.hooks.plugin]
 
 [tool.hatch.build.targets.wheel]
 packages = ["depthflow"]

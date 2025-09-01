@@ -1,4 +1,8 @@
-from broken import BrokenProject, __version__
+import importlib.metadata
+
+from broken import BrokenProject
+
+__version__ = importlib.metadata.version(__package__)
 
 DEPTHFLOW_ABOUT = "🌊 Images to 3D Parallax effect video"
 
