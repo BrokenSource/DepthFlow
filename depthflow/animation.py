@@ -17,9 +17,12 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from broken import BrokenAttribute, BrokenModel, Environment, MultiEnum
-from broken.core.extra.loaders import LoadString
-from broken.core.typerx import BrokenTyper
+from broken.enumx import MultiEnum
+from broken.envy import Environment
+from broken.loaders import LoadString
+from broken.model import BrokenModel
+from broken.typerx import BrokenTyper
+from broken.utils import BrokenAttribute
 from depthflow.state import (
     BlurState,
     ColorState,
@@ -32,7 +35,7 @@ from depthflow.state import (
 if TYPE_CHECKING:
     from depthflow.scene import DepthScene
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class ClassEnum:
 
@@ -45,7 +48,7 @@ class ClassEnum:
                 continue
             yield getattr(cls, name)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class Target(MultiEnum):
     Nothing           = "nothing"
@@ -88,7 +91,7 @@ class Target(MultiEnum):
     ColorGrayscale    = "colors.grayscale"
     ColorSepia        = "colors.sepia"
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 hint: str = "[bold blue](🔵 Option)[/]"
 
@@ -131,7 +134,7 @@ DepthType = Annotated[float, Option("--depth", "-d", min=-1, max=2,
 CumulativeType = Annotated[bool, Option("--cumulative", "-c", " /--force", " /-f",
     help=f"{hint} Cumulative animation, adds to the previous frame's target value")]
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class AnimationBase(BaseModel, ABC):
     """The simplest animation meta-type, applies anything to the scene"""
@@ -183,7 +186,7 @@ class FilterBase(AnimationBase):
     """Meta-class for post processing effects"""
     ...
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class Animation(ClassEnum):
 
@@ -511,7 +514,7 @@ class Animation(ClassEnum):
                 reverse   = self.reverse,
             ).apply(scene)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 AnimationType: TypeAlias = Union[
     # Special
@@ -542,7 +545,7 @@ AnimationType: TypeAlias = Union[
     Animation.Orbital,
 ]
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class DepthAnimation(BrokenModel):
     steps: list[AnimationType] = Field(default_factory=list)

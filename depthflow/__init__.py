@@ -1,6 +1,6 @@
 import importlib.metadata
 
-from broken import BrokenProject
+from broken.project import BrokenProject
 
 __version__ = importlib.metadata.version(__package__)
 
@@ -12,6 +12,6 @@ DEPTHFLOW = BrokenProject(
     ABOUT=DEPTHFLOW_ABOUT,
 )
 
-from broken.core.pytorch import BrokenTorch
+from broken.pytorch import BrokenTorch
 
 BrokenTorch.install(exists_ok=True)

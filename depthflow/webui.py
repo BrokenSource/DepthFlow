@@ -8,26 +8,23 @@ from pathlib import Path
 from typing import Annotated, Iterable
 
 import gradio
-from attr import Factory, define
+from attrs import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
 from typer import Option
 
-from broken import (
-    BrokenPath,
-    DictUtils,
-    Runtime,
-    denum,
-)
-from broken.core.extra.resolution import BrokenResolution
-from broken.core.pytorch import BrokenTorch
-from broken.core.worker import BrokenWorker
+from broken.envy import Runtime
 from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
+from broken.path import BrokenPath
+from broken.pytorch import BrokenTorch
+from broken.resolution import BrokenResolution
+from broken.utils import DictUtils, denum
+from broken.worker import BrokenWorker
 from depthflow import DEPTHFLOW
 from depthflow.animation import Animation, FilterBase, PresetBase
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class BrokenGradio:
 
@@ -120,7 +117,7 @@ class BrokenGradio:
             .then(**then) \
             .then(**toggle(True))
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 WEBUI_OUTPUT: Path = (DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"webui")
 """The temporary output for the WebUI, cleaned at the start and after any render"""
@@ -138,7 +135,7 @@ UPSCALERS: dict[str, BrokenUpscaler] = {
     "Waifu2x":               Waifu2x(),
 }
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 @define(slots=False)
 class DepthGradio:
@@ -501,7 +498,7 @@ class DepthGradio:
             pwa=pwa,
         )
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 if (__name__ == "__main__"):
     demo = DepthGradio()

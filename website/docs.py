@@ -2,15 +2,17 @@ import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Iterable
 
-from attr import Factory, define
+from attrs import Factory, define
 from depthflow import DEPTHFLOW
 from depthflow.scene import DEPTH_SHADER, DepthScene
 from imgui_bundle import imgui
 from shaderflow.variable import ShaderVariable, Uniform
 
-from broken import BROKEN, Environment, install
-from broken.core.trackers import OnceTracker
+from broken.envy import Environment
 from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
+from broken.project import BROKEN
+from broken.trackers import OnceTracker
+from broken.utils import install
 
 install(package="manim")
 
@@ -19,7 +21,7 @@ if TYPE_CHECKING:
 
 Environment.set("IMGUI_FONT_SCALE", "1.21")
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 SHADER_PATCH = """
 if (iSteadyPlane && abs(depthflow.value - iDepthSteady) < 0.002) {
@@ -85,7 +87,7 @@ class DocScene(DepthScene):
         if not self.other():
             self.next(dt=0)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 @define
 class DocsParameters:
@@ -244,13 +246,13 @@ class DocsParameters:
         self.render(scene=Example(), time=5,
             file="learn/parameters/origin-varying.mp4")
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 @define
 class DocsMath(manim.Scene):
     ...
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 def main():
     fabric = DocsParameters()

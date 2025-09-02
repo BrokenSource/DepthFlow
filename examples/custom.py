@@ -29,7 +29,7 @@ class CustomScene(DepthScene):
 
 def manual():
     scene = CustomScene()
-    scene.cli(sys.argv[1:])
+    scene.cli(*sys.argv[1:])
 
 def managed():
     scene = CustomScene(backend="headless")

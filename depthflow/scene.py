@@ -1,13 +1,13 @@
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Union
 
 import numpy as np
 import validators
-from attr import Factory, define
+from attrs import Factory, define
 from imgui_bundle import imgui
 from PIL.Image import Image as ImageType
-from pydantic import Field
+from pydantic import Field, HttpUrl
 from shaderflow.exceptions import ShaderBatchStop
 from shaderflow.message import ShaderMessage
 from shaderflow.scene import ShaderScene
@@ -15,8 +15,7 @@ from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 from typer import Option
 
-from broken import BrokenPath, Environment, flatten, list_get
-from broken.core.extra.loaders import LoadableImage, LoadImage
+from broken.envy import Environment
 from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
@@ -32,7 +31,10 @@ from broken.externals.upscaler import (
     Upscayl,
     Waifu2x,
 )
-from broken.types import FileExtensions, PydanticImage
+from broken.loaders import LoadableImage, LoadImage
+from broken.path import BrokenPath
+from broken.types import FileExtensions
+from broken.utils import flatten, list_get
 from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT
 from depthflow.animation import (
     Animation,
@@ -42,6 +44,8 @@ from depthflow.animation import (
     PresetBase,
 )
 from depthflow.state import DepthState
+
+PydanticImage = Union[str, HttpUrl, Path]
 
 # -------------------------------------------------------------------------------------------------|
 

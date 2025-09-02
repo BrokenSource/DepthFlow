@@ -17,14 +17,15 @@ from pathlib import Path
 from threading import Thread
 from typing import Self
 
-from attr import Factory, define
+from attrs import Factory, define
 from depthflow.animation import Animation, Target
 from depthflow.scene import DepthScene
 from dotmap import DotMap
 
-from broken import Environment, combinations
+from broken.envy import Environment
 from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
 from broken.externals.upscaler import BrokenUpscaler, NoUpscaler, Upscayl
+from broken.utils import combinations
 
 
 # Note: You can also use your own subclassing like Custom.py!
@@ -33,7 +34,7 @@ class YourScene(DepthScene):
         self.state.offset_x = 0.3 * math.sin(self.cycle)
         self.state.isometric = 1
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 @define
 class DepthManager:
@@ -144,7 +145,7 @@ class DepthManager:
         for thread in self.threads:
             thread.join()
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 # Nice: You can subclass the manager itself 🤯
 class YourManager(DepthManager):
@@ -166,7 +167,7 @@ class YourManager(DepthManager):
             data.scene.animation.add(Animation.Set(target=Target.Isometric, value=0.4))
             data.scene.animation.add(Animation.Circle(intensity=0.3))
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 if (__name__ == "__main__"):
     images = Path(os.getenv("IMAGES", "/home/tremeschin/Public/Images"))

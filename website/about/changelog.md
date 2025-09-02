@@ -7,7 +7,7 @@ icon: material/file-document-edit
     p  {margin-bottom: 2px !important;}
 </style>
 
-### ✏️ v0.9.2 <small>August ??, 2025</small> {#0.9.2}
+### ✏️ v0.10.0 <small>August ??, 2025</small> {#0.10.0}
 
 !!! example ""
     - Fixed a internal resolution doubling bug before the final resize

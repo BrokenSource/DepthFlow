@@ -1,13 +1,13 @@
-from typing import Annotated, Iterable, Tuple
+from typing import Annotated, Iterable
 
 from pydantic import Field
 from shaderflow.variable import ShaderVariable, Uniform
 from typer import Option
 
-from broken import BrokenModel
-from broken.core.typerx import BrokenTyper
+from broken.model import BrokenModel
+from broken.typerx import BrokenTyper
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class VignetteState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
@@ -24,7 +24,7 @@ class VignetteState(BrokenModel):
         yield Uniform("float", "iVigIntensity", self.intensity)
         yield Uniform("float", "iVigDecay",     self.decay)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
 
 class LensState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
@@ -45,7 +45,8 @@ class LensState(BrokenModel):
         yield Uniform("float", "iLensDecay",     self.decay)
         yield Uniform("int",   "iLensQuality",   self.quality)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
+
 
 class BlurState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
@@ -78,7 +79,8 @@ class BlurState(BrokenModel):
         yield Uniform("int",   "iBlurQuality",    self.quality)
         yield Uniform("int",   "iBlurDirections", self.directions)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
+
 
 class InpaintState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
@@ -95,7 +97,8 @@ class InpaintState(BrokenModel):
         yield Uniform("bool",  "iInpaintBlack", self.black)
         yield Uniform("float", "iInpaintLimit", self.limit)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
+
 
 class ColorState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
@@ -127,7 +130,8 @@ class ColorState(BrokenModel):
         yield Uniform("float", "iColorsGrayscale",  self.grayscale/100)
         yield Uniform("float", "iColorsSepia",      self.sepia/100)
 
-# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------------- #
+
 
 class DepthState(BrokenModel):
     """Set effect parameters, animations might override them!"""

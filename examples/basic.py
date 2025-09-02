@@ -10,4 +10,4 @@ from depthflow.scene import DepthScene
 
 if __name__ == "__main__":
     scene = DepthScene()
-    scene.cli(sys.argv[1:])
+    scene.cli(*sys.argv[1:])
