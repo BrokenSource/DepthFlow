@@ -47,7 +47,6 @@ class LensState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-
 class BlurState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable this depth of field (blur) effect"""
@@ -81,7 +80,6 @@ class BlurState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-
 class InpaintState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
     """Enable the inpainting effect (masks stretchy regions for advanced usage)"""
@@ -98,7 +96,6 @@ class InpaintState(BrokenModel):
         yield Uniform("float", "iInpaintLimit", self.limit)
 
 # ---------------------------------------------------------------------------- #
-
 
 class ColorState(BrokenModel):
     enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
@@ -131,7 +128,6 @@ class ColorState(BrokenModel):
         yield Uniform("float", "iColorsSepia",      self.sepia/100)
 
 # ---------------------------------------------------------------------------- #
-
 
 class DepthState(BrokenModel):
     """Set effect parameters, animations might override them!"""

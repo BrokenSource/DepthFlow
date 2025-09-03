@@ -4,6 +4,7 @@ import copy
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -17,7 +18,6 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from broken.enumx import MultiEnum
 from broken.envy import Environment
 from broken.loaders import LoadString
 from broken.model import BrokenModel
@@ -50,7 +50,7 @@ class ClassEnum:
 
 # ---------------------------------------------------------------------------- #
 
-class Target(MultiEnum):
+class Target(Enum):
     Nothing           = "nothing"
     Height            = "height"
     Steady            = "steady"
