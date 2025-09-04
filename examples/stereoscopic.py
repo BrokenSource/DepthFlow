@@ -4,12 +4,12 @@
 Simple example of rendering a side-by-side video
 """
 from depthflow.scene import DepthScene
-from shaderflow.modules.Camera import CameraProjection
+
 
 class CustomScene(DepthScene):
     def setup(self):
         DepthScene.setup(self)
-        self.camera.projection = "sidebyside"
+        self.camera.projection = "stereoscopic"
         self.camera.separation.value = 0.3
 
 def main():
