@@ -19,15 +19,13 @@ requires-python = ">=3.10"
 dependencies = [
     "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource",
     "shaderflow @ git+https://github.com/BrokenSource/ShaderFlow",
-    "transformers~=4.56.0",
-    "fastapi~=0.116.1",
-    "gradio~=5.44.1",
+    "transformers~=4.57",
+    "gradio~=5.49",
 ]
 
 [project.scripts]
 depthflow = "depthflow.__main__:main"
 depth     = "depthflow.__main__:main"
-depthdocs = "website.docs:main"
 
 [build-system]
 requires = ["hatchling", "hook@git+https://github.com/BrokenSource/Hook/"]
