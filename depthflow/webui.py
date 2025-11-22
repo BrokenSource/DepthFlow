@@ -31,14 +31,14 @@ class BrokenGradio:
     @staticmethod
     def theme() -> gradio.Theme:
         return gradio.themes.Base(
-            font=fonts.GoogleFont("Rubik"),
+            font=fonts.GoogleFont("Inter"),
             spacing_size=sizes.Size(
                 name="spacing_sm",
                 xxs="0px",
                 xs="0px",
                 sm="1px",
                 md="2px",
-                lg="0px",
+                lg="4px",
                 xl="4px",
                 xxl="2px",
             ),
@@ -54,9 +54,9 @@ class BrokenGradio:
     def _css() -> Iterable[str]:
 
         # Fullscreen like app without body padding
-        yield ".app {padding: 0 !important;}"
+        yield ".app {padding: 4px !important;}"
 
-        # Remove up and down arrows from number inputs
+        # Remove arrows from number inputs
         yield """
             input[type=number]::-webkit-inner-spin-button,
             input[type=number]::-webkit-outer-spin-button {
@@ -338,8 +338,6 @@ class DepthGradio:
                             print(attr, field, field.annotation)
 
         with gradio.Blocks(
-            theme=BrokenGradio.theme(),
-            css=BrokenGradio.css(),
             analytics_enabled=False,
             title="DepthFlow",
             fill_height=True,
@@ -414,7 +412,7 @@ class DepthGradio:
                                     value=50, minimum=0, maximum=100, step=10)
                             with gradio.Column(variant="panel"):
                                 self.ui.ssaa = gradio.Slider(label="Super sampling anti-aliasing",
-                                    info="Reduce aliasing and improve quality **(expensive)**",
+                                    info="Reduce jagged edges **(expensive)**",
                                     value=1.5, minimum=1, maximum=4, step=0.1)
 
                         with gradio.Row(equal_height=True):
@@ -487,7 +485,9 @@ class DepthGradio:
 
         return self.interface.launch(
             favicon_path=str(DEPTHFLOW.RESOURCES.ICON_PNG),
-            inbrowser=browser, show_api=False,
+            theme=BrokenGradio.theme(),
+            css=BrokenGradio.css(),
+            inbrowser=browser,
             prevent_thread_lock=(not block),
             max_threads=workers,
             server_name=server,

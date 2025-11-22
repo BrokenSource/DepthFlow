@@ -20,7 +20,7 @@ dependencies = [
     "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource",
     "shaderflow @ git+https://github.com/BrokenSource/ShaderFlow",
     "transformers~=4.57",
-    "gradio~=5.49",
+    "gradio~=6.0",
 ]
 
 [project.scripts]
