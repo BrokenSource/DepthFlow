@@ -14,7 +14,7 @@ from gradio.themes.utils import fonts, sizes
 from typer import Option
 
 from broken.envy import Runtime
-from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
+from broken.externals.depthmap import DepthAnythingV2, DepthAnythingV3, DepthEstimator
 from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from broken.path import BrokenPath
 from broken.pytorch import BrokenTorch
@@ -126,6 +126,10 @@ ESTIMATORS: dict[str, DepthEstimator] = {
     "DepthAnything2 Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
     "DepthAnything2 Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
     "DepthAnything2 Large": DepthAnythingV2(model=DepthAnythingV2.Model.Large),
+    "DepthAnything3 Small": DepthAnythingV3(model=DepthAnythingV3.Model.Small),
+    "DepthAnything3 Base":  DepthAnythingV3(model=DepthAnythingV3.Model.Base),
+    "DepthAnything3 Large": DepthAnythingV3(model=DepthAnythingV3.Model.Large),
+    "DepthAnything3 Giant": DepthAnythingV3(model=DepthAnythingV3.Model.Giant),
 }
 
 UPSCALERS: dict[str, BrokenUpscaler] = {

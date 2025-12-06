@@ -19,6 +19,7 @@ from broken.envy import Environment
 from broken.externals.depthmap import (
     DepthAnythingV1,
     DepthAnythingV2,
+    DepthAnythingV3,
     DepthEstimator,
     DepthPro,
     Marigold,
@@ -59,7 +60,7 @@ class DepthScene(ShaderScene):
     class Config(ShaderScene.Config):
         image:     Iterable[PydanticImage] = DEFAULT_IMAGE
         depth:     Iterable[PydanticImage] = None
-        estimator: DepthEstimator = Field(default_factory=DepthAnythingV2)
+        estimator: DepthEstimator = Field(default_factory=DepthAnythingV3)
         animation: DepthAnimation = Field(default_factory=DepthAnimation)
         upscaler:  BrokenUpscaler = Field(default_factory=NoUpscaler)
 
@@ -82,6 +83,7 @@ class DepthScene(ShaderScene):
         with self.cli.panel("🌊 Depth estimator"):
             self.cli.command(DepthAnythingV1, post=self.set_estimator, name="da1")
             self.cli.command(DepthAnythingV2, post=self.set_estimator, name="da2")
+            self.cli.command(DepthAnythingV3, post=self.set_estimator, name="da3")
             self.cli.command(DepthPro, post=self.set_estimator)
             self.cli.command(ZoeDepth, post=self.set_estimator)
             self.cli.command(Marigold, post=self.set_estimator)

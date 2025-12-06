@@ -23,13 +23,15 @@ def estimator() -> None:
     from broken.externals.depthmap import (
         DepthAnythingV1,
         DepthAnythingV2,
+        DepthAnythingV3,
         DepthPro,
         Marigold,
         ZoeDepth,
     )
     cli = BrokenTyper(description=estimator.__doc__)
-    DepthAnythingV2.cli(cli, name="anything2")
-    DepthAnythingV1.cli(cli, name="anything1")
+    DepthAnythingV3.cli(cli, name="da3")
+    DepthAnythingV2.cli(cli, name="da2")
+    DepthAnythingV1.cli(cli, name="da1")
     DepthPro.cli(cli, name="depthpro")
     Marigold.cli(cli, name="marigold")
     ZoeDepth.cli(cli, name="zoedepth")
