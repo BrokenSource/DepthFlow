@@ -60,7 +60,7 @@ class DepthScene(ShaderScene):
     class Config(ShaderScene.Config):
         image:     Iterable[PydanticImage] = DEFAULT_IMAGE
         depth:     Iterable[PydanticImage] = None
-        estimator: DepthEstimator = Field(default_factory=DepthAnythingV3)
+        estimator: DepthEstimator = Field(default_factory=DepthAnythingV2)
         animation: DepthAnimation = Field(default_factory=DepthAnimation)
         upscaler:  BrokenUpscaler = Field(default_factory=NoUpscaler)
 
