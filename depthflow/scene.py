@@ -34,8 +34,7 @@ from broken.externals.upscaler import (
 )
 from broken.loaders import LoadableImage, LoadImage
 from broken.path import BrokenPath
-from broken.types import FileExtensions
-from broken.utils import flatten, list_get
+from broken.utils import list_get
 from depthflow import DEPTHFLOW, __about__, logger
 from depthflow.animation import (
     Animation,
@@ -301,8 +300,7 @@ class DepthScene(ShaderScene):
         # Valid directory on disk
         elif (path := BrokenPath.get(item, exists=True)):
             if (path.is_dir()):
-                files = (path.glob("*" + x) for x in FileExtensions.Image)
-                yield from sorted(flatten(files))
+                yield from sorted(path.glob("*"))
             else:
                 yield path
 
