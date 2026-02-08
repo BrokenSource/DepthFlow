@@ -36,7 +36,7 @@ from broken.loaders import LoadableImage, LoadImage
 from broken.path import BrokenPath
 from broken.types import FileExtensions
 from broken.utils import flatten, list_get
-from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT
+from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT, logger
 from depthflow.animation import (
     Animation,
     ComponentBase,
@@ -236,7 +236,7 @@ class DepthScene(ShaderScene):
     # -------------------------------------------------------------------------------------------- #
     # Internal batch exporting
 
-    def _load_inputs(self, echo: bool=True) -> None:
+    def _load_inputs(self) -> None:
         """Load inputs: single or batch exporting"""
 
         # Batch exporting implementation
@@ -246,8 +246,8 @@ class DepthScene(ShaderScene):
         if (image is None):
             raise ShaderBatchStop()
 
-        self.log_info(f"Loading image: {image}", echo=echo)
-        self.log_info(f"Loading depth: {depth or 'Estimating from image'}", echo=echo)
+        logger.info(f"Loading image: {image}")
+        logger.info(f"Loading depth: {depth or 'Estimating from image'}")
 
         # Load, estimate, upscale input image
         image = self.config.upscaler.upscale(LoadImage(image))
@@ -310,7 +310,7 @@ class DepthScene(ShaderScene):
         elif ("*" in str(item)):
             yield from sorted(path.parent.glob(path.name))
         else:
-            self.log_minor(f"Assuming {item} is an iterable, could go wrong..")
+            logger.note(f"Assuming {item} is an iterable, could go wrong..")
             yield from item
 
     def _get_batch_input(self, item: LoadableImage) -> Optional[LoadableImage]:

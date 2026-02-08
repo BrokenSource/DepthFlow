@@ -1,3 +1,5 @@
+from dearlog import logger  # isort: split
+
 import importlib.metadata
 
 from broken.project import BrokenProject

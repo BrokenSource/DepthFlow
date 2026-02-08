@@ -1,9 +1,8 @@
 import sys
 
-from loguru import logger
-
 from broken.pytorch import BrokenTorch
 from broken.typerx import BrokenTyper
+from depthflow import logger
 
 # -----------------------------------------------|
 
@@ -14,7 +13,7 @@ def depthflow() -> None:
 
 def gradio() -> None:
     """🎓 Run DepthFlow's [bold green]Gradio user interface[/]"""
-    logger.minor("Launching the DepthFlow WebUI")
+    logger.note("Launching the DepthFlow WebUI")
     from depthflow.webui import DepthGradio
     BrokenTyper.simple(DepthGradio().launch)
 

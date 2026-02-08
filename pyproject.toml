@@ -19,7 +19,7 @@ requires-python = ">=3.10"
 dependencies = [
     "broken-source[extra] @ git+https://github.com/BrokenSource/BrokenSource",
     "shaderflow @ git+https://github.com/BrokenSource/ShaderFlow",
-    "transformers~=4.57",
+    "transformers~=5.0",
     "gradio~=6.0",
 ]
 
