@@ -1,5 +1,5 @@
 ---
-title: DepthFlow/Parameters
+title: Parameters
 ---
 
 <b><span class="the">T</span>his page</b> focus on all shader-related parameters, and how they affect the final image (in practical terms). The main goal is for helping you to understand how to work with the software and parametrize it to your needs, create your own animations, and more.

@@ -1,0 +1,127 @@
+[project]
+site_name = "DepthFlow"
+site_description = "🌊 Images to 3D Parallax effect video"
+site_author = "Tremeschin"
+site_url  = "https://depth.brokensrc.dev/"
+repo_url  = "https://github.com/BrokenSource/DepthFlow/"
+repo_name = "BrokenSource/DepthFlow"
+copyright = "&copy; CC BY-SA 4.0, <a href='https://github.com/Tremeschin/'>Tremeschin</a> 🇧🇷"
+docs_dir  = "website"
+extra_css = ["css/main.css"]
+nav = [
+  {Home = [
+    "index.md",
+    {About = [
+      "about/changelog.md",
+      "about/roadmap.md",
+      "about/contact.md",
+    ]}
+  ]},
+  {Installation = [
+    "get/index.md",
+    {Packages = [
+      "get/executables.md",
+      "get/wheels.md",
+      "get/source.md",
+    ]},
+  ]},
+  {Quickstart = [
+    "docs/index.md",
+    {Places = [
+      "docs/webui.md",
+      "docs/commands.md",
+      "docs/scripts.md",
+    ]},
+  ]},
+  {Documentation = [
+    {Math = [
+      "docs/parameters.md",
+    ]}
+  ]}
+]
+
+# ---------------------------------------------------------------------------- #
+
+[project.theme]
+variant = "modern"
+# custom_dir = "website/overrides"
+# favicon = "assets/images/logo.png"
+language = "en"
+features = [
+  "announce.dismiss",
+  "content.action.view",
+  "content.code.annotate",
+  "content.code.copy",
+  "content.footnote.tooltips",
+  "content.tabs.link",
+  "content.tooltips",
+  "navigation.expand",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant.prefetch",
+  "navigation.instant.progress",
+  "navigation.instant",
+  "navigation.path",
+  "navigation.tabs",
+  "navigation.top",
+  "search.highlight",
+  "toc.follow",
+]
+
+# ---------------------------------------------------------------------------- #
+
+[project.theme.icon]
+logo = "octicons/package-16"
+repo = "fontawesome/brands/github"
+
+[project.theme.font]
+text = "Inter"
+code = "Cascadia Code"
+
+[[project.theme.palette]]
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+media       = "(prefers-color-scheme: light)"
+scheme      = "default"
+primary     = "blue"
+accent      = "light-blue"
+
+[[project.theme.palette]]
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+media       = "(prefers-color-scheme: dark)"
+scheme      = "slate"
+primary     = "orange"
+accent      = "orange"
+
+# ---------------------------------------------------------------------------- #
+
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://discord.gg/KjqvcYwRHm"
+name = "Discord"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/telegram"
+link = "https://t.me/BrokenSource"
+name = "Telegram"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/patreon"
+link = "https://www.patreon.com/Tremeschin"
+name = "Patreon"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/Tremeschin"
+name = "GitHub"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/youtube"
+link = "https://www.youtube.com/@Tremeschin"
+name = "YouTube"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/x-twitter"
+link = "https://twitter.com/Tremeschine"
+name = "Twitter"

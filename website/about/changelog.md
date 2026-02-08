@@ -1,25 +1,25 @@
 ---
+title: Changelog
 icon: material/file-document-edit
 ---
 
-<style>
-    li {margin-bottom: 2px !important;}
-    p  {margin-bottom: 2px !important;}
-</style>
+<style>ul li {line-height: 1.1}</style>
 
-### ✏️ v0.10.0 <small>August ??, 2025</small> {#0.10.0}
+### ✏️ Staging {#staging}
 
-!!! example ""
+!!! quote ""
     - Fixed a internal resolution doubling bug before the final resize
     - Recalled all executable releases, enough users didn't see warnings
     - Fixed FFmpeg command line interface options missing
     - Fix `turbopipe.sync` shouldn't be called when disabled
     - Make the inpainting mask color white
+    - Add staging Depth Anything v3 estimator option
+    - Remove upscaler and estimator CLIs (bloat, to be reworked)
 
 ### 📦 v0.9.0 <small>June 2, 2025</small> {#0.9.0}
 
 !!! success ""
-    - Convert the project into snake case, still have my differences
+    - Convert the project into snake case
     - Overhauled the Readme and the WebUI layout and content
     - Improvements to perceptual quality of the animation presets
     - Add [Upscayl](https://github.com/upscayl/upscayl) as an upscaler option

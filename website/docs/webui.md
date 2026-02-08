@@ -1,4 +1,5 @@
 ---
+title: Gradio WebUI
 icon: material/web
 ---
 

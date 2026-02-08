@@ -1,0 +1,17 @@
+body {
+  text-align: justify;
+}
+
+/* Spread content tabs to full width */
+.tabbed-labels--linked label {
+  text-align: center;
+  flex: 1;
+}
+
+/* Less bold admonition titles */
+.md-typeset .admonition-title {
+  font-weight: 450 !important;
+}
+.filename {
+  font-weight: 450 !important;
+}

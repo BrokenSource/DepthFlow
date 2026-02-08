@@ -1,4 +1,5 @@
 ---
+title: Commands
 icon: octicons/command-palette-16
 ---
 

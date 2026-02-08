@@ -1,4 +1,5 @@
 ---
+title: Scripts
 icon: material/language-python
 ---
 

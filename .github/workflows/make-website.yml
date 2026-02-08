@@ -3,15 +3,29 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  id-token: write
+  contents: read
+  pages: write
 
 jobs:
   main:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
     steps:
-      - uses: BrokenSource/BrokenSource@main
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Make Website
-        run: |
-          uv run --directory */${{github.event.repository.name}} \
-          mkdocs gh-deploy --force --no-history
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Build website
+        run: uvx zensical build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy pages
+        uses: actions/deploy-pages@v4
