@@ -5,12 +5,12 @@ from broken.typerx import BrokenTyper
 from depthflow import logger
 
 def depthflow() -> None:
-    """🚀 Run DepthFlow's [bold green]Command line interface[/]"""
+    """🚀 Run DepthFlow's Command Line Interface"""
     from depthflow.scene import DepthScene
     DepthScene().cli(*sys.argv[1:])
 
 def gradio() -> None:
-    """🎓 Run DepthFlow's [bold green]Gradio user interface[/]"""
+    """🎓 Run DepthFlow's Gradio user interface"""
     logger.note("Launching the DepthFlow WebUI")
     from depthflow.webui import DepthGradio
     BrokenTyper.simple(DepthGradio().launch)

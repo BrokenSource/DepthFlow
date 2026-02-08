@@ -1,15 +1,16 @@
 from dearlog import logger  # isort: split
 
-import importlib.metadata
 import os
+from importlib.metadata import metadata
+
+__meta__:   dict = metadata(__package__)
+__about__:   str = __meta__["Summary"]
+__author__:  str = __meta__["Author"]
+__version__: str = __meta__["Version"]
 
 from broken.project import BrokenProject
 
-__version__: str = importlib.metadata.version(__package__)
-__about__:   str = "🌊 Images to 3D Parallax effect video"
-
 # macOS: Enable CPU fallback for unsupported operations in MPS
-# - https://pytorch.org/docs/stable/mps_environment_variables.html
 os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 # Make telemetries opt-in instead of opt-out
