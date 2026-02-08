@@ -4,8 +4,6 @@ from broken.pytorch import BrokenTorch
 from broken.typerx import BrokenTyper
 from depthflow import logger
 
-# -----------------------------------------------|
-
 def depthflow() -> None:
     """🚀 Run DepthFlow's [bold green]Command line interface[/]"""
     from depthflow.scene import DepthScene
@@ -17,36 +15,6 @@ def gradio() -> None:
     from depthflow.webui import DepthGradio
     BrokenTyper.simple(DepthGradio().launch)
 
-def estimator() -> None:
-    """🔎 Estimate depthmaps of general images"""
-    from broken.externals.depthmap import (
-        DepthAnythingV1,
-        DepthAnythingV2,
-        DepthAnythingV3,
-        DepthPro,
-        Marigold,
-        ZoeDepth,
-    )
-    cli = BrokenTyper(description=estimator.__doc__)
-    DepthAnythingV3.cli(cli, name="da3")
-    DepthAnythingV2.cli(cli, name="da2")
-    DepthAnythingV1.cli(cli, name="da1")
-    DepthPro.cli(cli, name="depthpro")
-    Marigold.cli(cli, name="marigold")
-    ZoeDepth.cli(cli, name="zoedepth")
-    cli(*sys.argv[1:])
-
-def upscaler() -> None:
-    """✨ Upscale images to higher resolutions"""
-    from broken.externals.upscaler import Realesr, Upscayl, Waifu2x
-    cli = BrokenTyper(description=upscaler.__doc__)
-    Realesr.cli(cli, name="realesr")
-    Upscayl.cli(cli, name="upscayl")
-    Waifu2x.cli(cli, name="waifu2x")
-    cli(*sys.argv[1:])
-
-# -----------------------------------------------|
-
 def main() -> None:
     cli = BrokenTyper.toplevel()
 
@@ -57,8 +25,6 @@ def main() -> None:
 
     with cli.panel("Tools"):
         cli.command(BrokenTorch.install)
-        cli.command(estimator)
-        cli.command(upscaler)
 
     cli(*sys.argv[1:])
 

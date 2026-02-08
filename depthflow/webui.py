@@ -196,7 +196,7 @@ class DepthGradio:
         if (user[self.ui.image] is None):
             raise GeneratorExit()
         width, height = user[self.ui.image].size
-        return BrokenResolution().fit(
+        return BrokenResolution.fit(
             old=(1920, 1080), new=target,
             ar=(width/height), multiple=1,
         )

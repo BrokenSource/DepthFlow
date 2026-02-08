@@ -36,7 +36,7 @@ from broken.loaders import LoadableImage, LoadImage
 from broken.path import BrokenPath
 from broken.types import FileExtensions
 from broken.utils import flatten, list_get
-from depthflow import DEPTHFLOW, DEPTHFLOW_ABOUT, logger
+from depthflow import DEPTHFLOW, __about__, logger
 from depthflow.animation import (
     Animation,
     ComponentBase,
@@ -71,7 +71,7 @@ class DepthScene(ShaderScene):
     # Command line interface
 
     def commands(self):
-        self.cli.description = DEPTHFLOW_ABOUT
+        self.cli.description = __about__
 
         with self.cli.panel(self.scene_panel):
             self.cli.command(self.input)
