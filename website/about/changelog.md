@@ -8,13 +8,28 @@ icon: material/file-document-edit
 ### ✏️ Staging {#staging}
 
 !!! quote ""
+    > This version focuses on internal refactors and simplifications, by removing maintenance-burden features which are better done externally through scripts or library usage, and a website overhaul with [zensical](https://zensical.org/).
+    >
+    > Reason why it took so long was due side-tracking to deveolp auxiliary projects like [Pyaket](https://pyaket.dev/) for upcoming executable releases, starting to decouple projects from the monorepo life-support and life priorities.
+
+    **Fixes**
+
     - Fixed a internal resolution doubling bug before the final resize
-    - Recalled all executable releases, enough users didn't see warnings
-    - Fixed FFmpeg command line interface options missing
     - Fix `turbopipe.sync` shouldn't be called when disabled
+    - Fixed FFmpeg command line interface options help missing
+
+    **Changes**
+
+    - Swap logger library to [DearLog](https://github.com/BrokenSource/DearLog/) from [Loguru](https://github.com/Delgan/loguru)
     - Make the inpainting mask color white
-    - Add staging Depth Anything v3 estimator option
-    - Remove upscaler and estimator CLIs (bloat, to be reworked)
+    - Add experimental Depth Anything v3 estimator option
+    - Moved depth estimators to this package from shared library
+
+    **Removals**
+
+    - Remove batch processing support for its many problems and better done in [scripts](https://github.com/BrokenSource/DepthFlow/blob/main/examples/batch.py)
+    - Recalled all executable releases until [Pyaket](https://pyaket.dev/) ones are made, within next release
+    - Remove upscaler and estimator experimental CLIs
 
 ### 📦 v0.9.0 <small>June 2, 2025</small> {#0.9.0}
 

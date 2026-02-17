@@ -561,6 +561,3 @@ class DepthAnimation(BrokenModel):
     def apply(self, scene: DepthScene) -> None:
         for animation in self.steps:
             animation.apply(scene)
-
-    def __bool__(self) -> bool:
-        return bool(self.steps)

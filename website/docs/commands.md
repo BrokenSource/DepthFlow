@@ -191,65 +191,8 @@ You can use a couple of high quality presets with:
 
 ### Batch processing
 
-<sup><b>⚠️ Note:</b> Batch exporting feature is experimental and might have issues!</sup>
+Batch processing is better done externally with scripts:
 
-#### Selecting inputs
-
-!!! example ""
-
-    Multiple direct inputs
-
-    ```shell title=""
-    # Local paths
-    depthflow input -i ./image1.png -i ./image2.png (...)
-
-    # Or even URLs
-    depthflow input -i https://.. -i https://.. (...)
-    ```
-
-    ```shell title=""
-    # All file contents of a folder
-    depthflow input -i ./images (...)
-    ```
-
-    ```shell title=""
-    # Glob pattern matching
-    depthflow input -i ./images/*.png (...)
-    ```
-
-#### Exporting
-
-Let's assume there are `foo.png`, `bar.png`, and `baz.png` in the `./images` folder:
-
-1. Always have `-b all` or `--batch all` in the `main` command (or a range like `0-5` images)
-2. The output video basename will become a suffix of the exported video
-
-!!! example ""
-
-    ```shell title=""
-    # This creates 'foo-suffix.mp4', 'bar-suffix.mp4', 'baz-suffix.mp4' in the './outputs' folder
-    depthflow input -i ./images main -b all -o ./outputs/suffix
-    ```
-
-    The prefix is _enforced_ mainly as there's no 'empty' file in a directory, but also useful in:
-
-    ```shell title=""
-    # Create many different animations of the same image
-    depthflow input -i ./images orbital main -b all -o ./outputs/orbital
-    depthflow input -i ./images circle  main -b all -o ./outputs/circle
-    ```
-
-    Or even set the output folder to the same input, so videos sorts nicely alongside images:
-
-    ```shell title=""
-    depthflow input -i ./images main -b all -o ./images
-    ```
-
-    It might be a good idea to specify a common height for all exports:
-
-    ```shell title=""
-    # Ensures all videos are '1080p', at least in the height
-    depthflow input -i ./images main -b all -o ./images -h 1080p
-    ```
+<!-- Todo: Examples -->
 
 --8<-- "include/love-short.md"
