@@ -9,7 +9,15 @@ __version__: str = __meta__.get("Version")
 
 from pathlib import Path
 
-RESOURCES: Path = Path(__file__).parent/"resources"
+from platformdirs import PlatformDirs
+
+resources = Path(__file__).parent/"resources"
+
+dirs = PlatformDirs(
+    appname=__package__,
+    ensure_exists=True,
+    opinion=True,
+)
 
 import os
 

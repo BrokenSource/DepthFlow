@@ -2,11 +2,9 @@
 import contextlib
 import multiprocessing
 import os
-import tempfile
 from abc import ABC, abstractmethod
 from enum import Enum
 from io import BytesIO
-from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
 import numpy as np
@@ -15,6 +13,7 @@ from diskcache import Cache as DiskCache
 from pydantic import BaseModel, Field
 from typer import Option
 
+import depthflow
 from broken.loaders import LoadableImage, LoadImage
 from broken.vectron import Vectron
 
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 
 # Shared cache for estimations
 DEPTHMAPS: DiskCache = DiskCache(
-    directory=Path(tempfile.gettempdir()).joinpath("depthflow.sqlite"),
+    directory=depthflow.dirs.user_cache_path.joinpath("depthmaps"),
     size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", 20))*(1024**2),
 )
 
@@ -47,7 +46,7 @@ class DepthEstimator(BaseModel, ABC):
         image: LoadableImage,
         cache: bool=True,
     ) -> np.ndarray[np.float32]:
-        import lzma
+        import zlib
 
         image = LoadImage(image).convert("RGB")
 
@@ -68,10 +67,13 @@ class DepthEstimator(BaseModel, ABC):
 
             # Save the array as a compressed numpy file
             np.save(buffer := BytesIO(), depth, allow_pickle=False)
-            DEPTHMAPS.set(key, lzma.compress(buffer.getvalue()))
+            DEPTHMAPS.set(key, zlib.compress(
+                buffer.getvalue(),
+                level=9
+            ))
         else:
             # Load the compressed lzma numpy file from cache
-            depth = np.load(BytesIO(lzma.decompress(depth)))
+            depth = np.load(BytesIO(zlib.decompress(depth)))
 
         # Optionally thicken the depth map array
         depth = Vectron.normalize(depth, dtype=np.float32, min=0, max=1)
