@@ -5,7 +5,7 @@ import os
 from abc import ABC, abstractmethod
 from enum import Enum
 from io import BytesIO
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Optional
 
 import numpy as np
 import xxhash
@@ -15,7 +15,6 @@ from typer import Option
 
 import depthflow
 from broken.loaders import LoadableImage, LoadImage
-from broken.vectron import Vectron
 
 if TYPE_CHECKING:
     import torch
@@ -42,6 +41,34 @@ class DepthEstimator(BaseModel, ABC):
     def np_dtype(self) -> np.dtype:
         return getattr(np, self.dtype.value)
 
+    @staticmethod
+    def normalize(
+        array: np.ndarray,
+        dtype: np.dtype=np.float32,
+        lerp: np.dtype=np.float64,
+        min: Optional[float]=None,
+        max: Optional[float]=None,
+    ) -> np.ndarray:
+
+        # Get the dtype information
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+        else:
+            info = np.finfo(dtype)
+
+        info = (np.iinfo if np.issubdtype(dtype, np.integer) else np.finfo)(dtype)
+
+        # Optionally override target dtype min and max
+        min = (info.min if (min is None) else min)
+        max = (info.max if (max is None) else max)
+
+        # Work with float64 as array might be low precision
+        return np.interp(
+            x=array.astype(lerp),
+            xp=(np.min(array), np.max(array)),
+            fp=(min, max),
+        ).astype(dtype)
+
     def estimate(self,
         image: LoadableImage,
         cache: bool=True,
@@ -59,11 +86,10 @@ class DepthEstimator(BaseModel, ABC):
         # Estimate if not on cache
         if (not cache) or (depth := DEPTHMAPS.get(key)) is None:
             import torch
-            torch.set_num_threads(multiprocessing.cpu_count())
 
             # Estimate and convert to target dtype
             depth = self._estimate(image)
-            depth = Vectron.normalize(depth, dtype=self.np_dtype)
+            depth = self.normalize(depth, dtype=self.np_dtype)
 
             # Save the array as a compressed numpy file
             np.save(buffer := BytesIO(), depth, allow_pickle=False)
@@ -76,7 +102,7 @@ class DepthEstimator(BaseModel, ABC):
             depth = np.load(BytesIO(zlib.decompress(depth)))
 
         # Optionally thicken the depth map array
-        depth = Vectron.normalize(depth, dtype=np.float32, min=0, max=1)
+        depth = self.normalize(depth, dtype=np.float32, min=0, max=1)
         depth = (self._post(depth) if self.post else depth)
         return depth
 
@@ -99,3 +125,33 @@ class DepthEstimator(BaseModel, ABC):
     def _post(self, depth: np.ndarray) -> np.ndarray:
         """Post-processing to mitigate artifacts"""
         return depth
+
+    # ------------------------------------------------------------------------ #
+
+    @staticmethod
+    def lstsq_masked(
+        base: np.ndarray,
+        fill: np.ndarray,
+        mask: np.ndarray=None,
+    ) -> np.ndarray:
+        """
+        Find the linear system coefficients (A, B) that minimizes
+        MSE(base, A*(fill + B)) for the masked pixels
+        """
+
+        # Use whole image by default
+        if mask is None:
+            mask = np.ones_like(base, dtype=bool)
+
+        # Make linear, apply mask
+        mask = mask.ravel()
+        x = base.ravel()[mask]
+        y = fill.ravel()[mask]
+
+        # Fit least squares linear regression
+        A = np.column_stack((x, np.ones_like(x)))
+        (a, b), *_ = np.linalg.lstsq(A, y)
+
+        # Return opposite effects
+        return (fill - b) / (a or 1)
+
