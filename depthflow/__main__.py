@@ -4,6 +4,7 @@ from broken.pytorch import BrokenTorch
 from broken.typerx import BrokenTyper
 from depthflow import logger
 
+
 def depthflow() -> None:
     """🚀 Run DepthFlow's Command Line Interface"""
     from depthflow.scene import DepthScene

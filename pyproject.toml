@@ -9,7 +9,7 @@ Homepage  = "https://depth.brokensrc.dev/"
 
 [project]
 name        = "depthflow"
-description = "🌊 Images to → 3D Parallax effect video. A free and open source ImmersityAI alternative"
+description = "🌊 Images to 3D Parallax effect video. A free and open source ImmersityAI alternative"
 authors     = [{name="Tremeschin"}]
 dynamic     = ["keywords"]
 version     = "0.10.0"

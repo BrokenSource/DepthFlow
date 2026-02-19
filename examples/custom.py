@@ -4,7 +4,7 @@
 Basic example of defining your own class based on DepthScene, running
 it via CLI or a code managing it for automation
 
-• For more information, visit https://brokensrc.dev/depthflow
+Note: Class.method(self) is preferred over super().method(self) for clarity
 """
 import math
 import sys
@@ -12,7 +12,6 @@ import sys
 from depthflow.scene import DepthScene
 from shaderflow.message import ShaderMessage
 
-# Note: DepthScene.method(self) is preferred over super().method(self) for clarity
 
 class CustomScene(DepthScene):
     def update(self):

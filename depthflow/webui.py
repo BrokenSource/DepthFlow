@@ -14,7 +14,6 @@ from gradio.themes.utils import fonts, sizes
 from typer import Option
 
 from broken.envy import Runtime
-from broken.externals.depthmap import DepthAnythingV2, DepthAnythingV3, DepthEstimator
 from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
 from broken.path import BrokenPath
 from broken.pytorch import BrokenTorch
@@ -23,6 +22,11 @@ from broken.utils import DictUtils, denum
 from broken.worker import BrokenWorker
 from depthflow import DEPTHFLOW
 from depthflow.animation import Animation, FilterBase, PresetBase
+from depthflow.estimators import DepthEstimator
+from depthflow.estimators.anything import (
+    DepthAnythingV2,
+    DepthAnythingV3,
+)
 
 # ---------------------------------------------------------------------------- #
 

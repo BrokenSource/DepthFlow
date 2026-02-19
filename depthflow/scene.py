@@ -1,47 +1,33 @@
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Annotated, Optional, Union
+from typing import Annotated
 
 from attrs import Factory, define
 from imgui_bundle import imgui
-from pydantic import Field, HttpUrl
 from shaderflow.message import ShaderMessage
 from shaderflow.scene import ShaderScene
 from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 from typer import Option
 
-from broken.envy import Environment
-from broken.externals.depthmap import (
-    DepthAnythingV1,
-    DepthAnythingV2,
-    DepthAnythingV3,
-    DepthEstimator,
-    DepthPro,
-    Marigold,
-    ZoeDepth,
-)
-from broken.externals.upscaler import (
-    BrokenUpscaler,
-    NoUpscaler,
-    Realesr,
-    Upscayl,
-    Waifu2x,
-)
 from broken.loaders import LoadImage
 from depthflow import RESOURCES, __about__, logger
 from depthflow.animation import (
     Animation,
-    ComponentBase,
     DepthAnimation,
     FilterBase,
     PresetBase,
 )
+from depthflow.estimators import DepthEstimator
+from depthflow.estimators.anything import (
+    DepthAnythingV1,
+    DepthAnythingV2,
+    DepthAnythingV3,
+)
+from depthflow.estimators.depthpro import DepthPro
+from depthflow.estimators.marigold import Marigold
+from depthflow.estimators.zoedepth import ZoeDepth
 from depthflow.state import DepthState
-
-PydanticImage = Union[str, HttpUrl, Path]
-
-# -------------------------------------------------------------------------------------------------|
 
 DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
 DEPTH_SHADER: Path = (RESOURCES/"depthflow.glsl")
@@ -52,7 +38,7 @@ class DepthScene(ShaderScene):
     estimator: DepthEstimator = Factory(DepthAnythingV2)
     animation: DepthAnimation = Factory(DepthAnimation)
 
-    # -------------------------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # Command line interface
 
     def commands(self):
@@ -61,10 +47,6 @@ class DepthScene(ShaderScene):
         with self.cli.panel(self.scene_panel):
             self.cli.command(self.input)
 
-        with self.cli.panel("🔧 Preloading"):
-            self.cli.command(self.load_estimator, hidden=True)
-            self.cli.command(self.load_upscaler,  hidden=True)
-
         with self.cli.panel("🌊 Depth estimator"):
             self.cli.command(DepthAnythingV1, post=self.set_estimator, name="da1")
             self.cli.command(DepthAnythingV2, post=self.set_estimator, name="da2")
@@ -72,17 +54,6 @@ class DepthScene(ShaderScene):
             self.cli.command(DepthPro, post=self.set_estimator)
             self.cli.command(ZoeDepth, post=self.set_estimator)
             self.cli.command(Marigold, post=self.set_estimator)
-
-        with self.cli.panel("⭐️ Upscaler"):
-            self.cli.command(Realesr, post=self.set_upscaler)
-            self.cli.command(Upscayl, post=self.set_upscaler)
-            self.cli.command(Waifu2x, post=self.set_upscaler)
-
-        with self.cli.panel("🚀 Animation components"):
-            _hidden = Environment.flag("ADVANCED", 0)
-            for animation in Animation.members():
-                if issubclass(animation, ComponentBase):
-                    self.cli.command(animation, post=self.animation.add, hidden=_hidden)
 
         with self.cli.panel("🔮 Animation presets"):
             self.cli.command(self.animation.clear)
@@ -150,30 +121,11 @@ class DepthScene(ShaderScene):
     # ------------------------------------------------------------------------ #
     # Proxy methods
 
-    # # Upscalers
-
-    def set_upscaler(self, upscaler: Optional[BrokenUpscaler]=None) -> BrokenUpscaler:
-        self.upscaler = (upscaler or NoUpscaler())
-        return self.upscaler
-    def clear_upscaler(self) -> None:
-        self.upscaler = NoUpscaler()
-    def load_upscaler(self) -> None:
-        self.upscaler.download()
-
-    def realesr(self, **options) -> Realesr:
-        return self.set_upscaler(Realesr(**options))
-    def upscayl(self, **options) -> Upscayl:
-        return self.set_upscaler(Upscayl(**options))
-    def waifu2x(self, **options) -> Waifu2x:
-        return self.set_upscaler(Waifu2x(**options))
-
     # # Estimators
 
     def set_estimator(self, estimator: DepthEstimator) -> DepthEstimator:
         self.estimator = estimator
         return self.estimator
-    def load_estimator(self) -> None:
-        self.estimator.load_model()
 
     def depth_anything1(self, **options) -> DepthAnythingV1:
         return self.set_estimator(DepthAnythingV1(**options))

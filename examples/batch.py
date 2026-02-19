@@ -22,7 +22,7 @@ def main():
 
             # Animation variation one
             scene.config.animation.clear()
-            scene.state = DepthState() # Fixme: Always reset?
+            scene.state = DepthState()
             scene.circle(intensity=0.8)
             scene.main(
                 output=(OUTPUTS/f"{file.stem}-circle.mp4"),
