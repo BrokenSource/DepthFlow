@@ -10,8 +10,9 @@ from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 from typer import Option
 
+import depthflow
 from broken.loaders import LoadImage
-from depthflow import __about__, logger, resources
+from depthflow import logger
 from depthflow.animation import (
     Animation,
     DepthAnimation,
@@ -30,7 +31,7 @@ from depthflow.estimators.zoedepth import ZoeDepth
 from depthflow.state import DepthState
 
 DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-DEPTH_SHADER: Path = (resources/"depthflow.glsl")
+DEPTH_SHADER: Path = (depthflow.resources/"depthflow.glsl")
 
 @define
 class DepthScene(ShaderScene):
@@ -42,7 +43,7 @@ class DepthScene(ShaderScene):
     # Command line interface
 
     def commands(self):
-        self.cli.description = __about__
+        self.cli.description = depthflow.__about__
 
         with self.cli.panel(self.scene_panel):
             self.cli.command(self.input)

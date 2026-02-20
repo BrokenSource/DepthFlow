@@ -1,26 +1,20 @@
-import contextlib
 import sys
-import time
 import uuid
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor as ThreadPool
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Annotated, Iterable
 
 import gradio
+import torch
 from attrs import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
 from typer import Option
 
-from broken.envy import Runtime
-from broken.externals.upscaler import BrokenUpscaler, Realesr, Upscayl, Waifu2x
-from broken.path import BrokenPath
-from broken.pytorch import BrokenTorch
+import depthflow
 from broken.resolution import BrokenResolution
-from broken.utils import DictUtils, denum
-from broken.worker import BrokenWorker
-from depthflow import DEPTHFLOW
+from broken.utils import DictUtils
 from depthflow.animation import Animation, FilterBase, PresetBase
 from depthflow.estimators import DepthEstimator
 from depthflow.estimators.anything import (
@@ -123,9 +117,6 @@ class BrokenGradio:
 
 # ---------------------------------------------------------------------------- #
 
-WEBUI_OUTPUT: Path = (DEPTHFLOW.DIRECTORIES.SYSTEM_TEMP/"webui")
-"""The temporary output for the WebUI, cleaned at the start and after any render"""
-
 ESTIMATORS: dict[str, DepthEstimator] = {
     "DepthAnything2 Small": DepthAnythingV2(model=DepthAnythingV2.Model.Small),
     "DepthAnything2 Base":  DepthAnythingV2(model=DepthAnythingV2.Model.Base),
@@ -134,13 +125,6 @@ ESTIMATORS: dict[str, DepthEstimator] = {
     "DepthAnything3 Base":  DepthAnythingV3(model=DepthAnythingV3.Model.Base),
     "DepthAnything3 Large": DepthAnythingV3(model=DepthAnythingV3.Model.Large),
     "DepthAnything3 Giant": DepthAnythingV3(model=DepthAnythingV3.Model.Giant),
-}
-
-UPSCALERS: dict[str, BrokenUpscaler] = {
-    "Upscayl Digital Art":   Upscayl(model=Upscayl.Model.DigitalArt),
-    "Upscayl High Fidelity": Upscayl(model=Upscayl.Model.HighFidelity),
-    "Real-ESRGAN":           Realesr(),
-    "Waifu2x":               Waifu2x(),
 }
 
 # ---------------------------------------------------------------------------- #
@@ -171,9 +155,6 @@ class DepthGradio:
     def _estimator(self, user: dict) -> DepthEstimator:
         return ESTIMATORS[user[self.ui.estimator]]
 
-    def _upscaler(self, user: dict) -> BrokenUpscaler:
-        return UPSCALERS[user[self.ui.upscaler]]
-
     def estimate(self, user: dict):
         if ((image := user[self.ui.image]) is None):
             return None
@@ -184,14 +165,6 @@ class DepthGradio:
             self.ui.width:  width,
             self.ui.height: height,
         }
-
-    # -------------------------------------------|
-    # Upscalers
-
-    def upscale(self, user: dict):
-        if ((image := user[self.ui.image]) is None):
-            return gradio.Warning("The input image is empty")
-        yield {self.ui.image: (image := self._upscaler(user).upscale(image))}
 
     # -------------------------------------------|
     # Resolution
@@ -229,6 +202,7 @@ class DepthGradio:
         def worker(output: Path) -> Path:
             from depthflow.scene import DepthScene
             scene = DepthScene(backend="headless")
+            scene.initialize()
             scene.input(
                 image=user[self.ui.image],
                 depth=user[self.ui.depth]
@@ -242,7 +216,7 @@ class DepthGradio:
                     continue
                 if (not user[preset_dict.enable]):
                     continue
-                scene.config.animation.add(preset(**{
+                scene.animation.add(preset(**{
                     key: user[item] for (key, item) in preset_dict.options.items()
                 }))
 
@@ -262,21 +236,10 @@ class DepthGradio:
                 loops=user[self.ui.loop],
                 turbo=self.turbo,
                 output=output,
-            )[0]
+            )
 
-        with ThreadPool() as pool:
-            try:
-                output = (WEBUI_OUTPUT/f"{uuid.uuid4()}.mp4")
-                task = pool.submit(worker, output=output)
-                yield {self.ui.video: task.result()}
-            finally:
-                def remove(path: Path, delay: float):
-                    with contextlib.suppress(FileNotFoundError):
-                        time.sleep(delay)
-                        path.unlink()
-
-                # Gradio doesn't accept bytes, give some time to read
-                BrokenWorker.thread(remove, path=output, delay=10)
+        with TemporaryDirectory(prefix="depthflow-webui-") as workdir:
+            yield {self.ui.video: worker((Path(workdir)/f"{uuid.uuid4()}.mp4"))}
 
     # -------------------------------------------|
     # Layout
@@ -304,8 +267,6 @@ class DepthGradio:
             help="Enable NVENC hardware acceleration for encoding")]=False,
     ) -> gradio.Blocks:
         """🚀 Launch DepthFlow's Gradio WebUI with the given options"""
-        BrokenPath.recreate(WEBUI_OUTPUT)
-
         self.turbo = turbo
         self.nvenc = nvenc
 
@@ -364,14 +325,6 @@ class DepthGradio:
                                 type="pil", label="Input image",
                                 interactive=True, height=HEIGHT
                             )
-                            with gradio.Row(equal_height=True):
-                                self.ui.upscaler = gradio.Dropdown(
-                                    choices=list(UPSCALERS.keys()),
-                                    value=list(UPSCALERS.keys())[0],
-                                    label="Upscaler", scale=10
-                                )
-                                self.ui.upscale = gradio.Button(
-                                    value="🚀 Upscale", scale=1)
 
                     with gradio.Tab("Depth"):
                         with gradio.Column(variant="panel"):
@@ -450,7 +403,6 @@ class DepthGradio:
                                 loop=True,
                             )
 
-                            # Fixme: Stretch to match gradio.Dropdown
                             with gradio.Row(height=52, equal_height=True):
                                 self.ui.render = gradio.Button(
                                     value="🔥 Render 🔥",
@@ -461,11 +413,9 @@ class DepthGradio:
             outputs = {self.ui.image, self.ui.depth, self.ui.width, self.ui.height}
             self.ui.image.change(**self.simple(self.estimate, outputs=outputs))
 
-            # Estimate or upscale explicit buttons
+            # Estimate explicit buttons
             BrokenGradio.progress_button(element=self.ui.estimate,
                 then=self.simple(self.estimate, outputs=outputs))
-            BrokenGradio.progress_button(element=self.ui.upscale,
-                then=self.simple(self.upscale, outputs=outputs))
 
             # Render video on render button click
             BrokenGradio.progress_button(self.ui.render, self.simple(
@@ -476,9 +426,9 @@ class DepthGradio:
             # Footer-like credits :^)
             gradio.Markdown(f"""
                 <center><div style='padding-top: 10px; opacity: 0.7'>
-                    <b>DepthFlow</b> {Runtime.Method} v{DEPTHFLOW.VERSION} •
+                    <b>DepthFlow</b> v{depthflow.__version__} •
                     <b>Python</b> v{sys.version.split(' ')[0]} •
-                    <b>PyTorch</b> v{denum(BrokenTorch.version())}
+                    <b>PyTorch</b> v{torch.__version__}
                     <p><small style='opacity: 0.6'>
                         Made with ❤️ by <a href='https://github.com/Tremeschin'>
                             <b>Tremeschin</b></a> •
@@ -492,7 +442,7 @@ class DepthGradio:
             """)
 
         return self.interface.launch(
-            favicon_path=str(DEPTHFLOW.RESOURCES.ICON_PNG),
+            favicon_path=str(depthflow.resources/"images"/"logo.png"),
             theme=BrokenGradio.theme(),
             css=BrokenGradio.css(),
             inbrowser=browser,
