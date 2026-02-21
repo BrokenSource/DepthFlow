@@ -1,16 +1,23 @@
 from typing import Annotated, Iterable
 
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 from shaderflow.variable import ShaderVariable, Uniform
 from typer import Option
 
-from broken.model import BrokenModel
-from broken.typerx import BrokenTyper
+exclude = Option(
+    parser=(lambda type: type),
+    expose_value=False,
+    hidden=True,
+)
+
+class _BaseModel(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
 
 # ---------------------------------------------------------------------------- #
 
-class VignetteState(BrokenModel):
-    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+class VignetteState(_BaseModel):
+
+    enable: bool = Field(False)
     """Enable this vignette (darken corners) effect"""
 
     intensity: Annotated[float, Option("--intensity", "-i", min=0, max=1)] = Field(0.2)
@@ -26,8 +33,9 @@ class VignetteState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-class LensState(BrokenModel):
-    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+class LensState(_BaseModel):
+
+    enable: bool = Field(False)
     """Enable this lens distortion effect"""
 
     intensity: Annotated[float, Option("--intensity", "-i", min=0, max=1)] = Field(0.1)
@@ -47,8 +55,9 @@ class LensState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-class BlurState(BrokenModel):
-    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+class BlurState(_BaseModel):
+
+    enable: bool = Field(False)
     """Enable this depth of field (blur) effect"""
 
     intensity: Annotated[float, Option("--intensity", "-i", min=0, max=2)] = Field(1.0)
@@ -80,8 +89,9 @@ class BlurState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-class InpaintState(BrokenModel):
-    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+class InpaintState(_BaseModel):
+
+    enable: bool = Field(False)
     """Enable the inpainting effect (masks stretchy regions for advanced usage)"""
 
     black: Annotated[bool, Option("--black", "-b")] = Field(False)
@@ -97,8 +107,9 @@ class InpaintState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-class ColorState(BrokenModel):
-    enable: Annotated[bool, BrokenTyper.exclude()] = Field(False)
+class ColorState(_BaseModel):
+
+    enable: bool = Field(False)
     """Enable color manipulation effects"""
 
     saturation: Annotated[float, Option("--saturation", "-s", min=0, max=200)] = Field(100.0)
@@ -129,7 +140,7 @@ class ColorState(BrokenModel):
 
 # ---------------------------------------------------------------------------- #
 
-class DepthState(BrokenModel):
+class DepthState(_BaseModel):
     """Set effect parameters, animations might override them!"""
 
     height: Annotated[float, Option("--height", "-h", min=0, max=2)] = Field(0.20)
@@ -209,19 +220,19 @@ class DepthState(BrokenModel):
 
     # ---------------------------------------------------------------------------------------------|
 
-    vignette: Annotated[VignetteState, BrokenTyper.exclude()] = \
+    vignette: Annotated[VignetteState, exclude] = \
         Field(default_factory=VignetteState)
 
-    lens: Annotated[LensState, BrokenTyper.exclude()] = \
+    lens: Annotated[LensState, exclude] = \
         Field(default_factory=LensState)
 
-    inpaint: Annotated[InpaintState, BrokenTyper.exclude()] = \
+    inpaint: Annotated[InpaintState, exclude] = \
         Field(default_factory=InpaintState)
 
-    colors: Annotated[ColorState, BrokenTyper.exclude()] = \
+    colors: Annotated[ColorState, exclude] = \
         Field(default_factory=ColorState)
 
-    blur: Annotated[BlurState, BrokenTyper.exclude()] = \
+    blur: Annotated[BlurState, exclude] = \
         Field(default_factory=BlurState)
 
     # ---------------------------------------------------------------------------------------------|

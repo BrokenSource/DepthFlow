@@ -1,6 +1,5 @@
 # pyright: reportMissingImports=false
 import contextlib
-import multiprocessing
 import os
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -154,4 +153,3 @@ class DepthEstimator(BaseModel, ABC):
 
         # Return opposite effects
         return (fill - b) / (a or 1)
-

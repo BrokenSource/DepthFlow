@@ -9,7 +9,6 @@ from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Literal,
     Optional,
     TypeAlias,
     Union,
@@ -18,10 +17,6 @@ from typing import (
 from pydantic import BaseModel, Field
 from typer import Option
 
-from broken.envy import Environment
-from broken.loaders import LoadString
-from broken.model import BrokenModel
-from broken.typerx import BrokenTyper
 from broken.utils import BrokenAttribute
 from depthflow.state import (
     BlurState,
@@ -198,24 +193,10 @@ class Animation(ClassEnum):
             scene.state = self
 
     class Nothing(AnimationBase):
-        type: Annotated[Literal["nothing"], BrokenTyper.exclude()] = "nothing"
-
         def apply(self, scene: DepthScene) -> None:
             pass
 
-    class Custom(AnimationBase):
-        type: Annotated[Literal["custom"], BrokenTyper.exclude()] = "custom"
-
-        code: Annotated[str, Option("--code", "-c")] = Field("")
-        """Custom code to run for the animation [yellow](be sure to trust it)[/]"""
-
-        def apply(self, scene: DepthScene, tau: float, cycle: float) -> float:
-            if Environment.flag("CUSTOM_CODE", 0):
-                return exec(LoadString(self.code))
-            raise RuntimeError("Custom code execution is disabled")
-
     class Reset(AnimationBase):
-        type: Annotated[Literal["reset"], BrokenTyper.exclude()] = "reset"
 
         def apply(self, scene: DepthScene) -> None:
             scene.state = DepthState()
@@ -228,7 +209,6 @@ class Animation(ClassEnum):
 
     class Set(_ConstantBase):
         """Set a constant value to some component's animation"""
-        type: Annotated[Literal["set"], BrokenTyper.exclude()] = "set"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             self.cumulative = False
@@ -236,7 +216,6 @@ class Animation(ClassEnum):
 
     class Add(_ConstantBase):
         """Add a constant value to some component's animation"""
-        type: Annotated[Literal["add"], BrokenTyper.exclude()] = "add"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             self.cumulative = True
@@ -247,7 +226,6 @@ class Animation(ClassEnum):
 
     class Linear(ReversibleComponentBase):
         """Add a Linear interpolation to some component's animation"""
-        type: Annotated[Literal["linear"], BrokenTyper.exclude()] = "linear"
 
         start: Annotated[float, Option("--start", "-t0")] = Field(0.0)
         """Normalized start time"""
@@ -287,21 +265,18 @@ class Animation(ClassEnum):
 
     class Sine(_WaveBase):
         """Add a Sine wave to some component's animation"""
-        type: Annotated[Literal["sine"], BrokenTyper.exclude()] = "sine"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return self.amplitude * math.sin((cycle * self.cycles) + (self.phase * math.tau)) + self.bias
 
     class Cosine(_WaveBase):
         """Add a Cosine wave to some component's animation"""
-        type: Annotated[Literal["cosine"], BrokenTyper.exclude()] = "cosine"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             return self.amplitude * math.cos((cycle * self.cycles) + (self.phase * math.tau)) + self.bias
 
     class Triangle(_WaveBase):
         """Add a Triangle wave to some component's animation"""
-        type: Annotated[Literal["triangle"], BrokenTyper.exclude()] = "triangle"
 
         def compute(self, scene: DepthScene, tau: float, cycle: float) -> float:
             tau = (tau * self.cycles + self.phase + 0.25) % 1
@@ -312,35 +287,30 @@ class Animation(ClassEnum):
 
     class Vignette(FilterBase, VignetteState):
         """Add a Vignette effect to the video"""
-        type: Annotated[Literal["vignette"], BrokenTyper.exclude()] = "vignette"
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.vignette = self.update(enable=True)
 
     class Lens(FilterBase, LensState):
         """Add a Lens distortion effect to the video"""
-        type: Annotated[Literal["lens"], BrokenTyper.exclude()] = "lens"
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.lens = self.update(enable=True)
 
     class Blur(FilterBase, BlurState):
         """Add a Blur effect (depth of field) to the video"""
-        type: Annotated[Literal["blur"], BrokenTyper.exclude()] = "blur"
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.blur = self.update(enable=True)
 
     class Inpaint(FilterBase, InpaintState):
         """Replace steep regions with green color"""
-        type: Annotated[Literal["inpaint"], BrokenTyper.exclude()] = "inpaint"
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.inpaint = self.update(enable=True)
 
     class Colors(FilterBase, ColorState):
         """Add coloring effects to the video"""
-        type: Annotated[Literal["colors"], BrokenTyper.exclude()] = "colors"
 
         def apply(self, scene: DepthScene) -> None:
             scene.state.colors = self.update(enable=True)
@@ -350,7 +320,6 @@ class Animation(ClassEnum):
 
     class Vertical(PresetBase):
         """Add a Vertical Motion animation preset"""
-        type:      Annotated[Literal["vertical"], BrokenTyper.exclude()] = "vertical"
         smooth:    SmoothType    = Field(True)
         loop:      LoopType      = Field(True)
         phase:     PhaseType     = Field(0.0)
@@ -380,7 +349,6 @@ class Animation(ClassEnum):
 
     class Horizontal(PresetBase):
         """Add a Horizontal Motion animation preset"""
-        type:      Annotated[Literal["horizontal"], BrokenTyper.exclude()] = "horizontal"
         smooth:    SmoothType    = Field(True)
         loop:      LoopType      = Field(True)
         phase:     PhaseType     = Field(0.0)
@@ -410,7 +378,6 @@ class Animation(ClassEnum):
 
     class Zoom(PresetBase):
         """Add a Zoom Motion animation preset"""
-        type:      Annotated[Literal["zoom"], BrokenTyper.exclude()] = "zoom"
         smooth:    SmoothType    = Field(True)
         loop:      LoopType      = Field(False)
         phase:     PhaseType     = Field(0.0)
@@ -439,7 +406,6 @@ class Animation(ClassEnum):
 
     class Circle(PresetBase):
         """Add a Circular Motion animation preset"""
-        type:      Annotated[Literal["circle"], BrokenTyper.exclude()] = "circle"
         phase:     PhaseXYZType     = Field((0.0, 0.0, 0.0))
         amplitude: AmplitudeXYZType = Field((1.0, 1.0, 0.0))
         steady:    SteadyType       = Field(0.3)
@@ -465,7 +431,6 @@ class Animation(ClassEnum):
 
     class Dolly(PresetBase):
         """Add a Dolly Zoom animation preset"""
-        type:   Annotated[Literal["dolly"], BrokenTyper.exclude()] = "dolly"
         smooth: SmoothType  = Field(True)
         loop:   LoopType    = Field(True)
         focus:  DepthType   = Field(0.35)
@@ -492,7 +457,6 @@ class Animation(ClassEnum):
 
     class Orbital(PresetBase):
         """Orbit the camera around a fixed point"""
-        type:   Annotated[Literal["orbital"], BrokenTyper.exclude()] = "orbital"
         steady: DepthType = Field(0.3)
         zoom:   ZoomType  = Field(0.98)
 
@@ -520,7 +484,6 @@ AnimationType: TypeAlias = Union[
     # Special
     DepthState,
     Animation.Nothing,
-    Animation.Custom,
     Animation.Reset,
     # Constants
     Animation.Set,
@@ -547,7 +510,7 @@ AnimationType: TypeAlias = Union[
 
 # ---------------------------------------------------------------------------- #
 
-class DepthAnimation(BrokenModel):
+class DepthAnimation(BaseModel):
     steps: list[AnimationType] = Field(default_factory=list)
 
     def add(self, animation: AnimationBase) -> AnimationBase:
