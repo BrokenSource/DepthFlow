@@ -1,25 +1,13 @@
 import math
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterable
+from typing import Iterable
 
 from attrs import Factory, define
-from depthflow import DEPTHFLOW
+from depthflow.estimators import DepthEstimator
+from depthflow.estimators.anything import DepthAnythingV2
 from depthflow.scene import DEPTH_SHADER, DepthScene
 from imgui_bundle import imgui
-from shaderflow.variable import ShaderVariable, Uniform
-
-from broken.envy import Environment
-from broken.externals.depthmap import DepthAnythingV2, DepthEstimator
-from broken.project import BROKEN
-from broken.trackers import OnceTracker
-from broken.utils import install
-
-install(package="manim")
-
-if TYPE_CHECKING:
-    import manim
-
-Environment.set("IMGUI_FONT_SCALE", "1.21")
+from shaderflow.variable import Uniform
 
 # ---------------------------------------------------------------------------- #
 
@@ -35,8 +23,6 @@ if (iFocusPlane && abs(depthflow.value - iDepthFocus) < 0.002) {
 
 @define
 class DocScene(DepthScene):
-    other: OnceTracker = Factory(OnceTracker)
-
     steady_plane: bool = False
     focus_plane: bool = False
 
@@ -46,7 +32,7 @@ class DocScene(DepthScene):
             "if (depthflow.oob) {", (SHADER_PATCH + "if (depthflow.oob) {")
         )
 
-    def pipeline(self) -> Iterable[ShaderVariable]:
+    def pipeline(self) -> Iterable[Uniform]:
         yield from DepthScene.pipeline(self)
         yield Uniform("bool", "iSteadyPlane", self.steady_plane)
         yield Uniform("bool", "iFocusPlane", self.focus_plane)
@@ -83,10 +69,6 @@ class DocScene(DepthScene):
         self._final.texture.fbo.use()
         self.imgui.render(imgui.get_draw_data())
 
-        # Fixme: Dirty solution to frame zero issues
-        if not self.other():
-            self.next(dt=0)
-
 # ---------------------------------------------------------------------------- #
 
 @define
@@ -94,7 +76,7 @@ class DocsParameters:
     estimator: DepthEstimator = Factory(DepthAnythingV2)
 
     def render(self, scene: DepthScene, file: str, *, time: float=10):
-        output = Path(Environment.get("ASSETS") or DEPTHFLOW.DIRECTORIES.DATA)/file
+        output = Path(__file__).parent/"assets"/"videos"/file
 
         # Initialize and configure the scene
         scene.estimator = self.estimator

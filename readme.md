@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/depthflow/resources/images/logo.png" width="210">
   <h1 style="margin-top: 0">DepthFlow</h1>
-  <b>Images to → 3D Parallax</b> effect video • A free and open source <a href="https://www.immersity.ai/"><b>ImmersityAI</b></a> alternative
+  Images to 3D Parallax effect video • A free and open source <a href="https://www.immersity.ai/">ImmersityAI</a> alternative
   <br>
   <br>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue"></a>
@@ -12,23 +12,21 @@
   <!-- <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=light-green"></a> -->
   <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple"></a>
   <br>
-  <br>
   <b>
     Links •
+    <a href="https://github.com/BrokenSource/DepthFlow/">GitHub</a> •
     <a href="https://depth.brokensrc.dev/get/">Installation</a> •
     <a href="https://depth.brokensrc.dev/docs/">Documentation</a> •
-    <a href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes/">ComfyUI</a> •
-    <a href="https://github.com/BrokenSource/DepthFlow/issues/">Issues</a> •
     <a href="https://github.com/sponsors/Tremeschin/">Funding</a>
   </b>
   <br>
   <sub>
-    <a href="https://www.youtube.com/@Tremeschin">YouTube</a> •
-    <a href="https://www.github.com/BrokenSource/DepthFlow/">GitHub</a> •
-    <a href="https://depth.brokensrc.dev/about/contact/">Contact</a> •
     <a href="https://depth.brokensrc.dev/about/changelog/">Changelog</a> •
+    <a href="https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes/">ComfyUI</a> •
     <a href="https://depth.brokensrc.dev/about/license/">License</a>
   </sub>
+  <br>
+  <sub><small>⭐️ Consider starring the project to help it grow! ⭐️</small></sub>
   <br>
   <br>
 </div>

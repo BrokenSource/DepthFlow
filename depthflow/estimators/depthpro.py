@@ -7,10 +7,10 @@ from typing import Any
 import numpy as np
 from PIL import Image
 from pydantic import PrivateAttr
+from shaderflow.resolution import Resolution
 
 from broken import logger
 from broken.path import BrokenPath
-from broken.resolution import BrokenResolution
 from depthflow.estimators import DepthEstimator
 
 
@@ -54,7 +54,7 @@ class DepthPro(DepthEstimator):
         depth = (np.max(depth) - depth)
 
         # Limit resolution to 1024 as there's no gains in interpoilation
-        depth = np.array(Image.fromarray(depth).resize(BrokenResolution.fit(
+        depth = np.array(Image.fromarray(depth).resize(Resolution.fit(
             old=depth.shape, max=(1024, 1024),
             ar=(depth.shape[1]/depth.shape[0]),
         ), resample=Image.LANCZOS))

@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Annotated
 import numpy as np
 from PIL import Image
 from pydantic import Field
+from shaderflow.resolution import Resolution
 from typer import Option
 
-from broken.resolution import BrokenResolution
 from depthflow import logger
 from depthflow.estimators import DepthEstimator
 
@@ -44,5 +44,5 @@ class ZoeDepth(DepthEstimator):
     # Downscale for the largest component to be 512 pixels (Zoe precision), invert for 0=infinity
     def _estimate(self, image: np.ndarray) -> np.ndarray:
         depth = Image.fromarray(1 - DepthEstimator.normalize(self._model.infer_pil(image)))
-        new = BrokenResolution.fit(old=depth.size, max=(512, 512), ar=depth.size[0]/depth.size[1])
+        new = Resolution.fit(old=depth.size, max=(512, 512), ar=depth.size[0]/depth.size[1])
         return np.array(depth.resize(new, resample=Image.LANCZOS)).astype(np.float32)

@@ -10,10 +10,11 @@ import torch
 from attrs import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
+from shaderflow.ffmpeg import BrokenFFmpeg
+from shaderflow.resolution import Resolution
 from typer import Option
 
 import depthflow
-from broken.resolution import BrokenResolution
 from broken.utils import DictUtils
 from depthflow.animation import Animation, FilterBase, PresetBase
 from depthflow.estimators import DepthEstimator
@@ -173,7 +174,7 @@ class DepthGradio:
         if (user[self.ui.image] is None):
             raise GeneratorExit()
         width, height = user[self.ui.image].size
-        return BrokenResolution.fit(
+        return Resolution.fit(
             old=(1920, 1080), new=target,
             ar=(width/height), multiple=1,
         )
@@ -227,16 +228,20 @@ class DepthGradio:
             width  = user[self.ui.width]
             height = user[self.ui.height]
 
-            return scene.main(
+            video = scene.main(
                 width=width, height=height,
                 ratio=(width/height),
                 ssaa=user[self.ui.ssaa],
                 fps=user[self.ui.fps],
                 time=user[self.ui.time],
-                loops=user[self.ui.loop],
                 turbo=self.turbo,
                 output=output,
             )
+
+            if (loops := user[self.ui.loop]) > 1:
+                video = BrokenFFmpeg.loop(video, times=loops)
+
+            return video
 
         with TemporaryDirectory(prefix="depthflow-webui-") as workdir:
             yield {self.ui.video: worker((Path(workdir)/f"{uuid.uuid4()}.mp4"))}

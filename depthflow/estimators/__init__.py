@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 # Shared cache for estimations
 DEPTHMAPS: DiskCache = DiskCache(
-    directory=depthflow.dirs.user_cache_path.joinpath("depthmaps"),
+    directory=depthflow.directories.user_cache_path.joinpath("depthmaps"),
     size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", 20))*(1024**2),
 )
 
@@ -92,10 +92,7 @@ class DepthEstimator(BaseModel, ABC):
 
             # Save the array as a compressed numpy file
             np.save(buffer := BytesIO(), depth, allow_pickle=False)
-            DEPTHMAPS.set(key, zlib.compress(
-                buffer.getvalue(),
-                level=9
-            ))
+            DEPTHMAPS.set(key, zlib.compress(buffer.getvalue(), level=9))
         else:
             # Load the compressed lzma numpy file from cache
             depth = np.load(BytesIO(zlib.decompress(depth)))

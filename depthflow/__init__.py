@@ -13,7 +13,7 @@ from platformdirs import PlatformDirs
 
 resources = Path(__file__).parent/"resources"
 
-dirs = PlatformDirs(
+directories = PlatformDirs(
     appname=__package__,
     ensure_exists=True,
     opinion=True,
@@ -26,7 +26,3 @@ os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 # Make telemetries opt-in
 os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
-
-from broken.pytorch import BrokenTorch
-
-BrokenTorch.install(exists_ok=True)

@@ -11,7 +11,6 @@ from shaderflow.variable import ShaderVariable
 from typer import Option
 
 import depthflow
-from broken.loaders import LoadImage
 from depthflow import logger
 from depthflow.animation import (
     Animation,
@@ -31,7 +30,6 @@ from depthflow.estimators.zoedepth import ZoeDepth
 from depthflow.state import DepthState
 
 DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
-DEPTH_SHADER: Path = (depthflow.resources/"depthflow.glsl")
 
 @define
 class DepthScene(ShaderScene):
@@ -75,7 +73,8 @@ class DepthScene(ShaderScene):
         logger.info(f"Loading image: {image}")
         logger.info(f"Loading depth: {depth or 'Estimating from image'}")
 
-        # Load, estimate, upscale input image
+        # Fixme: Reimplement LoadImage
+        # Load estimate input image
         image = LoadImage(image)
         depth = LoadImage(depth) or self.estimator.estimate(image)
 
@@ -94,7 +93,7 @@ class DepthScene(ShaderScene):
     def build(self) -> None:
         self.depth = ShaderTexture(scene=self, name="depth", anisotropy=1).repeat(False)
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
-        self.shader.fragment = DEPTH_SHADER
+        self.shader.fragment = (depthflow.resources/"depthflow.glsl")
         self.subsample = 2
         self.runtime = 5.0
         self.ssaa = 1.2
