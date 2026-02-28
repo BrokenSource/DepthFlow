@@ -10,7 +10,8 @@ import torch
 from attrs import Factory, define
 from dotmap import DotMap
 from gradio.themes.utils import fonts, sizes
-from shaderflow.ffmpeg import BrokenFFmpeg
+from moderngl_window import logger
+from shaderflow.ffmpeg import FFmpeg
 from shaderflow.resolution import Resolution
 from typer import Option
 
@@ -239,7 +240,7 @@ class DepthGradio:
             )
 
             if (loops := user[self.ui.loop]) > 1:
-                video = BrokenFFmpeg.loop(video, times=loops)
+                video = FFmpeg.loop(video, times=loops)
 
             return video
 
@@ -249,7 +250,7 @@ class DepthGradio:
     # -------------------------------------------|
     # Layout
 
-    def launch(self,
+    def launch(self, *,
         port: Annotated[int, Option("--port", "-p",
             help="Port to run the WebUI on, None finds a free one")]=None,
         server: Annotated[str, Option("--server",
@@ -272,6 +273,7 @@ class DepthGradio:
             help="Enable NVENC hardware acceleration for encoding")]=False,
     ) -> gradio.Blocks:
         """🚀 Launch DepthFlow's Gradio WebUI with the given options"""
+        logger.note("Launching the DepthFlow WebUI")
         self.turbo = turbo
         self.nvenc = nvenc
 

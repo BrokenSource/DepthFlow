@@ -1,19 +1,20 @@
-# pyright: reportMissingImports=false
 import contextlib
 import os
 from abc import ABC, abstractmethod
 from enum import Enum
 from io import BytesIO
-from typing import TYPE_CHECKING, Annotated, Optional
+from pathlib import Path
+from typing import TYPE_CHECKING, Optional, Union
 
+import attrs
+import imageio.v3 as imageio
 import numpy as np
 import xxhash
+from attrs import define
 from diskcache import Cache as DiskCache
-from pydantic import BaseModel, Field
-from typer import Option
+from PIL import Image
 
 import depthflow
-from broken.loaders import LoadableImage, LoadImage
 
 if TYPE_CHECKING:
     import torch
@@ -24,7 +25,8 @@ DEPTHMAPS: DiskCache = DiskCache(
     size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", 20))*(1024**2),
 )
 
-class DepthEstimator(BaseModel, ABC):
+@define(kw_only=True)
+class DepthEstimator(ABC):
 
     class DTypeEnum(str, Enum):
         float64 = "float64"
@@ -33,58 +35,32 @@ class DepthEstimator(BaseModel, ABC):
         uint16  = "uint16"
         uint8   = "uint8"
 
-    dtype: Annotated[DTypeEnum, Option("--dtype", "-d")] = Field(DTypeEnum.uint16)
+    dtype: DTypeEnum = DTypeEnum.uint16
     """The final data format to work, save the depthmap with"""
 
     @property
     def np_dtype(self) -> np.dtype:
         return getattr(np, self.dtype.value)
 
-    @staticmethod
-    def normalize(
-        array: np.ndarray,
-        dtype: np.dtype=np.float32,
-        lerp: np.dtype=np.float64,
-        min: Optional[float]=None,
-        max: Optional[float]=None,
-    ) -> np.ndarray:
-
-        # Get the dtype information
-        if np.issubdtype(dtype, np.integer):
-            info = np.iinfo(dtype)
-        else:
-            info = np.finfo(dtype)
-
-        info = (np.iinfo if np.issubdtype(dtype, np.integer) else np.finfo)(dtype)
-
-        # Optionally override target dtype min and max
-        min = (info.min if (min is None) else min)
-        max = (info.max if (max is None) else max)
-
-        # Work with float64 as array might be low precision
-        return np.interp(
-            x=array.astype(lerp),
-            xp=(np.min(array), np.max(array)),
-            fp=(min, max),
-        ).astype(dtype)
-
     def estimate(self,
-        image: LoadableImage,
+        image: Union[str, Path, np.ndarray],
         cache: bool=True,
     ) -> np.ndarray[np.float32]:
         import zlib
 
-        image = LoadImage(image).convert("RGB")
+        image = imageio.imread(image)
+        # image = image.convert("RGB")
 
         # Uniquely identify the image and current parameters
         key: int = xxhash.xxh3_64_intdigest(
-            self.model_dump_json().encode() +
+            str(attrs.asdict(self)).encode() +
             image.tobytes()
         )
 
         # Estimate if not on cache
         if (not cache) or (depth := DEPTHMAPS.get(key)) is None:
             import torch
+            self.load_model()
 
             # Estimate and convert to target dtype
             depth = self._estimate(image)
@@ -114,7 +90,7 @@ class DepthEstimator(BaseModel, ABC):
         """Proper estimation logic"""
         ...
 
-    post: Annotated[bool, Option("--post", " /--raw")] = Field(True, exclude=True)
+    post: bool = True
     """Apply post-processing to mitigate artifacts"""
 
     @abstractmethod
@@ -123,6 +99,34 @@ class DepthEstimator(BaseModel, ABC):
         return depth
 
     # ------------------------------------------------------------------------ #
+
+    @staticmethod
+    def normalize(
+        array: np.ndarray,
+        dtype: np.dtype=np.float32,
+        lerp: np.dtype=np.float64,
+        min: Optional[float]=None,
+        max: Optional[float]=None,
+    ) -> np.ndarray:
+
+        # Get the dtype information
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+        else:
+            info = np.finfo(dtype)
+
+        info = (np.iinfo if np.issubdtype(dtype, np.integer) else np.finfo)(dtype)
+
+        # Optionally override target dtype min and max
+        min = (info.min if (min is None) else min)
+        max = (info.max if (max is None) else max)
+
+        # Work with float64 as array might be low precision
+        return np.interp(
+            x=array.astype(lerp),
+            xp=(np.min(array), np.max(array)),
+            fp=(min, max),
+        ).astype(dtype)
 
     @staticmethod
     def lstsq_masked(

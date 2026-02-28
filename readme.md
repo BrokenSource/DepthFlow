@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/depthflow/resources/images/logo.png" width="210">
   <h1 style="margin-top: 0">DepthFlow</h1>
-  Images to 3D Parallax effect video • A free and open source <a href="https://www.immersity.ai/">ImmersityAI</a> alternative
+  <span>Images to 3D Parallax effect video • A free and open source <a href="https://www.immersity.ai/">ImmersityAI</a> alternative</span>
   <br>
   <br>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue"></a>

@@ -1,22 +1,18 @@
-# pyright: reportMissingImports=false
 import subprocess
 import sys
 from abc import abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING
 
 import numpy as np
-from pydantic import Field
-from typer import Option
+from attrs import define
 
 from depthflow import logger
 from depthflow.estimators import DepthEstimator
 
-if TYPE_CHECKING:
-    import torch
-
 # ---------------------------------------------------------------------------- #
 
+@define(slots=False, kw_only=True)
 class DepthAnythingBase(DepthEstimator):
 
     class Model(str, Enum):
@@ -24,7 +20,7 @@ class DepthAnythingBase(DepthEstimator):
         Base  = "base"
         Large = "large"
 
-    model: Annotated[Model, Option("--model", "-m")] = Field(Model.Small)
+    model: Model = Model.Small
     """The model of DepthAnything to use"""
 
     @property
@@ -53,13 +49,14 @@ class DepthAnythingBase(DepthEstimator):
 # ---------------------------------------------------------------------------- #
 # https://github.com/LiheYoung/Depth-Anything
 
+@define(kw_only=True)
 class DepthAnythingV1(DepthAnythingBase):
     """Configure and use DepthAnythingV1"""
 
-    sigma: Annotated[float, Option("--sigma", "-s")] = Field(0.3)
+    sigma: float = 0.3
     """Gaussian blur intensity to smoothen the depthmap"""
 
-    thicken: Annotated[int, Option("--thicken", "-t")] = Field(5)
+    thicken: int = 5
     """Maximum-kernel size to thicken the depthmap edges"""
 
     @property
@@ -75,13 +72,14 @@ class DepthAnythingV1(DepthAnythingBase):
 # ---------------------------------------------------------------------------- #
 # https://github.com/DepthAnything/Depth-Anything-V2
 
+@define(kw_only=True)
 class DepthAnythingV2(DepthAnythingBase):
     """Configure and use DepthAnythingV2"""
 
-    sigma: Annotated[float, Option("--sigma", "-s")] = Field(0.6)
+    sigma: float = 0.6
     """Gaussian blur intensity to smoothen the depthmap"""
 
-    thicken: Annotated[int, Option("--thicken", "-t")] = Field(5)
+    thicken: int = 5
     """Maximum-kernel size to thicken the depthmap edges"""
 
     @property
@@ -97,6 +95,7 @@ class DepthAnythingV2(DepthAnythingBase):
 # ---------------------------------------------------------------------------- #
 # https://github.com/ByteDance-Seed/depth-anything-3
 
+@define(kw_only=True)
 class DepthAnythingV3(DepthEstimator):
     """Configure and use DepthAnythingV3"""
 
@@ -106,16 +105,16 @@ class DepthAnythingV3(DepthEstimator):
         Large = "large"
         Giant = "giant"
 
-    model: Annotated[Model, Option("--model", "-m")] = Field(Model.Small)
+    model: Model = Model.Small
     """The model of DepthAnything3 to use"""
 
-    resolution: Annotated[int, Option("--resolution", "-r")] = Field(1024)
+    resolution: int = 1024
     """Resolution of the depthmap, better results but slower and memory intensive"""
 
-    sigma: Annotated[float, Option("--sigma", "-s")] = Field(0.3)
+    sigma: float = 0.3
     """Gaussian blur intensity to smoothen the depthmap"""
 
-    thicken: Annotated[int, Option("--thicken", "-t")] = Field(5)
+    thicken: int = 5
     """Maximum-kernel size to thicken the depthmap edges"""
 
     def _load_model(self) -> None:

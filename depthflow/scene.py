@@ -1,17 +1,19 @@
+import contextlib
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
+import imageio.v3 as imageio
+import pooch
 from attrs import Factory, define
+from cyclopts import Parameter
 from imgui_bundle import imgui
 from shaderflow.message import ShaderMessage
 from shaderflow.scene import ShaderScene
 from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
-from typer import Option
 
 import depthflow
-from depthflow import logger
 from depthflow.animation import (
     Animation,
     DepthAnimation,
@@ -29,7 +31,20 @@ from depthflow.estimators.marigold import Marigold
 from depthflow.estimators.zoedepth import ZoeDepth
 from depthflow.state import DepthState
 
-DEFAULT_IMAGE: str = "https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png"
+
+class Assets:
+    """Copyright property of the original owners"""
+
+    def background() -> Path:
+        return pooch.retrieve(
+            url="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png",
+            known_hash="xxh128:6fe8d585cfc4b8fc623b5450d06bcdc4",
+            path=depthflow.directories.user_data_path,
+            fname="wallhaven-pkz5r9.png",
+            progressbar=True,
+        )
+
+# ---------------------------------------------------------------------------- #
 
 @define
 class DepthScene(ShaderScene):
@@ -37,55 +52,61 @@ class DepthScene(ShaderScene):
     estimator: DepthEstimator = Factory(DepthAnythingV2)
     animation: DepthAnimation = Factory(DepthAnimation)
 
+    def smartset(self, object: Any) -> Any:
+        if isinstance(object, DepthEstimator):
+            self.estimator = object
+        return object
+
     # ------------------------------------------------------------------------ #
     # Command line interface
 
     def commands(self):
-        self.cli.description = depthflow.__about__
+        self.cli.help = depthflow.__about__
+        self.cli.version = depthflow.__version__
+        self.cli.command(self.input)
 
-        with self.cli.panel(self.scene_panel):
-            self.cli.command(self.input)
+        with contextlib.nullcontext("🌊 Depth Estimator") as group:
+            options = dict(group=group, result_action=self.smartset)
+            self.cli.command(DepthAnythingV1, name="da1",      **options)
+            self.cli.command(DepthAnythingV2, name="da2",      **options)
+            self.cli.command(DepthAnythingV3, name="da3",      **options)
+            self.cli.command(DepthPro,        name="depthpro", **options)
+            self.cli.command(ZoeDepth,        name="zoedepth", **options)
+            self.cli.command(Marigold,        name="marigold", **options)
 
-        with self.cli.panel("🌊 Depth estimator"):
-            self.cli.command(DepthAnythingV1, post=self.set_estimator, name="da1")
-            self.cli.command(DepthAnythingV2, post=self.set_estimator, name="da2")
-            self.cli.command(DepthAnythingV3, post=self.set_estimator, name="da3")
-            self.cli.command(DepthPro, post=self.set_estimator)
-            self.cli.command(ZoeDepth, post=self.set_estimator)
-            self.cli.command(Marigold, post=self.set_estimator)
-
-        with self.cli.panel("🔮 Animation presets"):
-            self.cli.command(self.animation.clear)
+        with contextlib.nullcontext("🎬 Animation presets") as group:
             for preset in Animation.members():
                 if issubclass(preset, PresetBase):
-                    self.cli.command(preset, post=self.animation.add)
+                    self.cli.command(preset, group=group, result_action=self.animation.add)
 
-        with self.cli.panel("🎨 Post-processing"):
+        with contextlib.nullcontext("🎨 Post-processing") as group:
             for post in Animation.members():
                 if issubclass(post, FilterBase):
-                    self.cli.command(post, post=self.animation.add)
+                    self.cli.command(post, group=group, result_action=self.animation.add)
 
     def input(self,
-        image: Annotated[str, Option("--image", "-i", help="Input image from Path, URL or Directory")]=DEFAULT_IMAGE,
-        depth: Annotated[str, Option("--depth", "-d", help="Input depthmap of the image (None to estimate)")]=None,
+        image: Annotated[str, Parameter(
+            help="Input image from Path, NumPy, URL (None to default)",
+            name=("--image", "-i"))] = None,
+        depth: Annotated[str, Parameter(
+            help="Input depthmap of the image (None to estimate)",
+            name=("--depth", "-d"))] = None,
     ) -> None:
         """Use the given image(s) and depthmap(s) as the input of the scene"""
-        logger.info(f"Loading image: {image}")
-        logger.info(f"Loading depth: {depth or 'Estimating from image'}")
+        if (image is None):
+            image = Assets.background()
 
-        # Fixme: Reimplement LoadImage
         # Load estimate input image
-        image = LoadImage(image)
-        depth = LoadImage(depth) or self.estimator.estimate(image)
+        image = imageio.imread(image)
+        depth = imageio.imread(depth) \
+            if (depth is not None) else \
+            self.estimator.estimate(image)
 
-        self.image.from_image(image)
-        self.depth.from_image(depth)
+        self.image.from_numpy(image)
+        self.depth.from_numpy(depth)
 
         # Match rendering resolution to image
-        if (image is not DEFAULT_IMAGE):
-            self.resolution = (image.width,image.height)
-        else:
-            self.resolution = (1920, 1080)
+        self.resolution = self.image.size
 
     # ------------------------------------------------------------------------ #
     # Module implementation
@@ -94,15 +115,13 @@ class DepthScene(ShaderScene):
         self.depth = ShaderTexture(scene=self, name="depth", anisotropy=1).repeat(False)
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.shader.fragment = (depthflow.resources/"depthflow.glsl")
-        self.subsample = 2
         self.runtime = 5.0
-        self.ssaa = 1.2
 
     def setup(self) -> None:
         if (not self.animation.steps):
             self.animation.add(Animation.Orbital())
         if self.image.is_empty():
-            self.input(image=DEFAULT_IMAGE)
+            self.input()
 
     def update(self) -> None:
         self.animation.apply(self)
@@ -117,68 +136,6 @@ class DepthScene(ShaderScene):
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
         yield from self.state.pipeline()
-
-    # ------------------------------------------------------------------------ #
-    # Proxy methods
-
-    # # Estimators
-
-    def set_estimator(self, estimator: DepthEstimator) -> DepthEstimator:
-        self.estimator = estimator
-        return self.estimator
-
-    def depth_anything1(self, **options) -> DepthAnythingV1:
-        return self.set_estimator(DepthAnythingV1(**options))
-    def depth_anything2(self, **options) -> DepthAnythingV2:
-        return self.set_estimator(DepthAnythingV2(**options))
-    def depth_pro(self, **options) -> DepthPro:
-        return self.set_estimator(DepthPro(**options))
-    def zoe_depth(self, **options) -> ZoeDepth:
-        return self.set_estimator(ZoeDepth(**options))
-    def marigold(self, **options) -> Marigold:
-        return self.set_estimator(Marigold(**options))
-
-    # # Animations
-
-    # Constant
-    def set(self, **options) -> Animation.Set:
-        return self.animation.add(Animation.Set(**options))
-    def add(self, **options) -> Animation.Add:
-        return self.animation.add(Animation.Add(**options))
-
-    # Basic
-    def linear(self, **options) -> Animation.Linear:
-        return self.animation.add(Animation.Linear(**options))
-    def sine(self, **options) -> Animation.Sine:
-        return self.animation.add(Animation.Sine(**options))
-    def cosine(self, **options) -> Animation.Cosine:
-        return self.animation.add(Animation.Cosine(**options))
-    def triangle(self, **options) -> Animation.Triangle:
-        return self.animation.add(Animation.Triangle(**options))
-
-    # Presets
-    def vertical(self, **options) -> Animation.Vertical:
-        return self.animation.add(Animation.Vertical(**options))
-    def horizontal(self, **options) -> Animation.Horizontal:
-        return self.animation.add(Animation.Horizontal(**options))
-    def zoom(self, **options) -> Animation.Zoom:
-        return self.animation.add(Animation.Zoom(**options))
-    def circle(self, **options) -> Animation.Circle:
-        return self.animation.add(Animation.Circle(**options))
-    def dolly(self, **options) -> Animation.Dolly:
-        return self.animation.add(Animation.Dolly(**options))
-    def orbital(self, **options) -> Animation.Orbital:
-        return self.animation.add(Animation.Orbital(**options))
-
-    # Post-processing
-    def vignette(self, **options) -> Animation.Vignette:
-        return self.animation.add(Animation.Vignette(**options))
-    def blur(self, **options) -> Animation.Blur:
-        return self.animation.add(Animation.Blur(**options))
-    def inpaint(self, **options) -> Animation.Inpaint:
-        return self.animation.add(Animation.Inpaint(**options))
-    def colors(self, **options) -> Animation.Colors:
-        return self.animation.add(Animation.Colors(**options))
 
     # ------------------------------------------------------------------------ #
 

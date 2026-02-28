@@ -14,10 +14,10 @@ from typing import (
     Union,
 )
 
+from attrs import define
 from pydantic import BaseModel, Field
 from typer import Option
 
-from broken.utils import BrokenAttribute
 from depthflow.state import (
     BlurState,
     ColorState,
@@ -42,6 +42,51 @@ class ClassEnum:
             if (name == "members"):
                 continue
             yield getattr(cls, name)
+
+
+
+class SafeAttribute:
+    """Recursive implementation for getattr and setattr from strings"""
+
+    @define
+    class Parts:
+        all: list[str]
+        body: list[str]
+        last: str
+
+    @classmethod
+    def decompose(cls, key: str) -> Parts:
+        parts = str(key).replace("-", "_").split(".")
+
+        return cls.Parts(
+            all=parts,
+            body=parts[:-1],
+            last=parts[-1]
+        )
+
+    @classmethod
+    def get(cls, root: object, key: str) -> Optional[Any]:
+        parts = cls.decompose(key)
+
+        for part in parts.all:
+            try:
+                root = getattr(root, part)
+            except AttributeError:
+                return None
+
+        return root
+
+    @classmethod
+    def set(cls, object: object, attribute: str, value: Any) -> None:
+        parts = cls.decompose(attribute)
+
+        for part in parts.body:
+            try:
+                object = getattr(object, part)
+            except AttributeError:
+                return None
+
+        setattr(object, parts.last, value)
 
 # ---------------------------------------------------------------------------- #
 
@@ -154,14 +199,14 @@ class ComponentBase(AnimationBase):
     cumulative: CumulativeType = Field(False)
 
     def current(self, scene: DepthScene) -> Optional[Any]:
-        return BrokenAttribute.get(
+        return SafeAttribute.get(
             root=scene.state,
             key=self.target.value
         )
 
     def apply(self, scene: DepthScene) -> None:
         if (self.target != Target.Nothing):
-            BrokenAttribute.set(scene.state, self.target.value, sum((
+            SafeAttribute.set(scene.state, self.target.value, sum((
                 (self.compute(scene, *self.get_time(scene))),
                 (self.cumulative * (self.current(scene) or 0)),
             )))
