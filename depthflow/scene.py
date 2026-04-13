@@ -7,7 +7,6 @@ import imageio.v3 as imageio
 import pooch
 from attrs import Factory, define
 from cyclopts import Parameter
-from imgui_bundle import imgui
 from shaderflow.message import ShaderMessage
 from shaderflow.scene import ShaderScene
 from shaderflow.texture import ShaderTexture

@@ -17,7 +17,7 @@ class Target(str, Enum):
 # ---------------------------------------------------------------------------- #
 # Animation components
 
-class AnimationComponent(BaseModel, ABC):
+class AnimationComponent(_BaseModel, ABC):
 
     @abstractmethod
     def at(self, time: float) -> float:
@@ -40,7 +40,7 @@ class Sine(AnimationComponent):
 
 # ---------------------------------------------------------------------------- #
 
-class Action(BaseModel, ABC):
+class Action(_BaseModel, ABC):
 
     @abstractmethod
     def apply(self, state: DepthState, time: float) -> None:

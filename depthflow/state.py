@@ -1,4 +1,4 @@
-from typing import Annotated, Iterable
+from typing import Iterable
 
 from pydantic import BaseModel, ConfigDict, Field
 from shaderflow.variable import Uniform
