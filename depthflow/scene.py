@@ -14,12 +14,6 @@ from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 
 import depthflow
-from depthflow.animation import (
-    Animation,
-    DepthAnimation,
-    FilterBase,
-    PresetBase,
-)
 from depthflow.estimators import DepthEstimator
 from depthflow.estimators.anything import (
     DepthAnythingV1,
