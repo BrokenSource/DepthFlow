@@ -14,7 +14,16 @@ class _BaseModel(BaseModel):
 class Target(str, Enum):
     ...
 
-class Sine(_BaseModel):
+# ---------------------------------------------------------------------------- #
+# Animation components
+
+class AnimationComponent(BaseModel, ABC):
+
+    @abstractmethod
+    def at(self, time: float) -> float:
+        ...
+
+class Sine(AnimationComponent):
 
     cycles: float = 1.0
     """How many cycles to complete in the animation"""
@@ -38,19 +47,21 @@ class Action(BaseModel, ABC):
         ...
 
 class Horizontal(Action):
+    """Apply a horizontal motion in offsets"""
     wave: Sine = Field(default_factory=Sine)
 
     def apply(self, state: DepthState, time: float) -> None:
-        state.offset[0] = self.wave.at(time)
+        state.offset[0] = self.wave.at(time) # type: ignore
 
 class Vertical(Action):
+    """Apply a vertical motion in offsets"""
     wave: Sine = Field(default_factory=Sine)
 
     def apply(self, state: DepthState, time: float) -> None:
-        state.offset[1] = self.wave.at(time)
+        state.offset[1] = self.wave.at(time) # type: ignore
 
 class Circle(Action):
-    """Applies a circular motion to offsets"""
+    """Apply a circular motion in offsets"""
     x: Sine = Field(default_factory=Sine)
     y: Sine = Field(default_factory=Sine)
 

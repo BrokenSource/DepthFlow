@@ -14,7 +14,7 @@ from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 
 import depthflow
-from depthflow.animation import Circle, DepthAnimation, Horizontal, Sine, Vertical
+from depthflow.animation import Action, DepthAnimation
 from depthflow.estimators import DepthEstimator
 from depthflow.estimators.anything import (
     DepthAnythingV1,
@@ -51,10 +51,9 @@ class DepthScene(ShaderScene):
             self.cli.command(DepthAnythingV2, name="da2", group=group, result_action=self.smartset)
             self.cli.command(DepthAnythingV3, name="da3", group=group, result_action=self.smartset)
 
-        with contextlib.nullcontext("Animation Presets") as group:
-            self.cli.command(Circle,     group=group, result_action=self.animation.steps.append)
-            self.cli.command(Horizontal, group=group, result_action=self.animation.steps.append)
-            self.cli.command(Vertical,   group=group, result_action=self.animation.steps.append)
+        with contextlib.nullcontext("Animation") as group:
+            for cls in Action.__subclasses__():
+                self.cli.command(cls, group=group, result_action=self.animation.steps.append)
 
     def input(self,
         image: Annotated[Optional[Path | str], Parameter(
