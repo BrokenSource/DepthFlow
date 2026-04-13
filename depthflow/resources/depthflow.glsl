@@ -16,8 +16,6 @@ struct DepthFlow {
     float zoom;
     float isometric;
     float dolly;
-    float invert;
-    bool mirror;
     vec2 offset;
     vec2 center;
     vec2 origin;
@@ -88,10 +86,9 @@ DepthFlow DepthMake(
 
             // Sample next depth value
             last_value = depth.value;
-            depth.value = gtexture(depthmap, depth.gluv, depth.mirror).r;
+            depth.value = gtexture(depthmap, depth.gluv, true).r;
 
-            // Fixme optimization (+8%): Avoid recalculating 'invert'
-            float surface = depth.height * mix(depth.value, 1.0 - depth.value, depth.invert);
+            float surface = depth.height * depth.value;
             float ceiling = (1.0 - point.z);
 
             // Stop the first moment we're inside the surface
@@ -109,8 +106,8 @@ DepthFlow DepthMake(
     // The gradient is always normal to a surface; assume the change
     // of z is proportional to the maximum surface height
     depth.normal = normalize(vec3(
-        (gtexture(depthmap, depth.gluv - vec2(quality, 0), depth.mirror).r - depth.value) / quality,
-        (gtexture(depthmap, depth.gluv - vec2(0, quality), depth.mirror).r - depth.value) / quality,
+        (gtexture(depthmap, depth.gluv - vec2(quality, 0), true).r - depth.value) / quality,
+        (gtexture(depthmap, depth.gluv - vec2(0, quality), true).r - depth.value) / quality,
         max(depth.height, quality)
     ));
 
@@ -132,8 +129,6 @@ DepthFlow DepthMake(
         name.center    = name##Center; \
         name.steady    = name##Steady; \
         name.origin    = name##Origin; \
-        name.mirror    = name##Mirror; \
-        name.invert    = name##Invert; \
         name.quality   = iQuality; \
         name.glued     = true; \
         name.value     = 0.0; \
@@ -148,7 +143,7 @@ void main() {
     GetCamera(iCamera);
     GetDepthFlow(iDepth);
     DepthFlow depthflow = DepthMake(iCamera, iDepth, depth);
-    fragColor = gtexture(image, depthflow.gluv, depthflow.mirror);
+    fragColor = gtexture(image, depthflow.gluv, true);
 
     if (depthflow.oob) {
         fragColor = vec4(vec3(0.0), 1);
@@ -158,18 +153,15 @@ void main() {
     /* --------------------------------------- */
 
     // Inpaint masking
-    if (iInpaint && depthflow.steep > iInpaintLimit) {
-        fragColor = vec4(1, 1, 1, 1);
-        return;
-    } else if (iInpaintBlack) {
-        fragColor = vec4(0, 0, 0, 1);
+    if ((iInpaint > 0.0) && depthflow.steep > iInpaintLimit) {
+        fragColor = vec4(0, 1, 0, 1);
         return;
     }
 
     // Fixme: Ability to apply lens and blur on multi-pass (post-refactor and metaprograming overhaul)
 
     // Lens distortion (Mutually exclusive with blur)
-    if (iLensEnable) {
+    if (iLensIntensity > 0.0) {
 
         // Define the base 'velocity' (intensity) of the effect
         float decay = pow(0.62*length(agluv), (10 - 9*iLensDecay));
@@ -178,9 +170,9 @@ void main() {
 
         // Integrate the color along the path, different speeds per channel
         for (float i=0; i<1; i+=(1.0/iLensQuality)) {
-            color.r += gtexture(image, depthflow.gluv - (1*i*delta), depthflow.mirror).r;
-            color.g += gtexture(image, depthflow.gluv - (2*i*delta), depthflow.mirror).g;
-            color.b += gtexture(image, depthflow.gluv - (4*i*delta), depthflow.mirror).b;
+            color.r += gtexture(image, depthflow.gluv - (1*i*delta), true).r;
+            color.g += gtexture(image, depthflow.gluv - (2*i*delta), true).g;
+            color.b += gtexture(image, depthflow.gluv - (4*i*delta), true).b;
         }
 
         // Normalize the color, as it grew with integration
@@ -188,21 +180,21 @@ void main() {
     }
 
     // Depth of Field (Mutually exclusive with lens distortion)
-    else if (iBlurEnable) {
+    else if (iBlurIntensity > 0.0) {
         float intensity = iBlurIntensity * pow(smoothstep(iBlurStart, iBlurEnd, 1.0 - depthflow.value), iBlurExponent);
         vec4 color = fragColor;
 
         for (float angle=0.0; angle<TAU; angle+=TAU/iBlurDirections) {
             for (float walk=1.0/iBlurQuality; walk<=1.001; walk+=1.0/iBlurQuality) {
                 vec2 displacement = vec2(cos(angle), sin(angle)) * walk * intensity;
-                color += gtexture(image, depthflow.gluv + displacement, depthflow.mirror);
+                color += gtexture(image, depthflow.gluv + displacement, true);
             }
         }
         fragColor = color / (iBlurDirections*iBlurQuality);
     }
 
     // Vignette post processing
-    if (iVigEnable) {
+    if (iVigIntensity > 0.0) {
         vec2 away = astuv * (1.0 - astuv.yx);
         float linear = iVigDecay * (away.x*away.y);
         fragColor.rgb *= clamp(pow(linear, iVigIntensity), 0.0, 1.0);
@@ -225,17 +217,8 @@ void main() {
         fragColor.rgb = clamp(fragColor.rgb * iColorsBrightness, 0.0, 1.0);
     }
 
-    /* Gamma */ if (iColorsGamma != 1.0) {
-        fragColor.rgb = pow(fragColor.rgb, vec3(1.0/iColorsGamma));
-    }
-
     /* Sepia */ if (iColorsSepia != 0.0) {
         luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
         fragColor.rgb = mix(fragColor.rgb, luminance*vec3(1.2, 1.0, 0.8), iColorsSepia);
-    }
-
-    /* Grayscale */ if (iColorsGrayscale != 0.0) {
-        luminance     = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
-        fragColor.rgb = mix(fragColor.rgb, vec3(luminance), iColorsGrayscale);
     }
 }

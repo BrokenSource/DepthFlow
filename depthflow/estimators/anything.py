@@ -2,7 +2,6 @@ import subprocess
 import sys
 from abc import abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING
 
 import numpy as np
 from attrs import define

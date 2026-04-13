@@ -55,6 +55,8 @@ class DepthScene(ShaderScene):
     def smartset(self, object: Any) -> Any:
         if isinstance(object, DepthEstimator):
             self.estimator = object
+        elif isinstance(object, DepthState):
+            self.state = object
         return object
 
     # ------------------------------------------------------------------------ #
@@ -64,28 +66,15 @@ class DepthScene(ShaderScene):
         self.cli.help = depthflow.__about__
         self.cli.version = depthflow.__version__
         self.cli.command(self.input)
+        self.cli.command(DepthState, name="state", result_action=self.smartset)
 
         with contextlib.nullcontext("🌊 Depth Estimator") as group:
-            options = dict(group=group, result_action=self.smartset)
-            self.cli.command(DepthAnythingV1, name="da1",      **options)
-            self.cli.command(DepthAnythingV2, name="da2",      **options)
-            self.cli.command(DepthAnythingV3, name="da3",      **options)
-            self.cli.command(DepthPro,        name="depthpro", **options)
-            self.cli.command(ZoeDepth,        name="zoedepth", **options)
-            self.cli.command(Marigold,        name="marigold", **options)
-
-        with contextlib.nullcontext("🎬 Animation presets") as group:
-            for preset in Animation.members():
-                if issubclass(preset, PresetBase):
-                    self.cli.command(preset, group=group, result_action=self.animation.add)
-
-        with contextlib.nullcontext("🎨 Post-processing") as group:
-            for post in Animation.members():
-                if issubclass(post, FilterBase):
-                    self.cli.command(post, group=group, result_action=self.animation.add)
+            self.cli.command(DepthAnythingV1, name="da1", group=group, result_action=self.smartset)
+            self.cli.command(DepthAnythingV2, name="da2", group=group, result_action=self.smartset)
+            self.cli.command(DepthAnythingV3, name="da3", group=group, result_action=self.smartset)
 
     def input(self,
-        image: Annotated[str, Parameter(
+        image: Annotated[Optional[str], Parameter(
             help="Input image from Path, NumPy, URL (None to default)",
             name=("--image", "-i"))],
         depth: Annotated[Optional[str], Parameter(
@@ -121,7 +110,7 @@ class DepthScene(ShaderScene):
         if (not self.animation.steps):
             self.animation.add(Animation.Orbital())
         if self.image.is_empty():
-            self.input()
+            self.input(None)
 
     def update(self) -> None:
         self.animation.apply(self)
