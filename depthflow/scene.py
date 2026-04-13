@@ -1,7 +1,7 @@
 import contextlib
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 import imageio.v3 as imageio
 import pooch
@@ -36,13 +36,13 @@ class Assets:
     """Copyright property of the original owners"""
 
     def background() -> Path:
-        return pooch.retrieve(
+        return Path(pooch.retrieve(
             url="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png",
             known_hash="xxh128:6fe8d585cfc4b8fc623b5450d06bcdc4",
             path=depthflow.directories.user_data_path,
             fname="wallhaven-pkz5r9.png",
             progressbar=True,
-        )
+        ))
 
 # ---------------------------------------------------------------------------- #
 
@@ -87,8 +87,8 @@ class DepthScene(ShaderScene):
     def input(self,
         image: Annotated[str, Parameter(
             help="Input image from Path, NumPy, URL (None to default)",
-            name=("--image", "-i"))] = None,
-        depth: Annotated[str, Parameter(
+            name=("--image", "-i"))],
+        depth: Annotated[Optional[str], Parameter(
             help="Input depthmap of the image (None to estimate)",
             name=("--depth", "-d"))] = None,
     ) -> None:
@@ -131,7 +131,6 @@ class DepthScene(ShaderScene):
 
         if isinstance(message, ShaderMessage.Window.FileDrop):
             self.input(image=message.first, depth=message.second)
-            self._load_inputs()
 
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)

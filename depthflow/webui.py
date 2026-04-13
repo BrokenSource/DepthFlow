@@ -3,7 +3,7 @@ import uuid
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Annotated, Iterable
+from typing import Annotated, Any, Iterable
 
 import gradio
 import torch
@@ -16,13 +16,30 @@ from shaderflow.resolution import Resolution
 from typer import Option
 
 import depthflow
-from broken.utils import DictUtils
 from depthflow.animation import Animation, FilterBase, PresetBase
 from depthflow.estimators import DepthEstimator
 from depthflow.estimators.anything import (
     DepthAnythingV2,
     DepthAnythingV3,
 )
+
+
+class DictUtils:
+
+    @classmethod
+    def ritems(cls, data: dict) -> Iterable[tuple[str, Any]]:
+        """Recursively yields all items from a dictionary"""
+        for (key, value) in data.items():
+            if isinstance(value, dict):
+                yield from cls.ritems(value)
+                continue
+            yield (key, value)
+
+    @classmethod
+    def rvalues(cls, data: dict) -> Iterable[Any]:
+        """Recursively yields all values from a dictionary"""
+        for (key, value) in cls.ritems(data):
+            yield value
 
 # ---------------------------------------------------------------------------- #
 
