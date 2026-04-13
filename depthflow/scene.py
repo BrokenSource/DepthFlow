@@ -14,31 +14,15 @@ from shaderflow.texture import ShaderTexture
 from shaderflow.variable import ShaderVariable
 
 import depthflow
+from depthflow.animation import Circle, DepthAnimation, Horizontal, Sine, Vertical
 from depthflow.estimators import DepthEstimator
 from depthflow.estimators.anything import (
     DepthAnythingV1,
     DepthAnythingV2,
     DepthAnythingV3,
 )
-from depthflow.estimators.depthpro import DepthPro
-from depthflow.estimators.marigold import Marigold
-from depthflow.estimators.zoedepth import ZoeDepth
 from depthflow.state import DepthState
 
-
-class Assets:
-    """Copyright property of the original owners"""
-
-    def background() -> Path:
-        return Path(pooch.retrieve(
-            url="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png",
-            known_hash="xxh128:6fe8d585cfc4b8fc623b5450d06bcdc4",
-            path=depthflow.directories.user_data_path,
-            fname="wallhaven-pkz5r9.png",
-            progressbar=True,
-        ))
-
-# ---------------------------------------------------------------------------- #
 
 @define
 class DepthScene(ShaderScene):
@@ -67,8 +51,13 @@ class DepthScene(ShaderScene):
             self.cli.command(DepthAnythingV2, name="da2", group=group, result_action=self.smartset)
             self.cli.command(DepthAnythingV3, name="da3", group=group, result_action=self.smartset)
 
+        with contextlib.nullcontext("Animation Presets") as group:
+            self.cli.command(Circle,     group=group, result_action=self.animation.steps.append)
+            self.cli.command(Horizontal, group=group, result_action=self.animation.steps.append)
+            self.cli.command(Vertical,   group=group, result_action=self.animation.steps.append)
+
     def input(self,
-        image: Annotated[Optional[str], Parameter(
+        image: Annotated[Optional[Path | str], Parameter(
             help="Input image from Path, NumPy, URL (None to default)",
             name=("--image", "-i"))],
         depth: Annotated[Optional[str], Parameter(
@@ -76,8 +65,16 @@ class DepthScene(ShaderScene):
             name=("--depth", "-d"))] = None,
     ) -> None:
         """Use the given image(s) and depthmap(s) as the input of the scene"""
+
+        # Default image, property of the original owners
         if (image is None):
-            image = Assets.background()
+            image = Path(pooch.retrieve(
+                url="https://w.wallhaven.cc/full/pk/wallhaven-pkz5r9.png",
+                known_hash="xxh128:6fe8d585cfc4b8fc623b5450d06bcdc4",
+                path=depthflow.directories.user_data_path,
+                fname="wallhaven-pkz5r9.png",
+                progressbar=True,
+            ))
 
         # Load estimate input image
         image = imageio.imread(image)
@@ -101,13 +98,11 @@ class DepthScene(ShaderScene):
         self.runtime = 5.0
 
     def setup(self) -> None:
-        if (not self.animation.steps):
-            self.animation.add(Animation.Orbital())
         if self.image.is_empty():
             self.input(None)
 
     def update(self) -> None:
-        self.animation.apply(self)
+        self.animation.apply(self.state, self.tau)
 
     def handle(self, message: ShaderMessage) -> None:
         ShaderScene.handle(self, message)

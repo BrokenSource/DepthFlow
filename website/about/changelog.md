@@ -5,7 +5,7 @@ icon: material/file-document-edit
 
 <style>ul li {line-height: 1.1}</style>
 
-### ✏️ Staging {#staging}
+### 📦 v0.10.0 <small>Unreleased</small> {#0.10.0}
 
 !!! quote ""
     > This version focuses on internal refactors and simplifications, by removing maintenance-burden features which are better done externally through scripts or library usage, and a website overhaul with [zensical](https://zensical.org/).
@@ -21,9 +21,10 @@ icon: material/file-document-edit
     **Changes**
 
     - Swap logger library to [DearLog](https://github.com/BrokenSource/DearLog/) from [Loguru](https://github.com/Delgan/loguru)
-    - Make the inpainting mask color white
+    - Make the inpainting mask color green
     - Add experimental Depth Anything v3 estimator option
     - Moved depth estimators to this package from shared library
+    - Move to cyclopts cli library
 
     **Removals**
 

@@ -43,13 +43,13 @@ class DepthEstimator(ABC):
         return getattr(np, self.dtype.value)
 
     def estimate(self,
-        image: Union[str, Path, np.ndarray],
+        image: Union[np.ndarray],
         cache: bool=True,
-    ) -> np.ndarray[np.float32]:
+    ) -> np.ndarray:
         import zlib
 
-        image = imageio.imread(image)
-        # image = image.convert("RGB")
+        image = Image.fromarray(image)
+        image = image.convert("RGB")
 
         # Uniquely identify the image and current parameters
         key: int = xxhash.xxh3_64_intdigest(

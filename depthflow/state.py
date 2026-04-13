@@ -108,7 +108,7 @@ class DepthState(_BaseModel):
     height: float = Field(default=0.20, ge=-2.0, le=2.0)
     """Peak surface height, the parallax intensity"""
 
-    steady: float = Field(default=0.00, ge=-2.0, le=2.0)
+    steady: float = Field(default=0.15, ge=-2.0, le=2.0)
     """Focal depth for offsets, the pivot point of the effect"""
 
     focus: float = Field(default=0.00, ge=-2.0, le=1.0)
@@ -129,7 +129,7 @@ class DepthState(_BaseModel):
     center: tuple[float, float] = Field(default=(0.00, 0.00), ge=(-2.0, -2.0), le=(2.0, 2.0))
     """Camera is above this point, shifts the scene around"""
 
-    origin: tuple[float, float] = Field(default=(0.50, 0.50), ge=(-2.0, -2.0), le=(2.0, 2.0))
+    origin: tuple[float, float] = Field(default=(0.00, 0.00), ge=(-2.0, -2.0), le=(2.0, 2.0))
     """Camera point where rays hits perpendicular to the surface"""
 
     def pipeline(self) -> Iterable[Uniform]:

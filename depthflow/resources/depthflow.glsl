@@ -153,7 +153,7 @@ void main() {
     /* --------------------------------------- */
 
     // Inpaint masking
-    if ((iInpaint > 0.0) && depthflow.steep > iInpaintLimit) {
+    if ((iInpaint > 0.0) && depthflow.steep > iInpaint) {
         fragColor = vec4(0, 1, 0, 1);
         return;
     }
