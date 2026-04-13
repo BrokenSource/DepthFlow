@@ -135,39 +135,3 @@ class DepthScene(ShaderScene):
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
         yield from self.state.pipeline()
-
-    # ------------------------------------------------------------------------ #
-
-    def ui(self) -> None:
-        if (state := imgui.slider_float("Height", self.state.height, 0, 1, "%.2f"))[0]:
-            self.state.height = state[1]
-        if (state := imgui.slider_float("Steady", self.state.steady, 0, 1, "%.2f"))[0]:
-            self.state.steady = state[1]
-        if (state := imgui.slider_float("Focus", self.state.focus, 0, 1, "%.2f"))[0]:
-            self.state.focus = state[1]
-        if (state := imgui.slider_float("Invert", self.state.invert, 0, 1, "%.2f"))[0]:
-            self.state.invert = state[1]
-        if (state := imgui.slider_float("Zoom", self.state.zoom, 0, 2, "%.2f"))[0]:
-            self.state.zoom = state[1]
-        if (state := imgui.slider_float("Isometric", self.state.isometric, 0, 1, "%.2f"))[0]:
-            self.state.isometric = state[1]
-        if (state := imgui.slider_float("Dolly", self.state.dolly, 0, 5, "%.2f"))[0]:
-            self.state.dolly = state[1]
-
-        imgui.text("- True camera position")
-        if (state := imgui.slider_float("Center X", self.state.center_x, -self.aspect_ratio, self.aspect_ratio, "%.2f"))[0]:
-            self.state.center_x = state[1]
-        if (state := imgui.slider_float("Center Y", self.state.center_y, -1, 1, "%.2f"))[0]:
-            self.state.center_y = state[1]
-
-        imgui.text("- Fixed point at height changes")
-        if (state := imgui.slider_float("Origin X", self.state.origin_x, -self.aspect_ratio, self.aspect_ratio, "%.2f"))[0]:
-            self.state.origin_x = state[1]
-        if (state := imgui.slider_float("Origin Y", self.state.origin_y, -1, 1, "%.2f"))[0]:
-            self.state.origin_y = state[1]
-
-        imgui.text("- Parallax offset")
-        if (state := imgui.slider_float("Offset X", self.state.offset_x, -2, 2, "%.2f"))[0]:
-            self.state.offset_x = state[1]
-        if (state := imgui.slider_float("Offset Y", self.state.offset_y, -2, 2, "%.2f"))[0]:
-            self.state.offset_y = state[1]
