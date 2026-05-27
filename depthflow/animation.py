@@ -51,14 +51,14 @@ class Horizontal(Action):
     wave: Sine = Field(default_factory=Sine)
 
     def apply(self, state: DepthState, time: float) -> None:
-        state.offset[0] = self.wave.at(time) # type: ignore
+        state.offset = (self.wave.at(time), state.offset[1])
 
 class Vertical(Action):
     """Apply a vertical motion in offsets"""
     wave: Sine = Field(default_factory=Sine)
 
     def apply(self, state: DepthState, time: float) -> None:
-        state.offset[1] = self.wave.at(time) # type: ignore
+        state.offset = (state.offset[0], self.wave.at(time))
 
 class Circle(Action):
     """Apply a circular motion in offsets"""

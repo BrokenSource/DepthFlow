@@ -74,17 +74,24 @@ class DepthScene(ShaderScene):
                 progressbar=True,
             ))
 
-        # Load estimate input image
-        image = imageio.imread(image)
-        depth = imageio.imread(depth) \
+        # Load and estimate input image
+        image_arr = imageio.imread(image)
+        depth_arr = imageio.imread(depth) \
             if (depth is not None) else \
-            self.estimator.estimate(image)
+            self.estimator.estimate(image_arr)
 
-        self.image.from_numpy(image)
-        self.depth.from_numpy(depth)
+        # Textures are only available after build(); store for setup() if not yet built
+        if not hasattr(self, 'image'):
+            object.__setattr__(self, '_pending_image', image_arr)
+            object.__setattr__(self, '_pending_depth', depth_arr)
+            return
+
+        self.image.from_numpy(image_arr)
+        self.depth.from_numpy(depth_arr)
 
         # Match rendering resolution to image
-        self.resolution = self.image.size
+        w, h = self.image.size
+        self.resize(width=w, height=h)
 
     # ------------------------------------------------------------------------ #
     # Module implementation
@@ -96,7 +103,13 @@ class DepthScene(ShaderScene):
         self.runtime = 5.0
 
     def setup(self) -> None:
-        if self.image.is_empty():
+        pending = getattr(self, '_pending_image', None)
+        if pending is not None:
+            self.image.from_numpy(pending)
+            self.depth.from_numpy(self._pending_depth)
+            w, h = self.image.size
+            self.resize(width=w, height=h)
+        elif self.image.is_empty():
             self.input(None)
 
     def update(self) -> None:
