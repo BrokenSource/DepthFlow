@@ -1,0 +1,33 @@
+[project]
+name        = "depthflow"
+description = "🌊 Images to 3D parallax effect videos"
+authors     = [{name="Tremeschin"}]
+version     = "1.0.0.dev1"
+readme      = "readme.md"
+license     = "AGPL-3.0"
+requires-python = ">=3.10"
+dependencies = [
+    "attrs",
+    "cyclopts",
+    "diskcache",
+    "imageio",
+    "numpy",
+    "pillow",
+    "platformdirs",
+    "pooch",
+    "pydantic",
+    "scipy",
+    "shaderflow",
+    "torch",
+    "torchvision",
+    "transformers",
+    "xxhash",
+]
+
+[project.scripts]
+depthflow = "depthflow.__main__:main"
+depth     = "depthflow.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
