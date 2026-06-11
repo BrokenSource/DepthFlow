@@ -1,0 +1,23 @@
+name: website
+on:
+  workflow_dispatch:
+  # push:
+  #   paths:
+  #     - "website/**"
+  # schedule:
+  #   - cron: "0 0 * * 5"
+
+permissions:
+  id-token: write
+  contents: read
+  pages: write
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: BrokenSource/Zentheme@main
+      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/deploy-pages@v5
