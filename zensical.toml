@@ -1,0 +1,57 @@
+[project]
+site_name = "DepthFlow"
+site_description = "🌊 Images to parallax effect videos"
+site_author = "Tremeschin"
+site_url  = "https://depth.tremeschin.com/"
+repo_url  = "https://github.com/BrokenSource/DepthFlow/"
+repo_name = "BrokenSource/DepthFlow"
+copyright = "&copy; CC BY-SA 4.0, <a href='https://github.com/Tremeschin/'>Tremeschin</a> 🇧🇷"
+docs_dir  = "website"
+nav = [
+  {Origin = "https://tremeschin.com/"},
+  {Home = [
+    "index.md",
+    "changelog.md",
+    "community.md",
+    "license.md",
+  ]},
+  {Get = [
+    "get/index.md",
+    "get/pypi.md",
+  ]},
+  {Docs = [
+    "docs/index.md",
+    "docs/inputs.md",
+    "docs/estimators.md",
+    "docs/camera.md",
+    "docs/animation.md",
+    "docs/exporting.md",
+  ]},
+]
+
+[project.theme]
+name = "zentheme"
+favicon = "assets/logo.png"
+
+[project.theme.icon]
+logo = "octicons/package-16"
+tag.default = "material/tag"
+admonition.bug = "octicons/heart-fill-16" # Fixme
+
+[project.extra.tags]
+dummy = "key"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://discord.gg/KjqvcYwRHm"
+name = "Discord"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/patreon"
+link = "https://www.patreon.com/Tremeschin"
+name = "Patreon"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/Tremeschin"
+name = "GitHub"
