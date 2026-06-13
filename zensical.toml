@@ -18,6 +18,7 @@ nav = [
   {Get = [
     "get/index.md",
     "get/pypi.md",
+    "get/docker.md",
   ]},
   {Docs = [
     "docs/index.md",
@@ -27,6 +28,13 @@ nav = [
     "docs/animation.md",
     "docs/exporting.md",
   ]},
+  {Help = [
+    "help/index.md",
+    "help/general.md",
+    "help/windows.md",
+    "help/linux.md",
+    "help/macos.md",
+  ]}
 ]
 
 [project.theme]
