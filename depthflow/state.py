@@ -105,31 +105,31 @@ class ColorState(_BaseModel):
 
 class DepthState(_BaseModel):
 
-    height: float = Field(default=0.20, ge=-2.0, le=2.0)
+    height: float = Field(default=0.20)
     """Peak surface height, the parallax intensity"""
 
-    steady: float = Field(default=0.15, ge=-2.0, le=2.0)
+    steady: float = Field(default=0.15)
     """Focal depth for offsets, the pivot point of the effect"""
 
-    focus: float = Field(default=0.00, ge=-2.0, le=1.0)
+    focus: float = Field(default=0.00)
     """Focal depth where perspective changes makes no effect"""
 
-    zoom: float = Field(default=1.00, ge=0.0, le=2.0)
+    zoom: float = Field(default=1.00)
     """Camera zoom factor, 0.5 makes a quarter image visible"""
 
-    isometric: float = Field(default=0.00, ge=0.0, le=1.0)
+    isometric: float = Field(default=0.00)
     """Isometric factor of projections, how much rays are parallel"""
 
-    dolly: float = Field(default=0.00, ge=0.0, le=100.0)
+    dolly: float = Field(default=0.00)
     """Natural isometric changes, moves ray origins by this amount"""
 
-    offset: tuple[float, float] = Field(default=(0.00, 0.00), ge=(-2.0, -2.0), le=(2.0, 2.0))
+    offset: tuple[float, float] = Field(default=(0.00, 0.00))
     """Camera position displacement that actually makes parallax"""
 
-    center: tuple[float, float] = Field(default=(0.00, 0.00), ge=(-2.0, -2.0), le=(2.0, 2.0))
+    center: tuple[float, float] = Field(default=(0.00, 0.00))
     """Camera is above this point, shifts the scene around"""
 
-    origin: tuple[float, float] = Field(default=(0.00, 0.00), ge=(-2.0, -2.0), le=(2.0, 2.0))
+    origin: tuple[float, float] = Field(default=(0.00, 0.00))
     """Camera point where rays hits perpendicular to the surface"""
 
     def pipeline(self) -> Iterable[Uniform]:

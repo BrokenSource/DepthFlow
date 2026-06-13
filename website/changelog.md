@@ -19,7 +19,7 @@ tags:
 
 Expect more frequent releases and patches now that I'm actively using it in other projects, and the codebase is easier to maintain. May also reimplement removals in better ways!
 
-<small>**Note**: [Legacy](#legacy) versions will exist for a while, whether you depend or used previous features or code.</small>
+<small>**Note**: [Legacy](#legacy) versions will exist for a while, whether you depend or used previous features or code like the WebUI.</small>
 
 ### :package: v1.0.0 <small>Developing</small> {#v1.0.0}
 
