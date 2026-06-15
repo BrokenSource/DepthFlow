@@ -1,4 +1,4 @@
-name: make-pypi
+name: release
 on:
   workflow_dispatch:
   # push:
@@ -12,7 +12,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.2.0
       - run:  uv build --wheel
       - run:  uv publish
