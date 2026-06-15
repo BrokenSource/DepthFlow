@@ -27,7 +27,7 @@
 
 <div align="center">
   <a href="https://depth.tremeschin.com/">
-    <img src="https://github.com/user-attachments/assets/f74653a0-a62d-4911-b23b-f5d0ea03007e"/>
+    <img src="https://github.com/user-attachments/assets/d794899f-d7c9-4318-9038-9ec356c85e2d"/>
   </a>
   <i>
     Visit the documentation at
