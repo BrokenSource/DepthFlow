@@ -1,11 +1,11 @@
 name: website
 on:
   workflow_dispatch:
-  # push:
-  #   paths:
-  #     - "website/**"
-  # schedule:
-  #   - cron: "0 0 * * 5"
+  push:
+    paths:
+      - "website/**"
+  schedule:
+    - cron: "0 0 * * 5"
 
 permissions:
   id-token: write
