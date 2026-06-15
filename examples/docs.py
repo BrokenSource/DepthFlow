@@ -87,6 +87,7 @@ class ExampleScene(DepthScene):
 
 # ---------------------------------------------------------------------------- #
 
+@define
 class Quality(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -95,11 +96,13 @@ class Quality(ExampleScene):
         self.state.center = (-0.4, 0.0)
         self.state.zoom = 0.75
 
+@define
 class Height(ExampleScene):
     def update(self):
         ExampleScene.update(self)
         self.state.height = math.sin(self.cycle/2)**2
 
+@define
 class Offset(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -108,6 +111,7 @@ class Offset(ExampleScene):
             math.sin(self.cycle),
         )
 
+@define
 class Tiles(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -118,6 +122,7 @@ class Tiles(ExampleScene):
             0.15 * math.sin(self.cycle),
         )
 
+@define
 class Steady(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -125,6 +130,7 @@ class Steady(ExampleScene):
         self.state.steady = 0.32
         self.state.offset = (1.5 * math.sin(self.cycle), 0.0)
 
+@define
 class Isometric(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -135,6 +141,7 @@ class Isometric(ExampleScene):
             0.3*math.sin(3*self.cycle),
         )
 
+@define
 class Flat(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -145,6 +152,7 @@ class Flat(ExampleScene):
             0.3*math.sin(self.cycle),
         )
 
+@define
 class Dolly(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -152,6 +160,7 @@ class Dolly(ExampleScene):
         self.state.focus = 0.32
         self.state.dolly = (1 - math.cos(self.cycle))
 
+@define
 class Focus(ExampleScene):
     def update(self):
         ExampleScene.update(self)
@@ -160,16 +169,19 @@ class Focus(ExampleScene):
         self.state.focus = 0.32
         self.state.isometric = 0.999*(1 - math.cos(self.cycle))/2
 
+@define
 class Zoom(ExampleScene):
     def update(self):
         ExampleScene.update(self)
         self.state.zoom = 1 - 0.5*(1 - math.cos(self.cycle))/2
 
+@define
 class Center(ExampleScene):
     def update(self):
         ExampleScene.update(self)
         self.state.center = (math.sin(self.cycle), 0.0)
 
+@define
 class Origin(ExampleScene):
     def update(self):
         ExampleScene.update(self)

@@ -39,5 +39,5 @@ See [:octicons-video-16: Exporting](./exporting.md) for realtime previews or enc
 
 ## Presets
 
-!!! warning "Work in progress"
-    DepthFlow will include a simple animation system and presets in a future release.
+!!! warning "DepthFlow will include a simple animation system in a future release."
+    - For now, check the [Examples](https://github.com/BrokenSource/DepthFlow/tree/main/examples) directory on GitHub in how the [:octicons-device-camera-video-16: Camera](./camera.md) example videos are made, and the previous v0.9 hardcoded presets in the update method.
