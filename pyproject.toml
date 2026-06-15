@@ -24,6 +24,9 @@ dependencies = [
     "xxhash",
 ]
 
+[project.urls]
+GitHub = "https://github.com/BrokenSource/DepthFlow"
+
 [project.scripts]
 depthflow = "depthflow.__main__:main"
 depth     = "depthflow.__main__:main"
