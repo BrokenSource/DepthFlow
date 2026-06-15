@@ -55,10 +55,20 @@ A depthmap is a grayscale image where each pixel's intensity represents the dist
 
 !!! info "Matching aspect ratios isn't required, coordinates are absolute."
 
-There are two main formats for depthmaps; values can either be in a normalized range (0-1) or in real-world units (meters, feet, etc.) and/or multiples:
+### Formats
+
+There are two main formats for depthmaps:
 
 - **Near is white**: Seen on the image above, and what the depthflow math expects.
 - **Near is dark**: Inverse of the above, where near points are darker.
 
-DepthFlow uses normalized values in its [:octicons-device-camera-video-16: Camera](./camera.md) parameters.
+### Units
+
+And also three main types of values:
+
+- **Metric**: Values represent real-world distances, in meters, feet, etc.
+- **Relative**: Values can only be compared against each other reliably.
+- **Normalized**: Values are in a 0-1 range, loses proportions.
+
+DepthFlow uses _normalized_, _near is white_ values in its [:octicons-device-camera-video-16: Camera](./camera.md) parameters.
 
