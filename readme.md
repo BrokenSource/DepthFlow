@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/website/assets/logo.png" width="210">
+  <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/website/assets/logo.svg" width="180">
   <h1>DepthFlow</h1>
   <span>Images to 3D parallax effect videos</span>
   <br><br>
@@ -10,8 +10,6 @@
   <!-- <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/v/release/BrokenSource/DepthFlow?label=Release&color=light-green"></a> -->
   <!-- <a href="https://github.com/BrokenSource/DepthFlow/releases/"><img src="https://img.shields.io/github/downloads/BrokenSource/DepthFlow/total?label=Downloads&color=light-green"></a> -->
   <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple"></a>
-  <br>
-  <sub><small>⭐️ Consider starring the project to help it grow! ⭐️</small></sub>
   <br>
   <br>
 </div>

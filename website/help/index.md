@@ -1,9 +1,12 @@
 ---
-title: Questions
+title: Support
 tags:
 - Meta
 - Help
 ---
 
-!!! warning "For many related issues, check ShaderFlow's help page too!"
-    https://shaders.tremeschin.com/help/
+!!! success "Also check ShaderFlow's help page: https://shaders.tremeschin.com/help/"
+
+Generally speaking, try looking for your issue here first - chances are it's already understood and documented when related to systems, crashes, black screens, missing executables, or similar.
+
+Otherwise, search on [GitHub](https://github.com/BrokenSource/DepthFlow/issues) for keywords, ask in groups, or open a new ticket.
