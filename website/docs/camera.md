@@ -117,7 +117,7 @@ Controls the depth plane at which [#isometric](#isometric) changes cause no disp
 
 <video loop controls src="https://github.com/user-attachments/assets/bb8643d8-9047-44f2-a96d-46fbe9c47d04"></video>
 
-- Notice how in the video, the orange line doesn't move when the `isometric` changes, and the mirroring of perspective directions when crossing this boundary.
+- Notice how in the video, the green line doesn't move when the `isometric` changes, and the mirroring of perspective directions when crossing this boundary.
 - This parameter makes this depth value the surface plane internally.
 
 -> Think about it as an _Isometric Focal Depth._
@@ -127,6 +127,8 @@ Controls the depth plane at which [#isometric](#isometric) changes cause no disp
 Controls the number of ray marching steps. Lower values increases the algorithm discreteness, causing layers to not blend together in an unwanted "cutout" effect, but increases performance.
 
 <video loop controls src="https://github.com/user-attachments/assets/e25f7fbc-9365-427c-a224-d07924e4e4a1"></video>
+
+Note that a high quality value makes no difference for small offsets, be conservative for speed.
 
 ## Zoom
 

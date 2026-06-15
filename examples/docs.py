@@ -183,7 +183,7 @@ output: Path = Path(__file__).parent.joinpath("docs")
 
 def make(
     cls: type[DepthScene],
-    time: float=10,
+    time: float,
 ):
     scene = cls(backend="headless")
     scene.input(image=None)

@@ -18,6 +18,7 @@ nav = [
   {Get = [
     "get/index.md",
     "get/pypi.md",
+    "get/pyaket.md",
     "get/docker.md",
   ]},
   {Docs = [

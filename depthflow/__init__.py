@@ -26,3 +26,6 @@ os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 # Make telemetries opt-in
 os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+
+# Note: We don't import DepthScene for pure estimators usage,
+#   to avoid importing shaderflow, moderngl, imgui, etc.

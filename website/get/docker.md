@@ -1,6 +1,9 @@
 ---
 title: Docker
 icon: simple/docker
+tags:
+- Install
+- Docker
 ---
 
 !!! warning "Images will be updated to v1.0 eventually."
