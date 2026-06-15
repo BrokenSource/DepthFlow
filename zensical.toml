@@ -40,7 +40,7 @@ nav = [
 
 [project.theme]
 name = "zentheme"
-favicon = "assets/logo.png"
+favicon = "assets/logo.svg"
 
 [project.theme.icon]
 logo = "octicons/package-16"

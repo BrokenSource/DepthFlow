@@ -5,6 +5,7 @@ on:
     paths:
       - "website/**"
       - "readme.md"
+      - "zensical.md"
   schedule:
     - cron: "0 0 * * 5"
 
