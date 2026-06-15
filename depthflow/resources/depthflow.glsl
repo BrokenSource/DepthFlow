@@ -119,9 +119,9 @@ DepthFlow DepthMake(
         name.focus     = name##Focus; \
         name.center    = name##Center; \
         name.steady    = name##Steady; \
+        name.sticky    = name##Sticky; \
         name.origin    = name##Origin; \
         name.quality   = iQuality; \
-        name.sticky    = true; \
         name.value     = 0.0; \
         name.gluv      = vec2(0.0); \
         name.oob       = false; \

@@ -111,6 +111,9 @@ class DepthState(_BaseModel):
     steady: float = Field(default=0.15)
     """Focal depth for offsets, the pivot point of the effect"""
 
+    sticky: bool = Field(default=True)
+    """Make the background stay fixed in place on offsets"""
+
     focus: float = Field(default=0.00)
     """Focal depth where perspective changes makes no effect"""
 
@@ -135,6 +138,7 @@ class DepthState(_BaseModel):
     def pipeline(self) -> Iterable[Uniform]:
         yield Uniform("float", "iDepthHeight",    self.height)
         yield Uniform("float", "iDepthSteady",    self.steady)
+        yield Uniform("bool",  "iDepthSticky",    self.sticky)
         yield Uniform("float", "iDepthFocus",     self.focus)
         yield Uniform("float", "iDepthZoom",      self.zoom)
         yield Uniform("float", "iDepthIsometric", self.isometric)
