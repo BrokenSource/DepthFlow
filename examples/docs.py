@@ -1,4 +1,12 @@
 """This file makes the example documentation videos"""
+
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "depthflow",
+# ]
+# ///
+
 import math
 from pathlib import Path
 from typing import Iterable

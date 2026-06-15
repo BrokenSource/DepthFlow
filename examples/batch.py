@@ -1,8 +1,12 @@
-"""
-(c) CC BY-SA 4.0, Tremeschin
+"""Example of programmatically batch rendering multiple inputs"""
 
-Simple example of programmatically batch rendering multiple inputs
-"""
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "depthflow",
+# ]
+# ///
+
 import math
 from pathlib import Path
 from typing import Literal

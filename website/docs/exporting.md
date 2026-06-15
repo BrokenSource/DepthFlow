@@ -5,13 +5,15 @@ tags:
 - Documentation
 ---
 
-DepthFlow supports realtime previews or video exporting.
+_-> DepthFlow supports realtime previews and video exporting._
+
+After creating your [:material-animation-play: Animation](./animation.md) (or using a [#preset](./animation.md#presets)), and sending [:material-image-area: Inputs](./inputs.md) images to a scene instance, it's time to run the animation and export them to a shareable video!
 
 !!! info "Ensure you have [FFmpeg](https://ffmpeg.org/) installed and available in PATH for video encoding"
     - For licensing and size reasons, it cannot be _easily_ distributed, and isn't a hard requirement.
     - Get from your package manager, or put executables in your working directory.
 
-## Simple
+## Video
 
 Simply send an `output="video.mp4"` argument to the `scene.main` method/command:
 

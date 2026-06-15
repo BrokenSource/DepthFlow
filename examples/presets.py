@@ -1,3 +1,12 @@
+"""Collection of simple and cool animation presets"""
+
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "depthflow",
+# ]
+# ///
+
 import math
 
 from attrs import define

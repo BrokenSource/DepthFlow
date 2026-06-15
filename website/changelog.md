@@ -15,13 +15,11 @@ tags:
 !!! danger "Major breaking changes"
     **DepthFlow** is now scoped to be a minimal library-first application, and do it well.
 
-    Features were added without much thought in future maintenance cost, snowballing into making a new release impossible on any internal changes - the only solution was softly starting over, now with experience.
+    Features were added without much thought in future maintenance cost, creating tight coupling where changing one thing often broke several others - the only solution was softly starting over, now with experience.
 
-Expect more frequent releases and patches now that I'm actively using it in other projects, and the codebase is easier to maintain. May also reimplement removals in better ways!
+<small><b>Note</b>: [Legacy](#legacy) versions will exist for a while, whether you depend or used previous features or code like the WebUI.</small>
 
-<small>**Note**: [Legacy](#legacy) versions will exist for a while, whether you depend or used previous features or code like the WebUI.</small>
-
-### :package: v1.0.0 <small>Developing</small> {#v1.0.0}
+### :package: v1.0.0 <small>June 15, 2026</small> {#v1.0.0}
 
 !!! quote ""
     For all practical purposes, this is the first _proper release_ of depthflow.
@@ -32,6 +30,7 @@ Expect more frequent releases and patches now that I'm actively using it in othe
     - Remove animation system, now in example scripts and documentation
     - Remove Gradio WebUI for a future rework (looking for better libraries)
     - Remove all upscalers wrappers (out of scope)
+    - Design an actual project logo rather than a placeholder.
 
 ## Legacy
 
@@ -39,6 +38,12 @@ Expect more frequent releases and patches now that I'm actively using it in othe
     - They were heavily coupled with a monorepo, now independent (reduces package count in PyPI)
     - Unsupported and spaghetti code vs newer releases, maximum Python 3.13 support
     - Thinking in a year or two after [v1.0](#v1.0.0) for removals, extra months for shared library
+
+For where the previous Gradio WebUI exists, you can run it with:
+
+```sh
+$ uvx --python 3.13 depthflow==0.9.1 gradio
+```
 
 ### :package: v0.9.1 <small>June 29, 2025</small> {#v0.9.1}
 

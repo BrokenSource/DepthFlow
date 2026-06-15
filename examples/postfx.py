@@ -1,3 +1,12 @@
+"""Showcase on enabling post-processing effects"""
+
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "depthflow",
+# ]
+# ///
+
 from attrs import define
 from depthflow.scene import DepthScene
 
