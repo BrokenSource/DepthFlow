@@ -1,18 +1,11 @@
-import contextlib
 import os
 from abc import ABC, abstractmethod
-from enum import Enum
-from io import BytesIO
-from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import Optional
 
 import numpy as np
 import xxhash
-from attrs import define
 from diskcache import Cache as DiskCache
 from numpy.typing import DTypeLike
-from PIL import Image
-from PIL.Image import Image as ImageType
 from pydantic import BaseModel
 
 import depthflow

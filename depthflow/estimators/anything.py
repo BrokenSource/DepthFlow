@@ -1,21 +1,13 @@
-import os
-import subprocess
-import sys
 from enum import Enum
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 
-import cachetools
 import numpy as np
 import xxhash
 from cyclopts import Parameter
-from PIL import Image
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import PrivateAttr
 
 from depthflow import logger
 from depthflow.estimators import DepthEstimator
-
-if TYPE_CHECKING:
-    from transformers import Pipeline
 
 # ---------------------------------------------------------------------------- #
 
