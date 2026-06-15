@@ -5,7 +5,6 @@
   <br><br>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/v/depthflow?label=PyPI&color=blue"></a>
   <a href="https://pypi.org/project/depthflow/"><img src="https://img.shields.io/pypi/dw/depthflow?label=Installs&color=blue"></a>
-  <a href="https://github.com/BrokenSource/DepthFlow/"><img src="https://img.shields.io/github/v/tag/BrokenSource/DepthFlow?label=GitHub&color=orange"></a>
   <a href="https://github.com/BrokenSource/DepthFlow/stargazers/"><img src="https://img.shields.io/github/stars/BrokenSource/DepthFlow?label=Stars&style=flat&color=orange"></a>
   <a href="https://discord.gg/KjqvcYwRHm"><img src="https://img.shields.io/discord/1184696441298485370?label=Discord&style=flat&color=purple"></a>
   <br>

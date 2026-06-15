@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "website/**"
+      - "readme.md"
   schedule:
     - cron: "0 0 * * 5"
 
