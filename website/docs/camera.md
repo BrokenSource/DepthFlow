@@ -99,7 +99,7 @@ Internally, it moves the ray origin plane backwards, so a value of :infinity: is
 
 <video loop controls src="https://github.com/user-attachments/assets/978e6487-de9a-49a4-b14c-a64b77d2acf9"></video>
 
-As far as I know, the convertion factor between the two is given by:
+As far as I know, the conversion factor between the two is given by:
 
 ```python
 def isometric(dolly: float) -> float:

@@ -72,6 +72,23 @@ depthmap = estimator.estimate(image=...)
 
 <hr>
 
+### [Depth Anything v3](https://github.com/ByteDance-Seed/depth-anything-3)
+
+!!! info "Currently awaiting a [transformers](https://github.com/huggingface/transformers) safetensors release or alternatives"
+    - Likely available through the non-existing the [`*-hf`](https://huggingface.co/depth-anything/DA3-SMALL-hf) version of [depth-anything/DA3-SMALL](https://huggingface.co/depth-anything/DA3-SMALL)
+    - The [pypi release](https://pypi.org/project/depth-anything-3/) contains **way too many** problematic and limiting [dependencies](https://github.com/ByteDance-Seed/Depth-Anything-3/blob/41736238f5bced4debf3f2a12375d2466874866d/pyproject.toml#L14-L42), eg:
+        - `open3d`: Not used in Monocular Depth Estimation (MDE), has no Python 3.13+ prebuilt wheels.
+        - `numpy<2`: Version 1.26.4 was release in Feb 2025, the ecosystem already moved forward.
+    - Fork at [BrokenSource/Depth-Anything-3](https://github.com/BrokenSource/Depth-Anything-3) reducing it, but I don't want to maintain a pypi package.
+    - May add a runtime git+ install option, but that is frowned upon.
+
+!!! quote "Showcase"
+    <img src="https://depth-anything-3.github.io/assets/teaser.png" width="100%"/>
+
+<!----------------------------------------------------------------------------->
+
+<hr>
+
 ### [Depth Anything v1](https://github.com/LiheYoung/Depth-Anything)
 
 !!! quote "Showcase"
@@ -111,4 +128,4 @@ depthmap = estimator.estimate(image=...)
 
 ### [ZoeDepth](https://github.com/isl-org/ZoeDepth)
 
-!!! failure "No longer maintained, early historical model, vastly superseeded."
+!!! failure "No longer maintained, early historical model, vastly superseded."
