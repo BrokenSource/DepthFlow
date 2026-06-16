@@ -18,7 +18,7 @@ tags:
 
 !!! info "Pause looping videos for performance"
 
-This page talks about the parallax projection parameters and their effects. Most are direct matches to the base shader engine [:octicons-package-16: Camera](https://shaders.tremeschin.com/docs/camera/) model, but some like [#steady](#steady) and [#focus](#focus) are complex linear algebra transformations done internally, that you don't have to worry :slight_smile:
+This page talks about the parallax projection parameters and their effects. Most are direct matches to the base shader engine [:octicons-package-16: Camera](https://shaders.tremeschin.com/docs/camera/) model, but some like [#steady](#steady) and [#focus](#focus) are complex linear algebra transformations done internally, already managed for you :slight_smile:
 
 ## Height
 

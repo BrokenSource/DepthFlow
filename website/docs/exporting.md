@@ -3,6 +3,12 @@ title: Exporting
 icon: octicons/video-16
 tags:
 - Documentation
+- Exporting
+- Video
+- FFmpeg
+- Realtime
+- Codec
+- Quality
 ---
 
 _-> DepthFlow supports realtime previews and video exporting._
@@ -77,11 +83,11 @@ Very large topic, until ShaderFlow documentation is written, you can:
 
 The main things that affect the final video quality are:
 
-1. **Depthmap precision**: DepthFlow is highly sensitive to _good relative depths_ between any two scene points, and **not** _object sillhouette precision_. Learn more at [:material-magnify-scan: Estimators](./estimators.md).
+1. **Depthmap precision**: DepthFlow is highly sensitive to _good relative depths_ between any two points on the scene, and **not** _object sillhouette precision_. Learn more at [:material-image-area: Inputs/#depth](./inputs.md#depth).
 1. **SSAA Value**: Render at a higher resolution and downscales to output, default being 1.0 (pure). Must only go as high[^opengl-limits] as `2 * subsample` (default 2), the downscale kernel size, hurts quality otherwise. A value of 2.0 is plenty for final exports.
-1. **Video resolution**: No gains in videos larger than input sources, _should_ at least match it. When using SSAA, zooming, or with large [#heights](./camera.md#height) or [#offsets](./camera.md#offset), a higher resolution 
+1. **Resolution**: No gains in videos larger than input sources, _should_ at least match it. When using SSAA, zooming, or with large [#heights](./camera.md#height) or [#offsets](./camera.md#offset), a larger input image has benefits.
 1. **Quality parameter**: Explained in [:octicons-device-camera-video-16: Camera/#quality](./camera.md#quality).
-1. **Image contents**: Explained in [:material-image-area: Inputs/#image](./inputs.md#image)
+1. **Image contents**: Explained in [:material-image-area: Inputs/#image](./inputs.md#image).
 1. **Encoder settings**: Explained in [#codec](#codec).
 
 [^opengl-limits]: OpenGL driver implementations have a maximum texture size, commonly 16384 or 32768 pixels depending on your GPU. Values above 2.0 may cause crashes for 4k or 8k output videos.
