@@ -9,6 +9,6 @@ description: Explore community integrations for DepthFlow including a dedicated 
 
 ### akatz-ai
 
-<img src="https://image-b2.civitai.com/file/civitai-media-cache/52f2f16d-a311-46ea-a13b-688983d64fae/original" width="100%">
+<img src="https://github.com/user-attachments/assets/540edee6-75ea-4b13-85ce-748c1eeeff89" width="100%" alt="Akatz Screenshot on a complex DepthFlow nodes workflow in ComfyUI">
 
 <b>Repository:</b> https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes
