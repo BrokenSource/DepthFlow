@@ -1,6 +1,8 @@
 ---
 title: PyPI
 icon: material/language-python
+description: Install and run DepthFlow via PyPI using pip or uv, either within a script file,
+  integrating in your project's dependencies, or directly the package command line interface.
 tags:
 - Install
 - PyPI

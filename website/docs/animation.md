@@ -1,6 +1,8 @@
 ---
 title: Animation
 icon: material/animation-play
+description: Create 3D parallax animations by extending the DepthScene class to modify
+  Camera parameters over time using temporal and projection variables.
 tags:
 - Documentation
 - Animations

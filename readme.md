@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/website/assets/logo.svg" width="200">
+  <img src="https://raw.githubusercontent.com/BrokenSource/DepthFlow/main/website/assets/logo.svg" width="200" alt="Project logo">
   <h1>DepthFlow</h1>
   <span>🌊 Images to 3D parallax effect videos 🌊</span>
   <br><br>
@@ -11,7 +11,7 @@
   <br>
 </div>
 
-<video src="https://github.com/user-attachments/assets/a67632a3-5528-453b-843a-120a65cc480e" loop controls autoplay></video>
+<video src="https://github.com/user-attachments/assets/a67632a3-5528-453b-843a-120a65cc480e" alt="DepthFlow landing video showcase" loop controls autoplay></video>
 
 ## 🔥 Description
 
@@ -26,7 +26,7 @@
 
 <div align="center">
   <a href="https://depth.tremeschin.com/">
-    <img src="https://github.com/user-attachments/assets/d794899f-d7c9-4318-9038-9ec356c85e2d"/>
+    <img src="https://github.com/user-attachments/assets/d794899f-d7c9-4318-9038-9ec356c85e2d" alt="DepthFlow website preview"/>
   </a>
   <i>
     Visit the documentation at

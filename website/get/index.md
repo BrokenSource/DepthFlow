@@ -1,5 +1,7 @@
 ---
 title: Installation
+description: Installation options for DepthFlow include PyPI, Pyaket portable executables,
+  and Docker container images to suit various deployment environments.
 tags:
 - Meta
 ---

@@ -1,6 +1,8 @@
 ---
 title: Inputs
 icon: material/image-area
+description: Use your own images or depthmaps in DepthFlow to make animations, via Python
+  methods or CLI, including guidelines for visual quality, automatic estimation.
 tags:
 - Documentation
 - Image
@@ -71,4 +73,3 @@ And also three main types of values:
 - **Normalized**: Values are in a 0-1 range, loses proportions.
 
 DepthFlow uses _normalized_, _near is white_ values in its [:octicons-device-camera-video-16: Camera](./camera.md) parameters.
-

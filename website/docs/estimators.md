@@ -1,6 +1,8 @@
 ---
 title: Estimators
 icon: material/magnify-scan
+description: Compilation of recommendations and support for various community monocular
+  depth estimation models, using them on a scene or standalone via wrappers.
 tags:
 - Documentation
 - Estimators

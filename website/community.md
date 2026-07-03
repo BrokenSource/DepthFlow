@@ -1,6 +1,8 @@
 ---
 title: Community
 icon: material/recycle
+description: Explore community integrations for DepthFlow including a dedicated repository
+  for ComfyUI-Depthflow-Nodes to integrate the tool into ComfyUI workflows.
 ---
 
 ## ComfyUI

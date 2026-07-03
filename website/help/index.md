@@ -1,5 +1,7 @@
 ---
 title: Support
+description: Support information for DepthFlow users to troubleshoot system issues, crashes,
+  missing tools, performance through documentation, asking community groups, or GitHub.
 tags:
 - Meta
 - Help

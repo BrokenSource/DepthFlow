@@ -1,6 +1,8 @@
 ---
 title: Docker
 icon: simple/docker
+description: Docker container images for DepthFlow and how to properly setup an EGL
+  context inside it for fixing slow cpu-only rendering with llvmpipe.
 tags:
 - Install
 - Docker

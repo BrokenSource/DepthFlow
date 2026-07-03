@@ -1,5 +1,7 @@
 ---
 title: Documentation
+description: Overview of DepthFlow documentation including recommendations to also reference
+  the ShaderFlow project documentation, as it is the core engine behind rendering pipeline.
 tags:
 - Meta
 - Documentation

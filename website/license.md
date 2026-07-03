@@ -1,6 +1,8 @@
 ---
 title: License
 icon: material/license
+description: Details regarding the licensing of DepthFlow code, commercial usage,
+  and liability considerations for models, content, and video codecs.
 tags:
 - About
 - License

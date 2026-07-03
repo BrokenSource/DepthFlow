@@ -1,6 +1,8 @@
 ---
 title: Pyaket
 icon: octicons/package-16
+description: Run DepthFlow from portable executables made with Pyaket, a project from
+  the same author, and basic terminal usage to run your own scripts.
 tags:
 - Install
 - Pyaket

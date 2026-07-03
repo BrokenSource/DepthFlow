@@ -1,6 +1,8 @@
 ---
 title: Camera
 icon: octicons/device-camera-video-16
+description: Learn how to adjust 3D parallax effects using camera parameters like
+  Height, Offset, Steady, Isometric, Dolly, Focus, Quality, Zoom, Center, and Origin.
 tags:
 - Documentation
 - Camera
@@ -25,7 +27,7 @@ This page talks about the parallax projection parameters and their effects. Most
 Controls the scale factor of the projection surface growing towards the camera, acting like a global parallax intensity scalar. When depth maps are normalized:
 
 - A value of (0) zero generates no 3D displacements, the surface is flat at z=1.
-- A value of (1) one makes the surface's peak be on the same xy plane as the camera.    
+- A value of (1) one makes the surface's peak be on the same xy plane as the camera.
 - Note how in the video, the center doesn't touch the camera, as its relative depth value isn't 1, but the closer bottom edge _"gets below"_ the camera's view - where the peak is.
 
 <video loop controls src="https://github.com/user-attachments/assets/d388e725-2fb9-445e-b51d-3a63d60a6943"></video>

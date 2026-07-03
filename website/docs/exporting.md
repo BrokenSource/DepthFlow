@@ -1,6 +1,8 @@
 ---
 title: Exporting
 icon: octicons/video-16
+description: Export animations as high-quality videos using DepthFlow, single or batch,
+  and guides on optimizing final quality with supersampling, encoders, depthmaps
 tags:
 - Documentation
 - Exporting
@@ -48,6 +50,13 @@ scene.main(
     ssaa=1.0,
 )
 ```
+
+## Batch
+
+For exporting multiple videos, you can follow something similar to the <a href="https://github.com/BrokenSource/DepthFlow/blob/main/examples/batch.py"><code>batch.py</code></a> example script, where a scene is reused on many renders over globbing image directories - some notes:
+
+- Always initialize the scene with a `backend=headless` for compatibility.
+- Always reset the scene's state before rendering again, as the previous animation ending could leave changes in the camera parameters a second animation doesn't enforce.
 
 ## Codec
 

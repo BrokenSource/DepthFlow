@@ -1,6 +1,8 @@
 ---
 title: Changelog
 icon: material/file-document-edit
+description: Changelog page for the DepthFlow project. Detailed history of software
+  updates, feature improvements, infrastructure changes, and breaking changes.
 tags:
 - About
 - Changelog
