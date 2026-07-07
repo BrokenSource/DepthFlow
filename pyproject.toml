@@ -2,8 +2,8 @@
 name        = "depthflow"
 description = "🌊 Images to 3D parallax effect videos"
 version     = "1.0.0"
-readme      = "readme.md"
 license     = "AGPL-3.0"
+readme      = "readme.md"
 requires-python = ">=3.10"
 dependencies = [
     "attrs",
