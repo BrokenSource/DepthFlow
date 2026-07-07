@@ -1,18 +1,25 @@
 name: release
 on:
-  workflow_dispatch:
-  # push:
-  #   tags:
-  #     - "v*"
-
+  push:
+    tags:
+      - "v*"
 jobs:
   main:
     runs-on: ubuntu-latest
     environment: release
     permissions:
       id-token: write
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.2.0
-      - run:  uv build --wheel
-      - run:  uv publish
+      - run: uv build --wheel
+      - run: uv publish
+      - run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Release $GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag \
+            dist/*.whl

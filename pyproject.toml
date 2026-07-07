@@ -1,7 +1,6 @@
 [project]
 name        = "depthflow"
 description = "🌊 Images to 3D parallax effect videos"
-authors     = [{name="Tremeschin"}]
 version     = "1.0.0"
 readme      = "readme.md"
 license     = "AGPL-3.0"
