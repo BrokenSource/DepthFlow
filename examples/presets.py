@@ -8,6 +8,7 @@
 # ///
 
 import math
+import sys
 
 from attrs import define
 from depthflow.scene import DepthScene
@@ -102,5 +103,13 @@ class ZoomOutSmooth(DepthScene):
 
 
 if __name__ == "__main__":
+
+    # Chose your scene above or create one!
     scene = ZoomOut()
-    scene.main()
+
+    # For: 'uv run presets.py input -i image.png main ...'
+    scene.cli.meta(sys.argv[1:])
+
+    # Programmatically
+    # scene.input(image=...)
+    # scene.main(output="video.mp4")
