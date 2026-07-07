@@ -108,7 +108,7 @@ class DepthState(_BaseModel):
     height: float = Field(default=0.20)
     """Peak surface height, the parallax intensity"""
 
-    steady: float = Field(default=0.15)
+    steady: float = Field(default=0.05)
     """Focal depth for offsets, the pivot point of the effect"""
 
     sticky: bool = Field(default=True)
@@ -120,7 +120,7 @@ class DepthState(_BaseModel):
     zoom: float = Field(default=1.00)
     """Camera zoom factor, 0.5 makes a quarter image visible"""
 
-    isometric: float = Field(default=0.00)
+    isometric: float = Field(default=0.30)
     """Isometric factor of projections, how much rays are parallel"""
 
     dolly: float = Field(default=0.00)
