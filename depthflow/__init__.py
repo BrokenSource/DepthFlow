@@ -1,10 +1,9 @@
 from dearlog import logger  # isort: split
 
-from importlib.metadata import metadata
-
-__meta__    = metadata(str(__package__))
-__about__   = __meta__.get("Summary")
-__version__ = __meta__.get("Version")
+__about__   = "🌊 Images to 3D parallax effect videos"
+__package__ = "depthflow"
+__version__ = "1.0.0"
+__license__ = "AGPL-3.0"
 
 from pathlib import Path
 

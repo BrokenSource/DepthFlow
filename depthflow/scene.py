@@ -54,7 +54,7 @@ class DepthScene(ShaderScene):
         image: Annotated[Optional[Path | PilImage | np.ndarray | str | BytesIO | bytes], Parameter(
             help="Input image from Path, NumPy, URL (None to default)",
             name=("--image", "-i"))],
-        depth: Annotated[Optional[Path | PilImage |np.ndarray | str | BytesIO | bytes], Parameter(
+        depth: Annotated[Optional[Path | PilImage | np.ndarray | str | BytesIO | bytes], Parameter(
             help="Input depthmap of the image (None to estimate)",
             name=("--depth", "-d"))] = None,
     ) -> None:
