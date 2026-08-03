@@ -2,7 +2,7 @@ import contextlib
 from collections.abc import Iterable
 from io import BytesIO
 from pathlib import Path
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import numpy as np
 from attrs import Factory, define, field
@@ -51,10 +51,10 @@ class DepthScene(ShaderScene):
             self.cli.command(DepthAnythingV2, name="da2", group=group, result_action=self.smartset)
 
     def input(self,
-        image: Annotated[Optional[Path | PilImage | np.ndarray | str | BytesIO | bytes], Parameter(
+        image: Annotated[Path | PilImage | np.ndarray | str | BytesIO | bytes | None, Parameter(
             help="Input image from Path, NumPy, URL (None to default)",
             name=("--image", "-i"))],
-        depth: Annotated[Optional[Path | PilImage | np.ndarray | str | BytesIO | bytes], Parameter(
+        depth: Annotated[Path | PilImage | np.ndarray | str | BytesIO | bytes | None, Parameter(
             help="Input depthmap of the image (None to estimate)",
             name=("--depth", "-d"))] = None,
     ) -> None:
@@ -72,12 +72,11 @@ class DepthScene(ShaderScene):
                 progressbar=True,
             ))
 
-        import imageio.v3 as imageio
-
         # Load estimate input image
         if isinstance(image, PilImage):
             image = np.array(image)
         elif not isinstance(image, np.ndarray):
+            import imageio.v3 as imageio
             image = imageio.imread(image)
 
         if depth is None:
@@ -85,6 +84,7 @@ class DepthScene(ShaderScene):
         elif isinstance(depth, PilImage):
             depth = np.array(depth)
         elif not isinstance(depth, np.ndarray):
+            import imageio.v3 as imageio
             depth = imageio.imread(depth)
 
         self.image.from_numpy(image)

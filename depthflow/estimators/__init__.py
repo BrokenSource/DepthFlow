@@ -1,6 +1,5 @@
 import os
 from abc import ABC, abstractmethod
-from typing import Optional
 
 import numpy as np
 import xxhash
@@ -12,7 +11,7 @@ import depthflow
 
 DEPTHMAPS: DiskCache = DiskCache(
     directory=depthflow.dirs.user_cache_path.joinpath("depthmaps"),
-    size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", 32))*(1024**2),
+    size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", "32"))*(1024**2),
 )
 
 class DepthEstimator(BaseModel, ABC):
@@ -64,10 +63,10 @@ class DepthEstimator(BaseModel, ABC):
     @staticmethod
     def normalize(
         array: np.ndarray,
-        dtype: DTypeLike=np.float32,
-        lerp: DTypeLike=np.float64,
-        min: Optional[float]=None,
-        max: Optional[float]=None,
+        dtype: DTypeLike = np.float32,
+        lerp: DTypeLike = np.float64,
+        min: float | None = None,
+        max: float | None = None,
     ) -> np.ndarray:
 
         # Get the dtype information
