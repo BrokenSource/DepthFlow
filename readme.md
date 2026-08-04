@@ -15,7 +15,7 @@
 
 ## 🔥 Description
 
-**DepthFlow** is a fast _image-to-video_ converter that turns static pictures into awesome 3D parallax animations, perfect for digital art, social media, stock footage, fillers and more.
+**DepthFlow** is a Free and Open Source _image-to-video_ converter that turns pictures into awesome 3D parallax animations, perfect for digital art, social media, stock footage, fillers and more.
 
 - [x] **High quality** videos with artifact-free edges and seamless loops. Render at any resolution, fps, native supersampling, using external SOTA Depth Estimation models.
 - [x] **Fast processing** with a heavily optimized Ray Marching GLSL Shader, fastest FFmpeg data piping using [TurboPipe](https://github.com/BrokenSource/TurboPipe), up to 8k50fps rendering with an RTX 3060-class GPU.
@@ -23,6 +23,8 @@
 - [x] **Local code** with no watermarks, unlimited usage, mass production with scripts.
 
 ## 📦 Getting Started
+
+**Warning**: DepthFlow is free and runs locally. Any paid apps, websites, or ports claiming to be official are fake. All my projects are hosted exclusively on the [<code>tremeschin.com</code>](https://tremeschin.com/) domain. [#](https://github.com/BrokenSource/DepthFlow/issues/110)
 
 <div align="center">
   <a href="https://depth.tremeschin.com/">
