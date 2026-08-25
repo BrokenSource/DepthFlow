@@ -2,7 +2,7 @@ from dearlog import logger  # isort: split
 
 __about__   = "🌊 Images to 3D parallax effect videos"
 __package__ = "depthflow"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __license__ = "AGPL-3.0"
 
 from pathlib import Path
