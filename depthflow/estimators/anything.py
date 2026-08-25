@@ -34,8 +34,8 @@ class DepthAnythingBase(DepthEstimator):
 
     def __hash__(self) -> int:
         hasher = xxhash.xxh3_64()
-        hasher.update(type(self).__name__)
-        hasher.update(self.model.value)
+        hasher.update(type(self).__name__.encode())
+        hasher.update(self.model.value.encode())
         return hasher.intdigest()
 
 # ---------------------------------------------------------------------------- #

@@ -23,7 +23,7 @@ class DepthEstimator(BaseModel, ABC):
 
     def estimate(self, image: np.ndarray) -> np.ndarray:
         hasher = xxhash.xxh3_64()
-        hasher.update(str(self.__hash__()))
+        hasher.update(self.__hash__().to_bytes(8))
         hasher.update(image.tobytes())
         key: int = hasher.intdigest()
 
