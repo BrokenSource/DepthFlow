@@ -49,6 +49,9 @@ admonition.bug = "octicons/heart-fill-16" # Fixme
 [project.extra.tags]
 dummy = "key"
 
+[project.plugins.social]
+enabled = true
+
 [[project.extra.social]]
 icon = "fontawesome/brands/discord"
 link = "https://discord.gg/KjqvcYwRHm"
