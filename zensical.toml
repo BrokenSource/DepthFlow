@@ -5,6 +5,7 @@ site_description = "🌊 Images to parallax effect videos"
 site_url  = "https://depth.tremeschin.com/"
 repo_url  = "https://github.com/BrokenSource/DepthFlow/"
 repo_name = "BrokenSource/DepthFlow"
+extra_css = ["main.css"]
 docs_dir  = "website"
 nav = [
   {Origin = "https://tremeschin.com/"},

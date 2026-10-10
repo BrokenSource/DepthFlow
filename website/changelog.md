@@ -25,7 +25,7 @@ tags:
 
 !!! quote ""
     - Fix `xxhash` v4.0 no longer accepts `str` as inputs [(1)](https://github.com/ifduyue/python-xxhash/issues/187) [(2)](https://github.com/ifduyue/python-xxhash/releases/tag/v4.0.0) (TypeError)
-    - Add empty `pt.typed` file marker due recent linter changes (*pyright)
+    - Add empty `py.typed` file marker due recent linter changes (*pyright)
     - Inline project metadata instead of runtime importlib query overhead
     - Lazy load `imageio` when input isn't already numpy arrays
 
