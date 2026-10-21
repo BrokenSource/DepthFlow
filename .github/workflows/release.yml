@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v8.2.0
       - run: uv build --wheel
-      - run: uv publish
+      - uses: pypa/gh-action-pypi-publish@release/v1
       - run: |
           gh release create "$GITHUB_REF_NAME" \
             --title "Release $GITHUB_REF_NAME" \
