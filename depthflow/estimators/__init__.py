@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from typing import override
 
 import numpy as np
 import xxhash
@@ -16,6 +17,7 @@ DEPTHMAPS: DiskCache = DiskCache(
 
 class DepthEstimator(BaseModel, ABC):
 
+    @override
     @abstractmethod
     def __hash__(self) -> int:
         """Deterministic hash for current settings"""
@@ -84,4 +86,4 @@ class DepthEstimator(BaseModel, ABC):
             x=array.astype(lerp),
             xp=(np.min(array), np.max(array)),
             fp=(min, max),
-        ).astype(dtype) # type: ignore
+        ).astype(dtype)

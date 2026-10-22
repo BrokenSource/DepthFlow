@@ -2,7 +2,7 @@ import contextlib
 from collections.abc import Iterable
 from io import BytesIO
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, override
 
 import numpy as np
 from attrs import Factory, define, field
@@ -40,6 +40,7 @@ class DepthScene(ShaderScene):
 
     # ------------------------------------------------------------------------ #
 
+    @override
     def commands(self):
         self.cli.help = depthflow.__about__
         self.cli.version = depthflow.__version__
@@ -49,6 +50,9 @@ class DepthScene(ShaderScene):
         with contextlib.nullcontext("🌊 Depth Estimator") as group:
             self.cli.command(DepthAnythingV1, name="da1", group=group, result_action=self.smartset)
             self.cli.command(DepthAnythingV2, name="da2", group=group, result_action=self.smartset)
+
+    image: ShaderTexture = field(init=False)
+    depth: ShaderTexture = field(init=False)
 
     def input(self,
         image: Annotated[Path | PilImage | np.ndarray | str | BytesIO | bytes | None, Parameter(
@@ -91,33 +95,35 @@ class DepthScene(ShaderScene):
         self.depth.from_numpy(depth)
 
         # Match rendering resolution to image
-        self.resolution = self.image.size
+        self.resolution: tuple[int, int] = self.image.size
 
     # ------------------------------------------------------------------------ #
 
-    image: ShaderTexture = field(init=False)
-    depth: ShaderTexture = field(init=False)
+    @override
+    def update(self) -> None:
+        # Animation code here!
+        ...
 
+    @override
     def build(self) -> None:
         self.depth = ShaderTexture(scene=self, name="depth", anisotropy=1).repeat(False)
         self.image = ShaderTexture(scene=self, name="image").repeat(False)
         self.shader.fragment = (depthflow.resources/"depthflow.glsl")
         self.runtime = 5.0
 
+    @override
     def setup(self) -> None:
         if self.image.is_empty():
             self.input(None)
 
-    def update(self) -> None:
-        # Animation code here!
-        ...
-
+    @override
     def handle(self, message: ShaderMessage) -> None:
         ShaderScene.handle(self, message)
 
         if isinstance(message, ShaderMessage.Window.FileDrop):
             self.input(image=message.first, depth=message.second)
 
+    @override
     def pipeline(self) -> Iterable[ShaderVariable]:
         yield from ShaderScene.pipeline(self)
         yield from self.state.pipeline()
