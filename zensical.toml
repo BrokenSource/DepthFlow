@@ -53,6 +53,9 @@ dummy = "key"
 [project.plugins.social]
 enabled = true
 
+[project.plugins.privacy]
+enabled = true
+
 [[project.extra.social]]
 icon = "fontawesome/brands/discord"
 link = "https://discord.gg/KjqvcYwRHm"
