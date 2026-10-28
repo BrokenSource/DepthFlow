@@ -32,7 +32,7 @@ class ZoeDepth(DepthEstimator):
 
     def model_post_init(self) -> None:
         subprocess.run((
-            sys.executable, "-m", "uv", "pip", "install",
+            "uv", "pip", "install",
             "timm==0.6.7", "torchvision==0.15.2",
             "--no-deps",
         ))

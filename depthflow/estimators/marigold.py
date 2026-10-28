@@ -32,7 +32,7 @@ class Marigold(DepthEstimator):
 
     def model_post_init(self) -> None:
         subprocess.run((
-            sys.executable, "-m", "uv", "pip", "install",
+            "uv", "pip", "install",
             "accelerate", "diffusers", "matplotlib",
         ))
 

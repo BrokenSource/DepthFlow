@@ -1,9 +1,7 @@
 """Warning: Script not ported to v1.0"""
 
-# pyright: reportMissingImports=false
 import copy
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -26,8 +24,8 @@ class DepthPro(DepthEstimator):
     _transform: Any = PrivateAttr(None)
 
     def _load_model(self) -> None:
-        subprocess.run((
-            sys.executable, "-m", "uv", "pip", "install",
+        subprocess.check_call((
+            "uv", "pip", "install",
             "git+https://github.com/apple/ml-depth-pro"
         ))
 
@@ -36,7 +34,7 @@ class DepthPro(DepthEstimator):
         checkpoint = Path(pooch.retrieve(
             url="https://ml-site.cdn-apple.com/models/depth-pro/depth_pro.pt",
             known_hash="xxh128:d66f5787be967c80c160f1a1f293dc76",
-            path=depthflow.directories.user_data_path,
+            path=depthflow.dirs.user_data_path,
             fname="depth_pro.pt",
             progressbar=True,
         ))
