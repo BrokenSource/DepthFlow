@@ -4,7 +4,8 @@ from typing import override
 
 import numpy as np
 import xxhash
-from diskcache import Cache as DiskCache
+from diskcache_community import Cache as DiskCache
+from diskcache_community import SafeDisk
 from numpy.typing import DTypeLike
 from pydantic import BaseModel
 
@@ -13,6 +14,7 @@ import depthflow
 DEPTHMAPS: DiskCache = DiskCache(
     directory=depthflow.dirs.user_cache_path.joinpath("depthmaps"),
     size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", "32"))*(1024**2),
+    disk=SafeDisk.with_numpy().with_options(on_error="miss"),
 )
 
 class DepthEstimator(BaseModel, ABC):
