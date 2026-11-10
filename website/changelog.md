@@ -26,8 +26,12 @@ tags:
 !!! quote ""
     **Breaking**
 
-    - Store depthmaps as [`.npy`](https://numpy.org/doc/stable/reference/generated/numpy.save.html) bytes for cross cpython and numpy compatibility.
+    - Store depthmaps as [`.npy`](https://numpy.org/doc/stable/reference/generated/numpy.save.html) bytes for cross cpython and numpy compatibility
         - Cached data will fail to load, please reset your [`depthflow.dirs.user_cache_dir`](https://platformdirs.readthedocs.io/en/latest/platforms.html#user-cache-dir)
+
+    **Security**
+
+    - Workaround [CVE-2025-69872](https://github.com/advisories/GHSA-w8v5-vhqr-4h9v) via Disk subclass avoiding pickle loads [#116](https://github.com/BrokenSource/DepthFlow/issues/116)
 
 ### :package: v1.0.1 <small>August 25, 2026</small> {#v1.0.1}
 

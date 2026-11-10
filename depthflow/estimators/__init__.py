@@ -6,14 +6,31 @@ from typing import override
 import numpy as np
 import xxhash
 from diskcache import Cache as DiskCache
+from diskcache import Disk
+from diskcache.core import MODE_BINARY
 from numpy.typing import DTypeLike
 from pydantic import BaseModel
 
 import depthflow
 
+
+class BlobDisk(Disk):
+    """Workaround (CVE-2025-69872)"""
+    def fetch(self, mode, filename, value, read):
+        if mode == MODE_BINARY:
+            return super().fetch(mode, filename, value, read)
+        raise FileNotFoundError("Only binary mode is allowed")
+
+    def get(self, key, raw):
+        if not raw: # note: unhandled truthy values
+            raise ValueError("Only raw keys are allowed")
+        return super().get(key, raw)
+
+
 DEPTHMAPS: DiskCache = DiskCache(
     directory=depthflow.dirs.user_cache_path.joinpath("depthmaps"),
     size_limit=int(os.getenv("DEPTHMAP_CACHE_SIZE_MB", "32"))*(1024**2),
+    disk=BlobDisk,
 )
 
 class DepthEstimator(BaseModel, ABC):
