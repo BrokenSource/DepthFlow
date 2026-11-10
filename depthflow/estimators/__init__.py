@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from io import BytesIO
 from typing import override
 
 import numpy as np
@@ -38,7 +39,10 @@ class DepthEstimator(BaseModel, ABC):
             self.load_model()
             depth = self._estimate(image)
             depth = self.normalize(depth)
-            DEPTHMAPS.set(key, depth)
+            np.save(buffer := BytesIO(), depth, allow_pickle=False)
+            DEPTHMAPS.set(key, buffer.getvalue())
+        else:
+            depth = np.load(BytesIO(depth), allow_pickle=False)
 
         # Normalized f32 for GPU
         depth = self.normalize(

@@ -21,6 +21,14 @@ tags:
 
 <small><b>Note</b>: [Legacy](#legacy) versions will exist for a while, whether you depend or used previous features or code like the WebUI.</small>
 
+### :package: v1.1.0 <small>Staging</small> {#v1.1.0}
+
+!!! quote ""
+    **Breaking**
+
+    - Store depthmaps as [`.npy`](https://numpy.org/doc/stable/reference/generated/numpy.save.html) bytes for cross cpython and numpy compatibility.
+        - Cached data will fail to load, please reset your [`depthflow.dirs.user_cache_dir`](https://platformdirs.readthedocs.io/en/latest/platforms.html#user-cache-dir)
+
 ### :package: v1.0.1 <small>August 25, 2026</small> {#v1.0.1}
 
 !!! quote ""
