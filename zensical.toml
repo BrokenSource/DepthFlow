@@ -50,9 +50,6 @@ admonition.bug = "octicons/heart-fill-16" # Fixme
 [project.extra.tags]
 dummy = "key"
 
-[project.plugins.privacy]
-enabled = true
-
 [project.plugins.social]
 enabled = true
 
